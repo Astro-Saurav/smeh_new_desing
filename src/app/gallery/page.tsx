@@ -1,17 +1,32 @@
 ﻿"use client";
 
-import { studentProjects } from "@/lib/data";
+import { useEffect, useState } from "react";
+import { getNewsByCategory } from "@/lib/newsApi";
 import Image from "next/image";
 import Link from "next/link";
 import { TrendingUp, Camera, Maximize2, Hash, Image as ImageIcon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function GalleryPage() {
-  // Categorized data
-  const campusImages = studentProjects.slice(0, 4);
-  const eventImages = studentProjects.slice(4, 6);
-  const workImages = studentProjects.slice(1, 5);
-  const gridStories = studentProjects.slice(0, 6);
+  const [stories, setStories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchGallery = async () => {
+      const galleryNews = await getNewsByCategory("Gallery", 20);
+      setStories(galleryNews);
+      setLoading(false);
+    };
+    fetchGallery();
+  }, []);
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading gallery...</div>;
+  if (!stories.length) return <div className="min-h-screen flex items-center justify-center">No gallery items available yet.</div>;
+
+  const campusImages = stories.slice(0, 4);
+  const eventImages = stories.slice(4, 8); 
+  const workImages = stories.slice(8, 12);
+  const gridStories = stories.slice(0, 6);
 
   return (
     <div className="bg-white min-h-screen font-sans">

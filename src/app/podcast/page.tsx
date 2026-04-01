@@ -1,15 +1,31 @@
 ﻿"use client";
 
-import { studentProjects } from "@/lib/data";
+import { useEffect, useState } from "react";
+import { getNewsByCategory } from "@/lib/newsApi";
 import Image from "next/image";
 import Link from "next/link";
 import { MessageSquare, Share2, TrendingUp, Mic, Play, Headphones, Clock, Radio } from "lucide-react";
 
 export default function PodcastPage() {
-  const mainStory = studentProjects[3];
-  const sideStory1 = studentProjects[0];
-  const listStories = studentProjects.slice(1, 5);
-  const trendingStoriesList = studentProjects.slice(6, 11);
+  const [stories, setStories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPodcastNews = async () => {
+      const podcastNews = await getNewsByCategory("Podcast", 15);
+      setStories(podcastNews);
+      setLoading(false);
+    };
+    fetchPodcastNews();
+  }, []);
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading news...</div>;
+  if (!stories.length) return <div className="min-h-screen flex items-center justify-center">No news available yet.</div>;
+
+  const mainStory = stories[0] || { image: "/placeholder.jpg", headline: "No article", description: "" };
+  const sideStory1 = stories[1] || { image: "/placeholder.jpg", headline: "No article", description: "" };
+  const listStories = stories.slice(2, 6);
+  const trendingStoriesList = stories.slice(6, 11);
 
   return (
     <div className="bg-white min-h-screen font-sans">

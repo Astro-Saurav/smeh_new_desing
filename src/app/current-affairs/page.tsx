@@ -1,15 +1,31 @@
 ﻿"use client";
 
-import { studentProjects } from "@/lib/data";
+import { useEffect, useState } from "react";
+import { getNewsByCategory } from "@/lib/newsApi";
 import Image from "next/image";
 import Link from "next/link";
 import { MessageSquare, Share2, TrendingUp, Newspaper, Clock, BookOpen } from "lucide-react";
 
 export default function CurrentAffairsPage() {
-  const mainStory = studentProjects[1]; // Using variation in stories
-  const sideStory1 = studentProjects[3];
-  const listStories = studentProjects.slice(4, 8);
-  const trendingStoriesList = studentProjects.slice(0, 5);
+  const [stories, setStories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCurrentAffairs = async () => {
+      const affairsNews = await getNewsByCategory("Current Affairs", 10);
+      setStories(affairsNews);
+      setLoading(false);
+    };
+    fetchCurrentAffairs();
+  }, []);
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading news...</div>;
+  if (!stories.length) return <div className="min-h-screen flex items-center justify-center">No news available yet.</div>;
+
+  const mainStory = stories[0] || { image: "/placeholder.jpg", headline: "No article", description: "" };
+  const sideStory1 = stories[1] || { image: "/placeholder.jpg", headline: "No article", description: "" };
+  const listStories = stories.slice(2, 6);
+  const trendingStoriesList = stories.slice(0, 5);
 
   return (
     <div className="bg-white min-h-screen font-sans">

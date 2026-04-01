@@ -1,15 +1,31 @@
 ﻿"use client";
 
-import { competitions as competitionsData, studentProjects } from "@/lib/data";
+import { useEffect, useState } from "react";
+import { getNewsByCategory } from "@/lib/newsApi";
 import Image from "next/image";
 import Link from "next/link";
 import { MessageSquare, Share2, TrendingUp, Calendar, Users, Trophy, ChevronRight } from "lucide-react";
 import { format } from 'date-fns';
 
 export default function CompetitionsPage() {
-  const mainComp = competitionsData[0];
-  const listComps = competitionsData.slice(1, 5);
-  const trendingStoriesList = studentProjects.slice(2, 7);
+  const [stories, setStories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCompetitions = async () => {
+      const competitionNews = await getNewsByCategory("Competitions", 10);
+      setStories(competitionNews);
+      setLoading(false);
+    };
+    fetchCompetitions();
+  }, []);
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading competitions...</div>;
+  if (!stories.length) return <div className="min-h-screen flex items-center justify-center">No competitions available yet.</div>;
+
+  const mainComp = stories[0] || { image: "/placeholder.jpg", headline: "No competition", description: "" };
+  const listComps = stories.slice(1, 5);
+  const trendingStoriesList = stories.slice(0, 5);
 
   return (
     <div className="bg-white min-h-screen font-sans">

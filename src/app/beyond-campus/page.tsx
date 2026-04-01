@@ -1,15 +1,31 @@
 ﻿"use client";
 
-import { studentProjects } from "@/lib/data";
+import { useEffect, useState } from "react";
+import { getNewsByCategory } from "@/lib/newsApi";
 import Image from "next/image";
 import Link from "next/link";
 import { MessageSquare, Share2, TrendingUp, Globe, MapPin, ExternalLink } from "lucide-react";
 
 export default function BeyondCampusPage() {
-  const mainStory = studentProjects[1];
-  const sideStory1 = studentProjects[2];
-  const listStories = studentProjects.slice(3, 7);
-  const trendingStoriesList = studentProjects.slice(0, 5);
+  const [stories, setStories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBeyondNews = async () => {
+      const beyondNews = await getNewsByCategory("Beyond Campus", 10);
+      setStories(beyondNews);
+      setLoading(false);
+    };
+    fetchBeyondNews();
+  }, []);
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading news...</div>;
+  if (!stories.length) return <div className="min-h-screen flex items-center justify-center">No news available yet.</div>;
+
+  const mainStory = stories[0] || { image: "/placeholder.jpg", headline: "No article", description: "" };
+  const sideStory1 = stories[1] || { image: "/placeholder.jpg", headline: "No article", description: "" };
+  const listStories = stories.slice(2, 6);
+  const trendingStoriesList = stories.slice(0, 5);
 
   return (
     <div className="bg-white min-h-screen font-sans">

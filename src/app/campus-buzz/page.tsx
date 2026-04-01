@@ -1,15 +1,66 @@
 ﻿"use client";
 
-import { studentProjects } from "@/lib/data";
+import { useEffect, useState } from "react";
+import { getNewsByCategory } from "@/lib/newsApi";
 import Image from "next/image";
 import Link from "next/link";
 import { MessageSquare, Share2, TrendingUp, Clock, Globe } from "lucide-react";
 
 export default function CampusBuzzPage() {
-  const mainStory = studentProjects[0];
-  const sideStory1 = studentProjects[1];
-  const listStories = studentProjects.slice(2, 6);
-  const trendingStoriesList = studentProjects.slice(4, 9);
+  const [stories, setStories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchNews() {
+      try {
+        const data = await getNewsByCategory("Campus Buzz", 10);
+        setStories(data);
+      } catch (error) {
+        console.error("Failed to load Campus Buzz news", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchNews();
+    const refreshTimer = setInterval(fetchNews, 10000);
+
+    return () => clearInterval(refreshTimer);
+  }, []);
+
+  const mainStory = stories[0] || { image: "/placeholder.jpg", headline: "No article", description: "" };
+  const listStories = stories.slice(2, 6);
+  const trendingStoriesList = stories.slice(4, 9);
+
+  if (loading) {
+    return (
+      <div className="bg-white min-h-screen font-sans">
+        <main className="container mx-auto px-4 md:px-8 py-8 md:py-12">
+          <div className="border-b-4 border-zinc-900 mb-8 pb-4">
+            <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase">
+              Campus <span className="text-primary italic">Buzz</span>
+            </h1>
+          </div>
+          <p className="text-center text-zinc-500">Loading news...</p>
+        </main>
+      </div>
+    );
+  }
+
+  if (!mainStory) {
+    return (
+      <div className="bg-white min-h-screen font-sans">
+        <main className="container mx-auto px-4 md:px-8 py-8 md:py-12">
+          <div className="border-b-4 border-zinc-900 mb-8 pb-4">
+            <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase">
+              Campus <span className="text-primary italic">Buzz</span>
+            </h1>
+          </div>
+          <p className="text-center text-zinc-500">No news available yet.</p>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white min-h-screen font-sans">
@@ -25,12 +76,12 @@ export default function CampusBuzzPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
           
           {/* Main Feed - Column 1 & 2 (Lg) */}
-          <div className="lg:col-span-6 border-r-0 lg:border-r border-zinc-100 lg:pr-8">
+          <div className="lg:col-span-8 border-r-0 lg:border-r border-zinc-100 lg:pr-8">
             <Link href="#" className="group block mb-6">
               <div className="relative aspect-[16/10] mb-4 overflow-hidden">
                 <Image 
                   src={mainStory.image} 
-                  alt="m" 
+                  alt={mainStory.headline} 
                   fill 
                   className="object-cover group-hover:scale-105 transition-transform duration-700" 
                   priority
@@ -45,8 +96,8 @@ export default function CampusBuzzPage() {
               <p className="text-zinc-600 line-clamp-3 mb-6 text-xl">{mainStory.description}</p>
               
               <div className="flex items-center gap-6 text-[10px] font-black uppercase text-zinc-400">
-                <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> 2 Hours ago</span>
-                <span className="flex items-center gap-1.5 hover:text-primary cursor-pointer"><MessageSquare className="w-3.5 h-3.5" /> 18 Comments</span>
+                <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> Just now</span>
+                <span className="flex items-center gap-1.5 hover:text-primary cursor-pointer"><MessageSquare className="w-3.5 h-3.5" /> Comments</span>
               </div>
             </Link>
 
@@ -62,30 +113,8 @@ export default function CampusBuzzPage() {
             </div>
           </div>
 
-          {/* Secondary Column - Middle */}
-          <div className="lg:col-span-3 border-r-0 lg:border-r border-zinc-100 lg:pr-8">
-            <h3 className="text-xs font-black uppercase tracking-[0.2em] mb-6">Local Updates</h3>
-            <Link href="#" className="group block mb-10">
-              <div className="relative aspect-[3/4] mb-3 overflow-hidden">
-                <Image src={sideStory1.image} alt="side" fill className="object-cover group-hover:scale-110 transition-all duration-700" />
-              </div>
-              <h4 className="text-lg font-black leading-tight group-hover:text-primary transition-colors uppercase italic underline decoration-zinc-100">
-                {sideStory1.headline}
-              </h4>
-            </Link>
-
-            <div className="space-y-6 pt-6 border-t border-zinc-100">
-               {listStories.slice(2, 4).map((story, i) => (
-                 <Link key={i} href="#" className="block group">
-                    <span className="text-[9px] font-black uppercase text-primary tracking-widest block mb-1">In Brief</span>
-                    <h5 className="text-[13px] font-bold leading-tight group-hover:text-primary line-clamp-2">{story.headline}</h5>
-                 </Link>
-               ))}
-            </div>
-          </div>
-
           {/* Sidebar - Trending Column */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-4">
              <div className="bg-zinc-950 text-white p-6 mb-10 border-l-4 border-primary shadow-2xl">
                 <h4 className="text-primary font-black uppercase text-[10px] tracking-[0.3em] mb-4">Bulletin Board</h4>
                 <p className="text-[12px] text-zinc-400 leading-relaxed mb-6 italic">"The ultimate student resource for daily campus life and academic news."</p>

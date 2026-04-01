@@ -1,14 +1,30 @@
 ﻿"use client";
 
-import { studentProjects } from "@/lib/data";
+import { useEffect, useState } from "react";
+import { getNewsByCategory } from "@/lib/newsApi";
 import Image from "next/image";
 import Link from "next/link";
 import { MessageSquare, Share2, TrendingUp, Heart, Instagram, Twitter } from "lucide-react";
 
 export default function SocialBuzzPage() {
-  const mainStory = studentProjects[2];
-  const listStories = studentProjects.slice(4, 7);
-  const trendingStoriesList = studentProjects.slice(1, 6);
+  const [stories, setStories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSocialNews = async () => {
+      const socialNews = await getNewsByCategory("Social Buzz", 15);
+      setStories(socialNews);
+      setLoading(false);
+    };
+    fetchSocialNews();
+  }, []);
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading news...</div>;
+  if (!stories.length) return <div className="min-h-screen flex items-center justify-center">No news available yet.</div>;
+
+  const mainStory = stories[0] || { image: "/placeholder.jpg", headline: "No article", description: "" };
+  const listStories = stories.slice(1, 3);
+  const trendingStoriesList = stories.slice(3, 8);
 
   return (
     <div className="bg-white min-h-screen font-sans">

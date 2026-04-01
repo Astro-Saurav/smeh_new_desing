@@ -1,15 +1,31 @@
 ﻿"use client";
 
-import { studentProjects } from "@/lib/data";
+import { useEffect, useState } from "react";
+import { getNewsByCategory } from "@/lib/newsApi";
 import Image from "next/image";
 import Link from "next/link";
 import { MessageSquare, Share2, TrendingUp, PenTool, ArrowRight, User, BookOpen } from "lucide-react";
 
 export default function BlogPage() {
-  const mainStory = studentProjects[4];
-  const sideStory1 = studentProjects[2];
-  const listStories = studentProjects.slice(1, 4);
-  const trendingStoriesList = studentProjects.slice(5, 10);
+  const [stories, setStories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBlogNews = async () => {
+      const blogNews = await getNewsByCategory("Blog", 10);
+      setStories(blogNews);
+      setLoading(false);
+    };
+    fetchBlogNews();
+  }, []);
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading news...</div>;
+  if (!stories.length) return <div className="min-h-screen flex items-center justify-center">No news available yet.</div>;
+
+  const mainStory = stories[0] || { image: "/placeholder.jpg", headline: "No article", description: "" };
+  const sideStory1 = stories[1] || { image: "/placeholder.jpg", headline: "No article", description: "" };
+  const listStories = stories.slice(1, 4);
+  const trendingStoriesList = stories.slice(4, 9);
 
   return (
     <div className="bg-white min-h-screen font-sans">

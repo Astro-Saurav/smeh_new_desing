@@ -1,15 +1,31 @@
 ﻿"use client";
 
-import { studentProjects } from "@/lib/data";
+import { useEffect, useState } from "react";
+import { getNewsByCategory } from "@/lib/newsApi";
 import Image from "next/image";
 import Link from "next/link";
 import { MessageSquare, Share2, TrendingUp, Award, Star, Trophy } from "lucide-react";
 
 export default function AchievementsPage() {
-  const mainStory = studentProjects[3];
-  const sideStory1 = studentProjects[5];
-  const listStories = studentProjects.slice(1, 4);
-  const trendingStoriesList = studentProjects.slice(6, 11);
+  const [stories, setStories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAchievements = async () => {
+      const achievementNews = await getNewsByCategory("Achievements", 15);
+      setStories(achievementNews);
+      setLoading(false);
+    };
+    fetchAchievements();
+  }, []);
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading news...</div>;
+  if (!stories.length) return <div className="min-h-screen flex items-center justify-center">No news available yet.</div>;
+
+  const mainStory = stories[0] || { image: "/placeholder.jpg", headline: "No article", description: "" };
+  const sideStory1 = stories[1] || { image: "/placeholder.jpg", headline: "No article", description: "" };
+  const listStories = stories.slice(2, 5);
+  const trendingStoriesList = stories.slice(5, 10);
 
   return (
     <div className="bg-white min-h-screen font-sans">

@@ -1,15 +1,31 @@
 ﻿"use client";
 
-import { studentProjects } from "@/lib/data";
+import { useEffect, useState } from "react";
+import { getNewsByCategory } from "@/lib/newsApi";
 import Image from "next/image";
 import Link from "next/link";
 import { MessageSquare, Share2, TrendingUp, Bell, Pin, Calendar, ArrowRight, Info } from "lucide-react";
 
 export default function AnnouncementPage() {
-  const mainNotice = studentProjects[1];
-  const sideNotice1 = studentProjects[4];
-  const listNotices = studentProjects.slice(2, 6);
-  const trendingNoticesList = studentProjects.slice(8, 13);
+  const [stories, setStories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      const announcementNews = await getNewsByCategory("Announcement", 15);
+      setStories(announcementNews);
+      setLoading(false);
+    };
+    fetchAnnouncements();
+  }, []);
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading news...</div>;
+  if (!stories.length) return <div className="min-h-screen flex items-center justify-center">No news available yet.</div>;
+
+  const mainNotice = stories[0] || { image: "/placeholder.jpg", headline: "No article", description: "" };
+  const sideNotice1 = stories[1] || { image: "/placeholder.jpg", headline: "No article", description: "" };
+  const listNotices = stories.slice(2, 6);
+  const trendingNoticesList = stories.slice(6, 11);
 
   return (
     <div className="bg-white min-h-screen font-sans">
