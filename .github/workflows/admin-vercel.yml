@@ -4,11 +4,11 @@ on:
   push:
     branches: [main]
     paths:
-      - admin-crm/**
+      - frontend/admin-crm/**
       - .github/workflows/admin-vercel.yml
   pull_request:
     paths:
-      - admin-crm/**
+      - frontend/admin-crm/**
       - .github/workflows/admin-vercel.yml
   workflow_dispatch:
 
@@ -18,7 +18,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: admin-crm
+        working-directory: frontend/admin-crm
 
     steps:
       - name: Checkout
@@ -29,7 +29,7 @@ jobs:
         with:
           node-version: '20'
           cache: npm
-          cache-dependency-path: admin-crm/package-lock.json
+          cache-dependency-path: frontend/admin-crm/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -45,7 +45,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_ADMIN }}
-          working-directory: admin-crm
+          working-directory: frontend/admin-crm
           vercel-args: '--prod'
 
       - name: Preview Build (PR)
@@ -56,4 +56,4 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_ADMIN }}
-          working-directory: admin-crm
+          working-directory: frontend/admin-crm
