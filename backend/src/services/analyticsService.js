@@ -1,12 +1,10 @@
-const { getPool } = require('../config/db')
+const News = require('../models/News')
+const Category = require('../models/Category')
 
 async function getStatusCounts () {
-  const pool = await getPool()
-  const result = await pool.request().query(`
-    SELECT status, COUNT(*) AS count
-    FROM news
-    GROUP BY status
-  `)
+  const counts = await News.aggregate([
+    { $group: { _id: '$status', count: { $sum: 1 } } }
+  ])
 
   const baseline = {
     draft: 0,
@@ -14,45 +12,45 @@ async function getStatusCounts () {
     scheduled: 0
   }
 
-  for (const row of result.recordset) {
-    baseline[row.status] = Number(row.count)
-  }
+  counts.forEach(c => {
+    baseline[c._id] = c.count
+  })
 
   return baseline
 }
 
 async function getCategoryCounts () {
-  const pool = await getPool()
-  const result = await pool.request().query(`
-    SELECT c.id, c.name, COUNT(n.id) AS count
-    FROM categories c
-    LEFT JOIN news n ON n.category_id = c.id
-    GROUP BY c.id, c.name
-    ORDER BY count DESC, c.name ASC
-  `)
-
-  return result.recordset.map((row) => ({
-    id: row.id,
-    name: row.name,
-    count: Number(row.count)
-  }))
+  const results = await News.aggregate([
+    { $group: { _id: '$category', count: { $sum: 1 } } }
+  ])
+  
+  const categories = await Category.find()
+  
+  return categories.map(cat => {
+    const stat = results.find(r => r._id && r._id.toString() === cat._id.toString())
+    return {
+      id: cat._id,
+      name: cat.name,
+      count: stat ? stat.count : 0
+    }
+  }).sort((a,b) => b.count - a.count || a.name.localeCompare(b.name))
 }
 
 async function getMonthlyPublishTrend () {
-  const pool = await getPool()
-  const result = await pool.request().query(`
-    SELECT
-      FORMAT(published_at, 'yyyy-MM') AS month,
-      COUNT(*) AS count
-    FROM news
-    WHERE status = 'published' AND published_at IS NOT NULL
-    GROUP BY FORMAT(published_at, 'yyyy-MM')
-    ORDER BY month ASC
-  `)
+  const results = await News.aggregate([
+    { $match: { status: 'published', published_at: { $ne: null } } },
+    {
+      $group: {
+        _id: { $dateToString: { format: '%Y-%m', date: '$published_at' } },
+        count: { $sum: 1 }
+      }
+    },
+    { $sort: { _id: 1 } }
+  ])
 
-  return result.recordset.map((row) => ({
-    month: row.month,
-    count: Number(row.count)
+  return results.map(r => ({
+    month: r._id,
+    count: r.count
   }))
 }
 

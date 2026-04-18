@@ -1,32 +1,13 @@
-const { getPool, sql } = require('../config/db')
+const Category = require('../models/Category')
 
 async function createCategory ({ name }) {
-  const pool = await getPool()
-
-  const result = await pool
-    .request()
-    .input('name', sql.NVarChar(120), name.trim())
-    .query(`
-      INSERT INTO categories (name)
-      OUTPUT INSERTED.id, INSERTED.name, INSERTED.created_at
-      VALUES (@name)
-    `)
-
-  return result.recordset[0]
+  const category = new Category({ name: name.trim() })
+  await category.save()
+  return category
 }
 
 async function listCategories () {
-  const pool = await getPool()
-
-  const result = await pool
-    .request()
-    .query(`
-      SELECT id, name, created_at
-      FROM categories
-      ORDER BY name ASC
-    `)
-
-  return result.recordset
+  return Category.find().sort({ name: 1 })
 }
 
 module.exports = {

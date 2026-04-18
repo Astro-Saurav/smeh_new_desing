@@ -1,40 +1,27 @@
-const sql = require('mssql')
+const mongoose = require('mongoose')
 const { env } = require('./env')
 
-const sqlConfig = {
-  user: env.azureSql.user,
-  password: env.azureSql.password,
-  server: env.azureSql.server,
-  database: env.azureSql.database,
-  port: env.azureSql.port,
-  options: env.azureSql.options,
-  pool: {
-    max: 10,
-    min: 0,
-    idleTimeoutMillis: 30000
-  }
-}
+let isConnected = false
 
-let poolPromise
-
-function getPool () {
-  if (!poolPromise) {
-    poolPromise = new sql.ConnectionPool(sqlConfig)
-      .connect()
-      .then((pool) => {
-        console.log('Connected to Azure SQL')
-        return pool
-      })
-      .catch((error) => {
-        poolPromise = null
-        throw error
-      })
+async function getPool () {
+  if (isConnected) {
+    return mongoose.connection
   }
 
-  return poolPromise
+  try {
+    await mongoose.connect(env.mongo.uri, {
+      dbName: env.mongo.dbName
+    })
+    
+    isConnected = true
+    console.log('Connected to MongoDB/CosmosDB')
+    return mongoose.connection
+  } catch (error) {
+    console.error('Database connection error:', error)
+    throw error
+  }
 }
 
 module.exports = {
-  sql,
   getPool
 }

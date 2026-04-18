@@ -1,89 +1,44 @@
-const { v4: uuidv4 } = require('uuid')
-const { getPool, sql } = require('../config/db')
+const User = require('../models/User')
 const { hashPassword } = require('../utils/password')
+const News = require('../models/News')
 
 async function findUserByEmail (email) {
-  const pool = await getPool()
-  const result = await pool
-    .request()
-    .input('email', sql.NVarChar(255), email)
-    .query(`
-      SELECT id, email, password_hash, role, created_at
-      FROM users
-      WHERE email = @email
-    `)
-
-  return result.recordset[0] || null
+  return User.findOne({ email })
 }
 
 async function findUserById (id) {
-  const pool = await getPool()
-  const result = await pool
-    .request()
-    .input('id', sql.UniqueIdentifier, id)
-    .query(`
-      SELECT id, email, role, created_at
-      FROM users
-      WHERE id = @id
-    `)
-
-  return result.recordset[0] || null
+  return User.findById(id)
 }
 
 async function createUser ({ email, password, role }) {
-  const pool = await getPool()
-  const id = uuidv4()
   const passwordHash = await hashPassword(password)
-
-  await pool
-    .request()
-    .input('id', sql.UniqueIdentifier, id)
-    .input('email', sql.NVarChar(255), email)
-    .input('password_hash', sql.NVarChar(255), passwordHash)
-    .input('role', sql.NVarChar(20), role)
-    .query(`
-      INSERT INTO users (id, email, password_hash, role)
-      VALUES (@id, @email, @password_hash, @role)
-    `)
-
-  return findUserById(id)
+  const user = new User({
+    email,
+    password_hash: passwordHash,
+    role
+  })
+  await user.save()
+  return user
 }
 
 async function listUsers () {
-  const pool = await getPool()
-  const result = await pool
-    .request()
-    .query(`
-      SELECT id, email, role, created_at
-      FROM users
-      ORDER BY created_at DESC
-    `)
-
-  return result.recordset
+  return User.find().sort({ created_at: -1 }).select('-password_hash')
 }
 
 async function deleteUserById (id) {
-  const pool = await getPool()
+  const hasNews = await News.exists({ author: id })
 
-  const hasNewsResult = await pool
-    .request()
-    .input('author_id', sql.UniqueIdentifier, id)
-    .query('SELECT COUNT(*) AS total FROM news WHERE author_id = @author_id')
-
-  if (Number(hasNewsResult.recordset[0].total) > 0) {
+  if (hasNews) {
     return {
       deleted: false,
       reason: 'USER_HAS_NEWS'
     }
   }
 
-  const result = await pool
-    .request()
-    .input('id', sql.UniqueIdentifier, id)
-    .query('DELETE FROM users WHERE id = @id')
+  const result = await User.findByIdAndDelete(id)
 
   return {
-    deleted: result.rowsAffected[0] > 0,
+    deleted: !!result,
     reason: null
   }
 }

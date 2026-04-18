@@ -1,0 +1,30 @@
+const mongoose = require('mongoose')
+
+const refreshTokenSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  token_hash: {
+    type: String,
+    required: true
+  },
+  expires_at: {
+    type: Date,
+    required: true
+  },
+  revoked_at: {
+    type: Date,
+    default: null
+  },
+  replaced_by_token: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'RefreshToken',
+    default: null
+  }
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: false }
+})
+
+module.exports = mongoose.model('RefreshToken', refreshTokenSchema)
