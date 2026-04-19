@@ -31,3 +31,4 @@ const refreshTokenSchema = new mongoose.Schema({
 })
 
 module.exports = mongoose.model('RefreshToken', refreshTokenSchema)
+
