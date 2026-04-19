@@ -2,28 +2,33 @@
 const { getContainerClient } = require('../config/azureBlob')
 
 /**
- * Uploads a file buffer directly to Azure Blob Storage
- * Handles MIME types dynamically and avoids Base64 encoding corruption.
+ * Uploads a base64-encoded image to Azure Blob Storage.
+ * IMPORTANT: base64Data must be PURE base64 (no data URI prefix like "data:image/jpeg;base64,")
+ * The frontend is responsible for stripping the prefix before sending.
  */
-async function uploadFileBuffer (multerFile) {
+async function uploadBase64Image ({ fileName, mimeType, base64Data }) {
+  if (!base64Data || !fileName || !mimeType) {
+    throw new Error('Missing required upload fields: fileName, mimeType, base64Data')
+  }
+
+  // Safety net: strip data URI prefix if frontend accidentally sends it
+  const cleanBase64 = base64Data.includes(',') ? base64Data.split(',')[1] : base64Data
+
   const containerClient = await getContainerClient()
-  
-  // Extract extension safely
-  const originalName = multerFile.originalname || ''
-  const extension = originalName.includes('.') ? originalName.slice(originalName.lastIndexOf('.')) : ''
+  const extension = fileName.includes('.') ? fileName.slice(fileName.lastIndexOf('.')) : ''
   const blobName = `${Date.now()}-${uuidv4()}${extension}`
-  
   const blockBlobClient = containerClient.getBlockBlobClient(blobName)
 
-  // Upload the raw binary stream/buffer to prevent any encoding-based corruption
-  await blockBlobClient.uploadData(multerFile.buffer, {
-    blobHTTPHeaders: {
-      blobContentType: multerFile.mimetype // Must match exactly so browsers render it instead of downloading
-    }
+  // Convert pure base64 to binary buffer — no corruption
+  const buffer = Buffer.from(cleanBase64, 'base64')
+
+  console.log(`[Upload] Uploading ${blobName} | type=${mimeType} | size=${buffer.length} bytes`)
+
+  await blockBlobClient.uploadData(buffer, {
+    blobHTTPHeaders: { blobContentType: mimeType }
   })
 
-  // Optional: Add logging to help monitor success on production
-  console.log(`[UploadService] Successfully uploaded: ${blobName} as ${multerFile.mimetype} (${multerFile.size} bytes)`)
+  console.log(`[Upload] Success: ${blockBlobClient.url}`)
 
   return {
     url: blockBlobClient.url,
@@ -31,6 +36,4 @@ async function uploadFileBuffer (multerFile) {
   }
 }
 
-module.exports = {
-  uploadFileBuffer
-}
+module.exports = { uploadBase64Image }

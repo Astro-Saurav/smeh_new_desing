@@ -1,13 +1,14 @@
 ﻿const { asyncHandler } = require('../middleware/asyncHandler')
-const { uploadFileBuffer } = require('../services/uploadService')
+const { uploadBase64Image } = require('../services/uploadService')
 
 const uploadImage = asyncHandler(async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'No image file was uploaded' });
+  const { base64Data, fileName, mimeType } = req.body
+
+  if (!base64Data || !fileName || !mimeType) {
+    return res.status(400).json({ error: 'Missing fields: base64Data, fileName, mimeType are all required' })
   }
 
-  // Multer handles the file buffer so we pass req.file to the service
-  const result = await uploadFileBuffer(req.file)
+  const result = await uploadBase64Image({ base64Data, fileName, mimeType })
 
   return res.status(201).json({
     url: result.url,
@@ -15,6 +16,4 @@ const uploadImage = asyncHandler(async (req, res) => {
   })
 })
 
-module.exports = {
-  uploadImage
-}
+module.exports = { uploadImage }
