@@ -1,4 +1,4 @@
-﻿const News = require('../models/News')
+const News = require('../models/News')
 const Category = require('../models/Category')
 const { v4: uuidv4 } = require('uuid')
 
@@ -67,7 +67,7 @@ async function listNews ({ category, search, status, page = 1, pageSize = 10 }) 
 
   const [items, total] = await Promise.all([
     News.find(filter)
-      .sort({ created_at: -1 })
+      
       .skip(skip)
       .limit(Number(pageSize))
       .populate('category', 'name')

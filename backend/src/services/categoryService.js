@@ -1,4 +1,4 @@
-﻿const Category = require('../models/Category')
+const Category = require('../models/Category')
 const { v4: uuidv4 } = require('uuid')
 
 async function createCategory ({ name }) {
@@ -11,7 +11,7 @@ async function createCategory ({ name }) {
 }
 
 async function listCategories () {
-  return Category.find().sort({ name: 1 })
+  const categories = await Category.find(); return categories.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 }
 
 module.exports = {

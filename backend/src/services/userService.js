@@ -1,4 +1,4 @@
-﻿const User = require('../models/User')
+const User = require('../models/User')
 const { v4: uuidv4 } = require('uuid')
 const { hashPassword } = require('../utils/password')
 const News = require('../models/News')
@@ -24,7 +24,7 @@ async function createUser ({ email, password, role }) {
 }
 
 async function listUsers () {
-  return User.find().sort({ created_at: -1 }).select('-password_hash')
+  const users = await User.find().select('-password_hash'); return users.sort((a, b) => (new Date(b.created_at) - new Date(a.created_at)));
 }
 
 async function deleteUserById (id) {
