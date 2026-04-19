@@ -23,19 +23,25 @@ import {
 export default function Home() {
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [allNews, setAllNews] = useState<MainSiteNewsItem[]>([]);
+  const [latestBuzzNews, setLatestBuzzNews] = useState<MainSiteNewsItem[]>([]);
+  const [tvNews, setTvNews] = useState<MainSiteNewsItem[]>([]);
   const [categorySections, setCategorySections] = useState<{name: string, data: MainSiteNewsItem[]}[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [fetchedCats, fetchedAllNews] = await Promise.all([
+        const [fetchedCats, fetchedAllNews, fetchedLatest, fetchedTv] = await Promise.all([
           listCategories(),
-          getAllPublishedNews(10)
+          getAllPublishedNews(10),
+          getNewsByCategory("Latest Buzz", 4),
+          getNewsByCategory("Manav Rachna TV", 2)
         ]);
 
         setCategories(fetchedCats);
         setAllNews(fetchedAllNews);
+        setLatestBuzzNews(fetchedLatest);
+        setTvNews(fetchedTv);
 
         // For each category, get its news to build the sections
         const sections = await Promise.all(
@@ -76,8 +82,8 @@ export default function Home() {
     link: "#"
   };
 
-  const sideNews = allNews.slice(1, 5);
-  const multimediaNews = allNews.slice(5, 7);
+  const sideNews = latestBuzzNews.length > 0 ? latestBuzzNews : allNews.slice(1, 5);
+  const multimediaNews = tvNews.length > 0 ? tvNews : allNews.slice(5, 7);
 
   return (
     <div className="flex flex-col bg-white text-zinc-950 font-body min-h-screen">
