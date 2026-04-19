@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 
 const newsSchema = new mongoose.Schema({
+  _id: {
+    type: String,
+    required: true
+  },
   title: {
     type: String,
     required: true,
@@ -11,12 +15,12 @@ const newsSchema = new mongoose.Schema({
     required: true
   },
   category: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'Category',
     required: true
   },
   author: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'User',
     required: true
   },
