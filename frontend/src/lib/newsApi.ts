@@ -85,17 +85,9 @@ function extractItems(payload: unknown): RawNewsItem[] {
 
 export async function getNewsByCategory(categoryName: string, limit = 10): Promise<MainSiteNewsItem[]> {
   const timeBuster = Date.now();
-  const preferredUrl = `${API_BASE_URL}/api/news/category/${encodeURIComponent(categoryName)}?limit=${limit}&_t=${timeBuster}`;
+  
 
-  try {
-    const directPayload = await fetchJson(preferredUrl);
-    const directItems = extractItems(directPayload);
-    if (directItems.length) {
-      return directItems.map((item) => normalizeNewsItem(item, categoryName));
-    }
-  } catch {
-    // Fallback below handles backends that do not support /api/news/category/:name.
-  }
+  
 
   try {
     const fallbackUrl = `${API_BASE_URL}/api/news?page=1&pageSize=${limit}&status=published&category=${encodeURIComponent(categoryName)}&_t=${timeBuster}`;
