@@ -123,7 +123,7 @@ export function NewsPage () {
 
         return {
           ...old,
-          items: old.items.filter((item) => item.id !== id)
+          items: old.items.filter((item) => (item._id || item.id) !== id)
         }
       })
 
@@ -166,11 +166,11 @@ export function NewsPage () {
   }
 
   const startEdit = (item) => {
-    setEditingId(item.id)
+    setEditingId(item._id || item.id)
     setForm({
       title: item.title,
       content: item.content,
-      categoryId: String(item.category_id),
+      categoryId: String((item.category?._id || '')),
       imageUrl: item.image_url || '',
       youtubeUrl: item.youtube_url || item.youtubeUrl || '',
       status: item.status,
@@ -228,7 +228,7 @@ export function NewsPage () {
             >
               <option value="">Select category</option>
               {(categoriesQuery.data || []).map((item) => (
-                <option key={item.id} value={item.id}>{item.name}</option>
+                <option key={item._id || item.id} value={item.id}>{item.name}</option>
               ))}
             </select>
 
@@ -293,7 +293,7 @@ export function NewsPage () {
           <select value={category} onChange={(event) => setCategory(event.target.value)}>
             <option value="">All categories</option>
             {(categoriesQuery.data || []).map((item) => (
-              <option key={item.id} value={item.name}>{item.name}</option>
+              <option key={item._id || item.id} value={item.name}>{item.name}</option>
             ))}
           </select>
           <select value={status} onChange={(event) => setStatus(event.target.value)}>
@@ -332,9 +332,9 @@ export function NewsPage () {
                 </thead>
                 <tbody>
                   {newsQuery.data.items.map((item) => (
-                    <tr key={item.id}>
+                    <tr key={item._id || item.id}>
                       <td>{item.title}</td>
-                      <td>{item.category_name}</td>
+                      <td>{(item.category?.name || 'Uncategorized')}</td>
                       <td><span className={`badge ${item.status}`}>{item.status}</span></td>
                       <td>{item.published_at ? new Date(item.published_at).toLocaleString() : '-'}</td>
                       <td>
@@ -384,7 +384,7 @@ export function NewsPage () {
         onCancel={() => setPendingDelete(null)}
         onConfirm={() => {
           if (pendingDelete) {
-            deleteMutation.mutate(pendingDelete.id)
+            deleteMutation.mutate((pendingDelete._id || pendingDelete.id))
             setPendingDelete(null)
           }
         }}
