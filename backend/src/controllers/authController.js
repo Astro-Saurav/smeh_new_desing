@@ -1,4 +1,4 @@
-const { asyncHandler } = require('../middleware/asyncHandler')
+﻿const { asyncHandler } = require('../middleware/asyncHandler')
 const { v4: uuidv4 } = require('uuid')
 const { env } = require('../config/env')
 const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../utils/jwt')
@@ -42,7 +42,8 @@ function getRefreshCookieOptions () {
 
 async function issueTokenPair (res, user, previousTokenId = null) {
   const refreshTokenId = uuidv4()
-  const refreshToken = signRefreshToken({ userId: user.id, tokenId: refreshTokenId })
+  const userId = String(user._id || user.id)
+  const refreshToken = signRefreshToken({ userId, tokenId: refreshTokenId })
   const refreshExpiresAt = new Date(Date.now() + parseDurationMs(env.refreshJwtExpiresIn))
 
   if (previousTokenId) {
@@ -51,13 +52,13 @@ async function issueTokenPair (res, user, previousTokenId = null) {
 
   await createRefreshTokenRecord({
     tokenId: refreshTokenId,
-    userId: user.id,
+    userId,
     rawToken: refreshToken,
     expiresAt: refreshExpiresAt
   })
 
   const accessToken = signAccessToken({
-    userId: user.id,
+    userId,
     email: user.email,
     role: user.role
   })
@@ -105,7 +106,7 @@ const login = asyncHandler(async (req, res) => {
   return res.status(200).json({
     token,
     user: {
-      id: user.id,
+      id: String(user._id || user.id),
       email: user.email,
       role: user.role
     }
