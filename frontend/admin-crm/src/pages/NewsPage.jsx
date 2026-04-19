@@ -32,6 +32,32 @@ export function NewsPage () {
   const [form, setForm] = useState(initialForm)
   const [isUploadingImage, setIsUploadingImage] = useState(false)
 
+  /**
+   * Compresses an image using Canvas API before uploading.
+   * Resizes to max 1200px and converts to JPEG at 80% quality.
+   * Keeps base64 payload under Vercel's 4.5MB serverless body limit.
+   */
+  const compressImage = (file) => new Promise((resolve, reject) => {
+    const img = new Image()
+    const objectUrl = URL.createObjectURL(file)
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl)
+      const MAX = 1200
+      let { width, height } = img
+      if (width > MAX || height > MAX) {
+        if (width > height) { height = Math.round(height * MAX / width); width = MAX }
+        else { width = Math.round(width * MAX / height); height = MAX }
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = width
+      canvas.height = height
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+      resolve(canvas.toDataURL('image/jpeg', 0.8))
+    }
+    img.onerror = reject
+    img.src = objectUrl
+  })
+
   const handleImageUpload = async (event) => {
     const file = event.target.files?.[0]
     if (!file) return
@@ -41,27 +67,25 @@ export function NewsPage () {
       return
     }
 
-    const reader = new FileReader()
-    reader.onload = async () => {
-      try {
-        setIsUploadingImage(true)
-        const result = await newsApi.uploadImage({
-          base64Data: reader.result,
-          fileName: file.name,
-          mimeType: file.type
-        })
-        setForm((value) => ({ ...value, imageUrl: result.url || '' }))
-        toast.success('Image uploaded')
-      } catch (error) {
-        toast.error(error.response?.data?.error || 'Image upload failed')
-      } finally {
-        setIsUploadingImage(false)
-      }
+    try {
+      setIsUploadingImage(true)
+      const compressed = await compressImage(file)
+      const result = await newsApi.uploadImage({
+        base64Data: compressed,
+        fileName: file.name.replace(/\.[^.]+$/, '.jpg'),
+        mimeType: 'image/jpeg'
+      })
+      setForm((value) => ({ ...value, imageUrl: result.url || '' }))
+      toast.success('Image uploaded successfully!')
+      event.target.value = null
+    } catch (error) {
+      const msg = typeof error.response?.data === 'string'
+        ? error.response.data
+        : error.response?.data?.message || error.response?.data?.error || error.message || 'Image upload failed'
+      toast.error(String(msg))
+    } finally {
+      setIsUploadingImage(false)
     }
-    reader.onerror = () => {
-      toast.error('Failed to read image file')
-    }
-    reader.readAsDataURL(file)
   }
 
   const queryParams = useMemo(() => ({
