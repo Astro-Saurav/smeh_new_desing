@@ -2,131 +2,112 @@
 
 import { useEffect, useState } from "react";
 import { getNewsByCategory } from "@/lib/newsApi";
+import type { MainSiteNewsItem } from "@/lib/newsApi";
 import Image from "next/image";
 import Link from "next/link";
-import { MessageSquare, Share2, TrendingUp, Heart, Instagram, Twitter } from "lucide-react";
+import { Clock, Youtube, PlayCircle } from "lucide-react";
 
-export default function SocialBuzzPage() {
+function getYouTubeId(url) {
+  if (!url) return null;
+  const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/);
+  return m ? m[1] : null;
+}
+function safeImg(url) {
+  return url && url !== "undefined" && url !== "" ? url : "/placeholder.jpg";
+}
+function YTButton({ url }) {
+  const id = getYouTubeId(url);
+  if (!id) return null;
+  return (
+    <a href={"https://www.youtube.com/watch?v=" + id} target="_blank" rel="noopener noreferrer"
+      className="inline-flex items-center gap-1.5 text-[11px] font-black text-red-600 hover:text-red-700 transition-colors">
+      <Youtube className="w-3.5 h-3.5" /> Watch Video
+    </a>
+  );
+}
+
+export default function Page() {
   const [stories, setStories] = useState([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
-    const fetchSocialNews = async () => {
-      const socialNews = await getNewsByCategory("Social Buzz", 15);
-      setStories(socialNews);
-      setLoading(false);
-    };
-    fetchSocialNews();
+    getNewsByCategory("Social Buzz", 20).then(data => { setStories(data); setLoading(false); });
   }, []);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading news...</div>;
-  if (!stories.length) return <div className="min-h-screen flex items-center justify-center">No news available yet.</div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-pulse flex flex-col items-center gap-3"><div className="w-12 h-12 bg-zinc-200 rounded-full" /><div className="h-3 w-28 bg-zinc-100 rounded" /></div></div>;
+  if (!stories.length) return <div className="min-h-screen flex items-center justify-center text-zinc-400"><p>No news published in this section yet.</p></div>;
 
-  const mainStory = stories[0] || { image: "/placeholder.jpg", headline: "No article", description: "" };
-  const listStories = stories.slice(1, 3);
-  const trendingStoriesList = stories.slice(3, 8);
+  const lead = stories[0];
+  const sub = stories.slice(1, 5);
+  const trending = stories.slice(5, 12);
+  const ytId = getYouTubeId(lead.youtubeUrl);
 
   return (
-    <div className="bg-white min-h-screen font-sans">
-      <main className="container mx-auto px-4 md:px-8 py-8 md:py-12">
-        {/* Section Header */}
-        <div className="border-b-4 border-zinc-900 mb-8 pb-4">
+    <div className="bg-white min-h-screen">
+      <main className="container mx-auto px-4 md:px-8 py-8">
+        <div className="border-b-4 border-zinc-900 mb-10 pb-4">
           <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase">
             Social <span className="text-primary italic">Buzz</span>
           </h1>
         </div>
-
-        {/* 3 Column Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
-          
-          {/* Main Social Feature - Column 1 & 2 (Lg) */}
-          <div className="lg:col-span-6 border-r-0 lg:border-r border-zinc-100 lg:pr-8">
-            <Link href="#" className="group block mb-6">
-              <div className="relative aspect-square mb-4 overflow-hidden bg-zinc-100">
-                <Image 
-                  src={mainStory.image} 
-                  alt="m" 
-                  fill 
-                  className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700" 
-                  priority
-                />
-                <div className="absolute top-4 left-4 bg-zinc-950 text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
-                  <Instagram className="w-3 h-3 text-primary" /> Viral
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          <div className="lg:col-span-7 lg:border-r border-zinc-100 lg:pr-10">
+            <Link href={lead.link} className="group block">
+              <div className="relative w-full aspect-video overflow-hidden bg-zinc-100 mb-5">
+                <Image src={safeImg(lead.image)} alt={lead.headline} fill className="object-cover group-hover:scale-[1.03] transition-transform duration-700" priority />
+                {ytId && <div className="absolute inset-0 flex items-center justify-center"><div className="bg-red-600/90 rounded-full p-4"><PlayCircle className="w-9 h-9 text-white" /></div></div>}
               </div>
-              <div className="flex items-center gap-3 mb-3">
-                 <div className="w-6 h-6 rounded-full bg-zinc-200 border border-zinc-300" />
-                 <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">@manav_rachna_times</span>
-              </div>
-              <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-none group-hover:text-primary transition-colors mb-4">
-                {mainStory.headline}
-              </h2>
-              <p className="text-zinc-600 line-clamp-3 mb-6">{mainStory.description}</p>
-              <div className="flex gap-6 text-[11px] font-black uppercase text-zinc-400">
-                 <span className="flex items-center gap-1.5"><Heart className="w-4 h-4 text-primary" /> 2.4k</span>
-                 <span className="flex items-center gap-1.5"><MessageSquare className="w-4 h-4" /> 156</span>
-              </div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-primary mb-2 block">{lead.category}</span>
+              <h2 className="text-2xl md:text-4xl font-black leading-tight group-hover:text-primary transition-colors mb-4">{lead.headline}</h2>
+              <p className="text-zinc-600 text-[15px] leading-relaxed line-clamp-3 mb-5">{lead.description}</p>
             </Link>
-
-            <div className="grid md:grid-cols-2 gap-6 pt-8 border-t border-zinc-100">
-               {listStories.slice(0, 2).map((story, i) => (
-                 <Link key={i} href="#" className="block group">
-                    <div className="relative aspect-video mb-3 overflow-hidden">
-                       <Image src={story.image} alt="sub" fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
-                    </div>
-                    <h4 className="text-sm font-bold group-hover:text-primary transition-colors leading-tight">{story.headline}</h4>
-                 </Link>
-               ))}
+            <div className="flex items-center gap-5 pb-8 border-b border-zinc-100 mb-8">
+              <YTButton url={lead.youtubeUrl} />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {sub.map((story, i) => {
+                const sYt = getYouTubeId(story.youtubeUrl);
+                return (
+                  <div key={i} className="group">
+                    <Link href={story.link}>
+                      <div className="relative aspect-[16/10] overflow-hidden bg-zinc-100 mb-3">
+                        <Image src={safeImg(story.image)} alt={story.headline} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                        {sYt && <div className="absolute bottom-2 left-2"><span className="bg-red-600 text-white text-[9px] font-black px-2 py-0.5 flex items-center gap-1"><PlayCircle className="w-2.5 h-2.5" /> Video</span></div>}
+                      </div>
+                      <span className="text-[9px] font-black uppercase tracking-wider text-primary mb-1 block">{story.category}</span>
+                      <h4 className="text-[14px] font-black leading-snug group-hover:text-primary transition-colors mb-2 line-clamp-2">{story.headline}</h4>
+                      <p className="text-[12px] text-zinc-500 line-clamp-2 leading-relaxed">{story.description}</p>
+                    </Link>
+                    {sYt && <div className="mt-2"><YTButton url={story.youtubeUrl} /></div>}
+                  </div>
+                );
+              })}
             </div>
           </div>
-
-          {/* Feed Column - Middle Column */}
-          <div className="lg:col-span-3 border-r-0 lg:border-r border-zinc-100 lg:pr-8">
-            <h3 className="text-xs font-black uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-              <Twitter className="w-4 h-4 text-primary" /> Live Feed
-            </h3>
-            <div className="space-y-8">
-               {stories.slice(8, 12).map((tweet, i) => (
-                 <div key={i} className="group border-b border-zinc-100 pb-6 last:border-0 cursor-pointer">
-                    <div className="flex items-center gap-2 mb-2">
-                       <div className="w-5 h-5 rounded-full bg-zinc-100" />
-                       <span className="text-[9px] font-black uppercase text-zinc-400">MRT_Insider</span>
+          <div className="lg:col-span-5">
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] border-b-2 border-zinc-900 pb-3 mb-6">More in Social Buzz</h3>
+            <div className="flex flex-col gap-5">
+              {trending.map((story, i) => {
+                const tYt = getYouTubeId(story.youtubeUrl);
+                return (
+                  <div key={i} className="group flex gap-4 border-b border-zinc-100 pb-5 last:border-0">
+                    <span className="text-3xl font-black text-zinc-100 group-hover:text-primary shrink-0 leading-none tabular-nums mt-1">{String(i + 1).padStart(2, "0")}</span>
+                    <div className="min-w-0 flex-1">
+                      <Link href={story.link}>
+                        <h5 className="text-[13px] font-black leading-snug group-hover:text-primary transition-colors mb-1 line-clamp-2">{story.headline}</h5>
+                      </Link>
+                      <p className="text-[11px] text-zinc-500 line-clamp-1 mb-1.5">{story.description}</p>
+                      {tYt && <YTButton url={story.youtubeUrl} />}
                     </div>
-                    <p className="text-[13px] text-zinc-800 leading-snug group-hover:text-primary transition-colors">
-                      {tweet.headline}... #ManavRachna #CampusLife #MRT
-                    </p>
-                    <span className="text-[9px] font-medium text-zinc-400 mt-2 block">2h ago</span>
-                 </div>
-               ))}
+                    <Link href={story.link} className="shrink-0 hidden sm:block">
+                      <div className="relative w-20 h-14 overflow-hidden bg-zinc-100">
+                        <Image src={safeImg(story.image)} alt={story.headline} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                      </div>
+                    </Link>
+                  </div>
+                );
+              })}
             </div>
           </div>
-
-          {/* Sidebar - Trending */}
-          <div className="lg:col-span-3">
-             <h4 className="text-xs font-black uppercase tracking-[0.2em] mb-8 flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-primary" /> Trending Tags
-             </h4>
-             <div className="flex flex-wrap gap-2 mb-10">
-                {["#SMEHBuzz", "#GlobalImpact", "#TechFest2026", "#LifeAtMR", "#MRTExclusive", "#ViralCampus"].map(tag => (
-                  <span key={tag} className="px-3 py-1.5 bg-zinc-50 border border-zinc-100 text-[9px] font-black uppercase text-zinc-600 hover:bg-primary hover:text-white transition-all cursor-pointer">
-                    {tag}
-                  </span>
-                ))}
-             </div>
-
-             <div className="space-y-6">
-                {trendingStoriesList.map((story, i) => (
-                  <Link key={i} href="#" className="flex gap-4 group">
-                    <div className="text-2xl font-black text-zinc-100 group-hover:text-primary transition-colors shrink-0 tabular-nums">0{i+1}</div>
-                    <div>
-                       <h5 className="text-[12px] font-bold leading-tight group-hover:text-primary transition-colors">{story.headline}</h5>
-                       <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mt-1 block">Trending</span>
-                    </div>
-                  </Link>
-                ))}
-             </div>
-          </div>
-
         </div>
       </main>
     </div>
