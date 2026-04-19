@@ -41,7 +41,7 @@ async function seedAdmin() {
     await User.findOneAndUpdate(
       { email },
       { email, password_hash, role: 'admin' },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: 'after' }
     );
 
     console.log('-----------------------------------------');
@@ -59,3 +59,4 @@ async function seedAdmin() {
 }
 
 seedAdmin();
+
