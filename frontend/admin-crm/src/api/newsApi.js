@@ -1,4 +1,4 @@
-import { apiClient } from './client'
+﻿import { apiClient } from './client'
 
 export const newsApi = {
   async list (params) {
@@ -16,8 +16,13 @@ export const newsApi = {
   async remove (id) {
     await apiClient.delete(`/news/${id}`)
   },
-  async uploadImage (payload) {
-    const { data } = await apiClient.post('/upload', payload)
+  async uploadImage (formData) {
+    // Send FormData for Multer to intercept
+    const { data } = await apiClient.post('/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
     return data
   }
 }
