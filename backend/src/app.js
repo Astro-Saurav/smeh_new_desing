@@ -28,6 +28,7 @@ app.use(rateLimit({
 }))
 
 app.use('/api', apiRouter)
+app.use('/', apiRouter) // Fallback for Vercel Services prefix stripping
 
 app.use(notFoundHandler)
 app.use(errorHandler)
@@ -35,3 +36,4 @@ app.use(errorHandler)
 module.exports = {
   app
 }
+
