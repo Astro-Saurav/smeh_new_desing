@@ -109,3 +109,4 @@ export function CategoriesPage () {
     </div>
   )
 }
+
