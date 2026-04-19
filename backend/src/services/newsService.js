@@ -1,8 +1,10 @@
-const News = require('../models/News')
+﻿const News = require('../models/News')
 const Category = require('../models/Category')
+const { v4: uuidv4 } = require('uuid')
 
 async function createNews ({ title, content, categoryId, authorId, imageUrl, status, publishedAt }) {
   const news = new News({
+    _id: uuidv4(),
     title,
     content,
     category: categoryId,

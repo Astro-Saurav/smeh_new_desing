@@ -1,4 +1,5 @@
-const User = require('../models/User')
+﻿const User = require('../models/User')
+const { v4: uuidv4 } = require('uuid')
 const { hashPassword } = require('../utils/password')
 const News = require('../models/News')
 
@@ -13,6 +14,7 @@ async function findUserById (id) {
 async function createUser ({ email, password, role }) {
   const passwordHash = await hashPassword(password)
   const user = new User({
+    _id: uuidv4(),
     email,
     password_hash: passwordHash,
     role
@@ -50,4 +52,3 @@ module.exports = {
   listUsers,
   deleteUserById
 }
-

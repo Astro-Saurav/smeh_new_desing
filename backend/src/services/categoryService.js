@@ -1,7 +1,11 @@
-const Category = require('../models/Category')
+﻿const Category = require('../models/Category')
+const { v4: uuidv4 } = require('uuid')
 
 async function createCategory ({ name }) {
-  const category = new Category({ name: name.trim() })
+  const category = new Category({ 
+    _id: uuidv4(),
+    name: name.trim() 
+  })
   await category.save()
   return category
 }
@@ -14,4 +18,3 @@ module.exports = {
   createCategory,
   listCategories
 }
-
