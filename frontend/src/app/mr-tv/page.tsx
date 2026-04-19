@@ -70,7 +70,7 @@ export default function MRTVPage() {
               </h2>
               <p className="text-zinc-600 line-clamp-3 mb-6 text-lg">{mainStory.description}</p>
               <div className="flex gap-6 mt-4 pt-4 border-t border-zinc-100">
-                {studentProjects.slice(6, 9).map((news, i) => (
+                {stories.slice(6, 9).map((news, i) => (
                   <Link key={i} href="#" className="block group flex-1">
                     <h4 className="text-[13px] font-bold group-hover:text-primary transition-colors line-clamp-2">
                       {news.headline}

@@ -61,7 +61,7 @@ export default function AchievementsPage() {
               <p className="text-zinc-600 line-clamp-3 mb-6 text-xl leading-relaxed">{mainStory.description}</p>
               
               <div className="flex flex-col gap-4 mt-6 pt-6 border-t border-zinc-100">
-                {studentProjects.slice(11, 14).map((news, i) => (
+                {stories.slice(11, 14).map((news, i) => (
                   <div key={i} className="flex gap-4 group">
                      <Trophy className="w-5 h-5 text-zinc-300 group-hover:text-primary shrink-0" />
                      <h4 className="text-md font-bold group-hover:text-primary transition-colors leading-tight">{news.headline}</h4>

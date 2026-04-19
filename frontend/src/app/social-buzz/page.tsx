@@ -86,7 +86,7 @@ export default function SocialBuzzPage() {
               <Twitter className="w-4 h-4 text-primary" /> Live Feed
             </h3>
             <div className="space-y-8">
-               {studentProjects.slice(8, 12).map((tweet, i) => (
+               {stories.slice(8, 12).map((tweet, i) => (
                  <div key={i} className="group border-b border-zinc-100 pb-6 last:border-0 cursor-pointer">
                     <div className="flex items-center gap-2 mb-2">
                        <div className="w-5 h-5 rounded-full bg-zinc-100" />

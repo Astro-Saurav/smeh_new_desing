@@ -61,7 +61,7 @@ export default function BeyondCampusPage() {
             </Link>
             
             <div className="space-y-4 pt-4 border-t border-zinc-100">
-              {studentProjects.slice(5, 8).map((news, i) => (
+              {stories.slice(5, 8).map((news, i) => (
                 <Link key={i} href="#" className="block group border-b border-zinc-50 pb-4 last:border-0">
                   <h3 className="text-lg font-bold group-hover:text-primary group-hover:underline transition-all">
                     {news.headline}

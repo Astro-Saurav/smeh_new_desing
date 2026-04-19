@@ -102,7 +102,7 @@ export default function BlogPage() {
             </Link>
 
             <div className="space-y-6 pt-6 border-t border-zinc-100">
-               {studentProjects.slice(7, 10).map((story, i) => (
+               {stories.slice(7, 10).map((story, i) => (
                  <Link key={i} href="#" className="block group">
                     <span className="text-[9px] font-black uppercase text-primary tracking-widest block mb-1">Essay</span>
                     <h5 className="text-[13px] font-bold leading-tight group-hover:text-primary line-clamp-2 underline decoration-zinc-100">{story.headline}</h5>

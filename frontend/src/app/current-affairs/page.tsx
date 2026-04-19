@@ -68,7 +68,7 @@ export default function CurrentAffairsPage() {
             </Link>
 
             <div className="space-y-6 pt-10 border-t border-zinc-100">
-              {studentProjects.slice(5, 8).map((news, i) => (
+              {stories.slice(5, 8).map((news, i) => (
                 <div key={i} className="flex gap-6 group cursor-pointer pb-6 border-b border-zinc-50 last:border-0">
                    <div className="text-2xl font-black text-zinc-100 group-hover:text-primary transition-colors shrink-0 tabular-nums">0{i+1}</div>
                    <div>

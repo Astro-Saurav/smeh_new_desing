@@ -116,7 +116,7 @@ export default function PodcastPage() {
             </Link>
 
             <div className="space-y-6 pt-6 border-t border-zinc-100">
-               {studentProjects.slice(8, 11).map((story, i) => (
+               {stories.slice(8, 11).map((story, i) => (
                  <Link key={i} href="#" className="block group">
                     <span className="text-[9px] font-black uppercase text-zinc-400 tracking-widest block mb-1 flex items-center gap-1.5"><Radio className="w-3 h-3" /> Audio Clip</span>
                     <h5 className="text-[13px] font-bold leading-tight group-hover:text-primary transition-colors line-clamp-2">{story.headline}</h5>

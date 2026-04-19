@@ -91,7 +91,7 @@ export default function AnnouncementPage() {
                </div>
 
                <div className="space-y-6 pt-6 border-t border-zinc-100">
-                  {studentProjects.slice(12, 15).map((n, i) => (
+                  {stories.slice(12, 15).map((n, i) => (
                     <div key={i} className="group">
                        <span className="text-[9px] font-black uppercase text-zinc-400 tracking-widest block mb-1">Administrative</span>
                        <h5 className="text-[13px] font-bold group-hover:text-primary leading-snug">{n.headline}</h5>
