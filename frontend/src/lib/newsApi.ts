@@ -137,7 +137,7 @@ export type CategoryItem = {
 export async function listCategories(): Promise<CategoryItem[]> {
   const timeBuster = Date.now();
   try {
-    const payload = await fetchJson(${API_BASE_URL}/api/categories?_t=);
+    const payload = await fetchJson(`/api/categories?_t=`);
     if (Array.isArray(payload)) {
       return payload.map((c: any) => ({ id: c.id || c._id, name: c.name }));
     }
