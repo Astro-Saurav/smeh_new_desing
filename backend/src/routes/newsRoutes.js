@@ -17,8 +17,8 @@ const {
 
 const newsRouter = express.Router()
 
-newsRouter.get('/', authenticate, validateRequest(listNewsSchema), list)
-newsRouter.get('/:id', authenticate, validateRequest(idParamSchema), getById)
+newsRouter.get('/', validateRequest(listNewsSchema), list)
+newsRouter.get('/:id', validateRequest(idParamSchema), getById)
 newsRouter.post('/', authenticate, authorize('admin', 'editor'), validateRequest(createNewsSchema), create)
 newsRouter.put('/:id', authenticate, authorize('admin', 'editor'), validateRequest(updateNewsSchema), update)
 newsRouter.delete('/:id', authenticate, authorize('admin'), validateRequest(idParamSchema), remove)

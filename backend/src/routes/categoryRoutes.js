@@ -6,7 +6,7 @@ const { createCategorySchema, idParamSchema } = require('../validators/categoryS
 
 const categoryRouter = express.Router()
 
-categoryRouter.get('/', authenticate, list)
+categoryRouter.get('/', list)
 categoryRouter.post('/', authenticate, authorize('admin', 'editor'), validateRequest(createCategorySchema), create)
 categoryRouter.delete('/:id', authenticate, authorize('admin'), validateRequest(idParamSchema), remove)
 
