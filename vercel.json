@@ -10,16 +10,16 @@
       "routePrefix": "/api"
     }
   },
-  "rewrites": [
-    {
-      "source": "/admin/(.*)",
-      "destination": "/admin/index.html"
-    }
-  ],
   "crons": [
     {
       "path": "/api/cron/publish",
       "schedule": "0 0 * * *"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/admin/(.*)",
+      "destination": "/admin/index.html"
     }
   ]
 }

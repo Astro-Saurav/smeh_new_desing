@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "next build && cd ../frontend/admin-crm && npm install && npm run build && cd ../frontend && mkdir -p public/admin && cp -r ../frontend/admin-crm/dist/* public/admin/",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"
@@ -65,3 +65,4 @@
     "typescript": "^5"
   }
 }
+

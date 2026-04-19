@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "npm --prefix frontend run dev",
-    "build": "npm --prefix frontend install && npm --prefix frontend run build && npm --prefix frontend/admin-crm install && npm --prefix frontend/admin-crm run build && mkdir -p public/admin && cp -r frontend/public/* public/ && cp -r frontend/admin-crm/dist/* public/admin/ && node scripts/sync-next-output.js",
+    "build": "npm --prefix frontend run build && npm --prefix backend install",
     "start": "npm --prefix frontend run start",
     "frontend:dev": "npm --prefix frontend run dev",
     "frontend:build": "npm --prefix frontend run build",
@@ -15,4 +15,5 @@
     "backend:lint": "npm --prefix backend run lint"
   }
 }
+
 
