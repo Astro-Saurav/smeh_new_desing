@@ -46,7 +46,7 @@ export function NewsPage () {
       try {
         setIsUploadingImage(true)
         const result = await newsApi.uploadImage({
-          file: reader.result,
+          base64Data: reader.result,
           fileName: file.name,
           mimeType: file.type
         })
@@ -150,7 +150,7 @@ export function NewsPage () {
     const payload = {
       title: form.title,
       content: form.content,
-      categoryId: Number(form.categoryId),
+      categoryId: String(form.categoryId),
       imageUrl: form.imageUrl || null,
       youtubeUrl: form.youtubeUrl || null,
       status: form.status,
