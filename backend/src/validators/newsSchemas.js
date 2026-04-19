@@ -6,7 +6,7 @@ const createNewsSchema = z.object({
   body: z.object({
     title: z.string().min(3).max(300),
     content: z.string().min(1),
-    categoryId: z.number().int().positive(),
+    categoryId: z.string(),
     imageUrl: z.string().url().optional().nullable(),
     status: statusEnum,
     publishedAt: z.string().datetime().optional().nullable()
@@ -19,7 +19,7 @@ const updateNewsSchema = z.object({
   body: z.object({
     title: z.string().min(3).max(300).optional(),
     content: z.string().min(1).optional(),
-    categoryId: z.number().int().positive().optional(),
+    categoryId: z.string().optional(),
     imageUrl: z.string().url().optional().nullable(),
     status: statusEnum.optional(),
     publishedAt: z.string().datetime().optional().nullable()
