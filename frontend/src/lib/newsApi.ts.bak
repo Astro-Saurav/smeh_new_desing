@@ -1,0 +1,142 @@
+﻿// API service for main site to fetch news from backend.
+// Keeps frontend resilient to backend response shape differences.
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.VERCEL_URL ? `https://` : "https://smeh-new-desing.vercel.app");
+
+type RawNewsItem = {
+  id?: string | number;
+  headline?: string;
+  title?: string;
+  description?: string;
+  content?: string;
+  image?: string;
+  image_url?: string;
+  imageUrl?: string;
+  category?: string;
+  category_name?: string;
+  categoryName?: string;
+  link?: string;
+  published_at?: string;
+};
+
+export type MainSiteNewsItem = {
+  id: string;
+  headline: string;
+  description: string;
+  image: string;
+  category: string;
+  link: string;
+};
+
+function stripHtml(input: string): string {
+  return input.replace(/<[^>]*>/g, "").trim();
+}
+
+function normalizeNewsItem(item: RawNewsItem, fallbackCategory: string): MainSiteNewsItem {
+  const headline = item.headline || item.title || "Untitled";
+  const rawDescription = item.description || item.content || "";
+  const cleanDescription = stripHtml(rawDescription);
+  const description = cleanDescription.length > 180
+    ? `${cleanDescription.slice(0, 180)}...`
+    : cleanDescription;
+
+  return {
+    id: String(item.id ?? `${headline}-${Math.random().toString(36).slice(2, 8)}`),
+    headline,
+    description,
+    image: item.image || item.image_url || item.imageUrl || "/placeholder.jpg",
+    category: item.category || item.category_name || item.categoryName || fallbackCategory,
+    link: item.link || "#"
+  };
+}
+
+async function fetchJson(url: string): Promise<unknown> {
+  const response = await fetch(url, {
+    method: "GET",
+    cache: "no-store",
+    headers: {
+      "Cache-Control": "no-cache"
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Request failed ${response.status} for ${url}`);
+  }
+
+  return response.json();
+}
+
+function extractItems(payload: unknown): RawNewsItem[] {
+  if (Array.isArray(payload)) {
+    return payload as RawNewsItem[];
+  }
+
+  if (payload && typeof payload === "object") {
+    const candidate = payload as { items?: unknown; data?: { items?: unknown } };
+    if (Array.isArray(candidate.items)) {
+      return candidate.items as RawNewsItem[];
+    }
+    if (candidate.data && Array.isArray(candidate.data.items)) {
+      return candidate.data.items as RawNewsItem[];
+    }
+  }
+
+  return [];
+}
+
+export async function getNewsByCategory(categoryName: string, limit = 10): Promise<MainSiteNewsItem[]> {
+  const timeBuster = Date.now();
+  
+
+  
+
+  try {
+    const fallbackUrl = `${API_BASE_URL}/api/news?page=1&pageSize=${limit}&status=published&category=${encodeURIComponent(categoryName)}&_t=${timeBuster}`;
+    const fallbackPayload = await fetchJson(fallbackUrl);
+    const fallbackItems = extractItems(fallbackPayload).map((item) => normalizeNewsItem(item, categoryName));
+    if (fallbackItems.length) {
+      return fallbackItems;
+    }
+
+    const relaxedUrl = `${API_BASE_URL}/api/news?page=1&pageSize=${limit}&category=${encodeURIComponent(categoryName)}&_t=${timeBuster}`;
+    const relaxedPayload = await fetchJson(relaxedUrl);
+    return extractItems(relaxedPayload).map((item) => normalizeNewsItem(item, categoryName));
+  } catch (error) {
+    console.error(`Error fetching ${categoryName}:`, error);
+    return [];
+  }
+}
+
+export async function getAllPublishedNews(limit = 20): Promise<MainSiteNewsItem[]> {
+  const timeBuster = Date.now();
+
+  try {
+    const payload = await fetchJson(
+      `${API_BASE_URL}/api/news?page=1&pageSize=${limit}&status=published&_t=${timeBuster}`
+    );
+    return extractItems(payload).map((item) => normalizeNewsItem(item, "General"));
+  } catch (error) {
+    console.error("Error fetching all news:", error);
+    return [];
+  }
+}
+
+
+export type CategoryItem = {
+  id: string;
+  name: string;
+};
+
+export async function listCategories(): Promise<CategoryItem[]> {
+  const timeBuster = Date.now();
+  try {
+    const payload = await fetchJson(`/api/categories?_t=`);
+    if (Array.isArray(payload)) {
+      return payload.map((c: any) => ({ id: c.id || c._id, name: c.name }));
+    }
+    return [];
+  } catch (error) {
+    console.error('Error listing categories:', error);
+    return [];
+  }
+}
+
