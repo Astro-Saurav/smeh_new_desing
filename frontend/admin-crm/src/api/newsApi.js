@@ -18,11 +18,7 @@ export const newsApi = {
   },
   async uploadImage (formData) {
     // Send FormData for Multer to intercept
-    const { data } = await apiClient.post('/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
+    const { data } = await apiClient.post('/upload', formData)
     return data
   }
 }
