@@ -20,33 +20,32 @@ async function seedAdmin() {
     await mongoose.connect(MONGODB_URI, { dbName: MONGODB_DB_NAME });
     console.log('Connected successfully.');
 
-    const email = 'admin@smeh.com';
-    const password = 'admin123';
+    // New desired credentials
+    const email = 'admin@smeh.manavrachna.net';
+    const password = 'admin@smeh@manavrachna';
     
-    // Check if user already exists
     const User = mongoose.model('User', new mongoose.Schema({
       email: String,
       password_hash: String,
       role: String
     }));
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      console.log(`User ${email} already exists.`);
-      process.exit(0);
-    }
+    // Cleanup old default if it exists
+    await User.deleteOne({ email: 'admin@smeh.com' });
+    console.log('Cleaned up previous default user.');
 
-    console.log(`Creating user ${email}...`);
+    // Upsert the new admin
+    console.log(`Setting up admin user: ${email}...`);
     const password_hash = await bcrypt.hash(password, 12);
     
-    await User.create({
-      email,
-      password_hash,
-      role: 'admin'
-    });
+    await User.findOneAndUpdate(
+      { email },
+      { email, password_hash, role: 'admin' },
+      { upsert: true, new: true }
+    );
 
     console.log('-----------------------------------------');
-    console.log('Admin User Created Successfully!');
+    console.log('Admin User Updated Successfully!');
     console.log(`Email: ${email}`);
     console.log(`Password: ${password}`);
     console.log('-----------------------------------------');

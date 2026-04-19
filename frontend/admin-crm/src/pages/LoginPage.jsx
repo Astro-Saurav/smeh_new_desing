@@ -7,8 +7,8 @@ import { Eye, EyeOff } from 'lucide-react'
 export function LoginPage () {
   const { login } = useAuth()
   const navigate = useNavigate()
-  const [email, setEmail] = useState('admin@smeh.com')
-  const [password, setPassword] = useState('admin123')
+  const [email, setEmail] = useState('admin@smeh.manavrachna.net')
+  const [password, setPassword] = useState('admin@smeh@manavrachna')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -81,3 +81,4 @@ export function LoginPage () {
     </div>
   )
 }
+
