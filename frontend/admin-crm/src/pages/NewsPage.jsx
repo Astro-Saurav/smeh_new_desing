@@ -20,6 +20,21 @@ const initialForm = {
   publishedAt: ''
 }
 
+// Maps category names to the public website section they appear in
+const CATEGORY_SECTION_MAP = {
+  'Campus Buzz':     'Homepage → Campus Buzz section',
+  'Latest Buzz':     'Homepage → Latest Buzz sidebar + Latest Buzz page',
+  'Beyond Campus':   'Beyond Campus page',
+  'Social Buzz':     'Social Buzz page',
+  'Manav Rachna TV': 'Homepage → Multimedia panel + MR TV page',
+  'Podcast':         'Podcast page',
+  'Blog':            'Blog page',
+  'Achievements':    'Achievements page',
+  'Announcement':    'Announcement page',
+  'Gallery':         'Digital Gallery page',
+}
+
+
 export function NewsPage () {
   const { user } = useAuth()
   const queryClient = useQueryClient()
