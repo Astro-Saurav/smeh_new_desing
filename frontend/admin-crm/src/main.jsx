@@ -12,7 +12,7 @@ const queryClient = new QueryClient()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <QueryClientProvider client={queryClient}>
-    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <BrowserRouter basename="/admin" future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <AuthProvider>
         <App />
         <Toaster position="top-right" />
@@ -20,3 +20,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </BrowserRouter>
   </QueryClientProvider>
 )
+

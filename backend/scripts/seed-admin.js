@@ -24,32 +24,38 @@ async function seedAdmin() {
     const email = 'admin@smeh.manavrachna.net';
     const password = 'admin@smeh@manavrachna';
     
+    // Cleanup collections to resolve BSON/Type mismatch 500 errors
+    console.log('Cleaning up existing data to ensure format consistency...');
+    await mongoose.connection.db.collection('categories').deleteMany({});
+    await mongoose.connection.db.collection('users').deleteMany({});
+    console.log('Data cleanup completed.');
+
     const User = mongoose.model('User', new mongoose.Schema({
+      _id: String,
       email: String,
       password_hash: String,
       role: String
     }));
 
-    // Cleanup old default if it exists
-    await User.deleteOne({ email: 'admin@smeh.com' });
-    console.log('Cleaned up previous default user.');
-
-    // Upsert the new admin
+    // Upsert the new admin with String ID
     console.log(`Setting up admin user: ${email}...`);
     const password_hash = await bcrypt.hash(password, 12);
     
+    // We generate a deterministic ID or a UUID string
+    const adminId = '11111111-1111-1111-1111-111111111111';
+
     await User.findOneAndUpdate(
       { email },
-      { email, password_hash, role: 'admin' },
+      { _id: adminId, email, password_hash, role: 'admin' },
       { upsert: true, returnDocument: 'after' }
     );
 
     console.log('-----------------------------------------');
-    console.log('Admin User Updated Successfully!');
+    console.log('Admin User Ready and Synced!');
     console.log(`Email: ${email}`);
     console.log(`Password: ${password}`);
     console.log('-----------------------------------------');
-    console.log('You can now log in at /admin/login');
+    console.log('IMPORTANT: Run this command locally, then refresh Vercel.');
     
     process.exit(0);
   } catch (error) {
@@ -59,4 +65,3 @@ async function seedAdmin() {
 }
 
 seedAdmin();
-
