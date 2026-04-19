@@ -5,6 +5,10 @@ export const categoriesApi = {
     const { data } = await apiClient.get('/categories')
     return data
   },
+  async remove (id) {
+    const { data } = await apiClient.delete(`/categories/${id}`)
+    return data
+  },
   async create (payload) {
     const { data } = await apiClient.post('/categories', payload)
     return data

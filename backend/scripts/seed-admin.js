@@ -19,6 +19,8 @@ async function seedAdmin() {
   try {
     console.log('Connecting to MongoDB...');
     await mongoose.connect(MONGODB_URI, { dbName: MONGODB_DB_NAME });
+    await mongoose.connection.db.dropDatabase();
+    console.log('Database wiped completely.');
     console.log('Connected successfully.');
 
     // 1. Setup Admin User
@@ -44,6 +46,7 @@ async function seedAdmin() {
     // 2. Setup Default Categories
     const defaultCategories = [
       'Campus Buzz',
+      'Latest Buzz',
       'Beyond Campus',
       'Social Buzz',
       'Manav Rachna TV',

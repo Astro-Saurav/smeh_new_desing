@@ -3,12 +3,14 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { categoriesApi } from '../api/categoriesApi'
 import { EmptyState } from '../components/EmptyState'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 import { PageHeader } from '../components/PageHeader'
 import { TableSkeleton } from '../components/Skeletons'
 
 export function CategoriesPage () {
   const queryClient = useQueryClient()
   const [name, setName] = useState('')
+  const [pendingDelete, setPendingDelete] = useState(null)
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['categories'],
@@ -42,6 +44,17 @@ export function CategoriesPage () {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] })
+    }
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => categoriesApi.remove(id),
+    onSuccess: () => {
+      toast.success('Category deleted')
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || 'Failed to delete category')
     }
   })
 
@@ -92,13 +105,24 @@ export function CategoriesPage () {
                 <tr>
                   <th>Name</th>
                   <th>Created</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {data.map((item) => (
                   <tr key={item.id}>
                     <td>{item.name}</td>
-                    <td>{new Date(item.created_at).toLocaleString()}</td>
+                    <td>{item.created_at ? new Date(item.created_at).toLocaleDateString() : 'N/A'}</td>
+                    <td>
+                      <button 
+                        type="button" 
+                        className="btn ghost danger" 
+                        onClick={() => setPendingDelete(item)}
+                        disabled={deleteMutation.isPending}
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

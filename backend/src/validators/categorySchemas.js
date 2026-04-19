@@ -8,6 +8,13 @@ const createCategorySchema = z.object({
   query: z.object({})
 })
 
+const idParamSchema = z.object({
+  body: z.object({}),
+  params: z.object({ id: z.string().uuid() }),
+  query: z.object({})
+})
+
 module.exports = {
+  idParamSchema,
   createCategorySchema
 }
