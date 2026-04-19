@@ -1,4 +1,4 @@
-import type {NextConfig} from 'next';
+﻿import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -31,6 +31,20 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'manavrachna.edu.in',
+        port: '',
+        pathname: '/**',
+      },
+      // Azure Blob Storage — where uploaded news images are stored
+      {
+        protocol: 'https',
+        hostname: 'smehstorage01.blob.core.windows.net',
+        port: '',
+        pathname: '/**',
+      },
+      // Allow any external image URL (CDN, pixabay, etc.) for flexibility
+      {
+        protocol: 'https',
+        hostname: '**',
         port: '',
         pathname: '/**',
       },
