@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 
 const refreshTokenSchema = new mongoose.Schema({
+  _id: {
+    type: String,
+    required: true
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -19,8 +23,7 @@ const refreshTokenSchema = new mongoose.Schema({
     default: null
   },
   replaced_by_token: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'RefreshToken',
+    type: String,
     default: null
   }
 }, {
@@ -28,4 +31,3 @@ const refreshTokenSchema = new mongoose.Schema({
 })
 
 module.exports = mongoose.model('RefreshToken', refreshTokenSchema)
-
