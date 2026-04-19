@@ -1,6 +1,6 @@
 // API service for main site to fetch news from backend.
 // Keeps frontend resilient to backend response shape differences.
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.VERCEL_URL ? `https://` : "https://smeh-new-desing.vercel.app");
 
 type RawNewsItem = {
   id?: string | number;
