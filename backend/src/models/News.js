@@ -28,6 +28,10 @@ const newsSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  youtube_url: {
+    type: String,
+    default: null
+  },
   status: {
     type: String,
     enum: ['draft', 'published', 'scheduled'],

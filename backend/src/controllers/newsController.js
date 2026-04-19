@@ -28,6 +28,7 @@ const create = asyncHandler(async (req, res) => {
     categoryId: payload.categoryId,
     authorId: req.user.userId,
     imageUrl: payload.imageUrl,
+    youtubeUrl: payload.youtubeUrl,
     status: payload.status,
     publishedAt: normalizePublishedAt(payload.status, payload.publishedAt)
   })

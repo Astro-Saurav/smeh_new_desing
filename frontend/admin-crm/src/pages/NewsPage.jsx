@@ -228,7 +228,7 @@ export function NewsPage () {
             >
               <option value="">Select category</option>
               {(categoriesQuery.data || []).map((item) => (
-                <option key={item._id || item.id} value={item.id}>{item.name}</option>
+                <option key={item._id || item.id} value={item._id || item.id}>{item.name}</option>
               ))}
             </select>
 

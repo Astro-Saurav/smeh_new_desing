@@ -8,6 +8,7 @@ const createNewsSchema = z.object({
     content: z.string().min(1),
     categoryId: z.string(),
     imageUrl: z.string().url().optional().nullable(),
+    youtubeUrl: z.string().url().optional().nullable(),
     status: statusEnum,
     publishedAt: z.string().datetime().optional().nullable()
   }),
@@ -21,6 +22,7 @@ const updateNewsSchema = z.object({
     content: z.string().min(1).optional(),
     categoryId: z.string().optional(),
     imageUrl: z.string().url().optional().nullable(),
+    youtubeUrl: z.string().url().optional().nullable(),
     status: statusEnum.optional(),
     publishedAt: z.string().datetime().optional().nullable()
   }).refine((value) => Object.keys(value).length > 0, {

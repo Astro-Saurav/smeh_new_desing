@@ -2,7 +2,7 @@ const News = require('../models/News')
 const Category = require('../models/Category')
 const { v4: uuidv4 } = require('uuid')
 
-async function createNews ({ title, content, categoryId, authorId, imageUrl, status, publishedAt }) {
+async function createNews ({ title, content, categoryId, authorId, imageUrl, youtubeUrl, status, publishedAt }) {
   const news = new News({
     _id: uuidv4(),
     title,
@@ -10,6 +10,7 @@ async function createNews ({ title, content, categoryId, authorId, imageUrl, sta
     category: categoryId,
     author: authorId,
     image_url: imageUrl || null,
+    youtube_url: youtubeUrl || null,
     status: status || 'draft',
     published_at: publishedAt || null
   })
@@ -25,6 +26,7 @@ async function updateNews (id, payload) {
   if (payload.content !== undefined) news.content = payload.content
   if (payload.categoryId !== undefined) news.category = payload.categoryId
   if (payload.imageUrl !== undefined) news.image_url = payload.imageUrl
+  if (payload.youtubeUrl !== undefined) news.youtube_url = payload.youtubeUrl
   if (payload.status !== undefined) news.status = payload.status
   if (payload.publishedAt !== undefined) news.published_at = payload.publishedAt
   
