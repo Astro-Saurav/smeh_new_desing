@@ -5,6 +5,7 @@ const { categoryRouter } = require('./categoryRoutes')
 const { uploadRouter } = require('./uploadRoutes')
 const { analyticsRouter } = require('./analyticsRoutes')
 const { userRouter } = require('./userRoutes')
+const { cronRouter } = require('./cronRoutes')
 
 const apiRouter = express.Router()
 
@@ -18,7 +19,9 @@ apiRouter.use('/categories', categoryRouter)
 apiRouter.use('/upload', uploadRouter)
 apiRouter.use('/analytics', analyticsRouter)
 apiRouter.use('/users', userRouter)
+apiRouter.use('/cron', cronRouter)
 
 module.exports = {
   apiRouter
 }
+

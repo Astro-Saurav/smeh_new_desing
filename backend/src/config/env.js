@@ -27,6 +27,7 @@ const env = {
     uri: fromEnv(['MONGODB_URI', 'COSMOSDB_CONNECTION_STRING']),
     dbName: fromEnv(['MONGODB_DB_NAME'], 'manav_rachna_time')
   },
+    cronSecret: fromEnv(['CRON_SECRET'], 'dev_secret'),
   azureBlob: {
     connectionString: fromEnv(['AZURE_STORAGE_CONNECTION_STRING']),
     containerName: process.env.AZURE_STORAGE_CONTAINER_NAME || 'news-media'
@@ -54,3 +55,4 @@ module.exports = {
   env,
   validateEnv
 }
+

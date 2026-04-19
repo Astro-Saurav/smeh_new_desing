@@ -157,3 +157,4 @@ az webapp up --name <app-name> --resource-group <rg> --runtime "NODE|20-lts" --l
 - Required GitHub secrets:
   - `AZURE_CREDENTIALS`
   - `AZURE_WEBAPP_NAME_BACKEND`
+

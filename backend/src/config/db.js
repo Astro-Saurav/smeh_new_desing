@@ -4,7 +4,7 @@ const { env } = require('./env')
 let isConnected = false
 
 async function getPool () {
-  if (isConnected) {
+  if (mongoose.connection.readyState >= 1) {
     return mongoose.connection
   }
 
@@ -12,8 +12,6 @@ async function getPool () {
     await mongoose.connect(env.mongo.uri, {
       dbName: env.mongo.dbName
     })
-    
-    isConnected = true
     console.log('Connected to MongoDB/CosmosDB')
     return mongoose.connection
   } catch (error) {
@@ -25,3 +23,4 @@ async function getPool () {
 module.exports = {
   getPool
 }
+
