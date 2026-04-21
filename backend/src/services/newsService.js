@@ -2,7 +2,7 @@ const News = require('../models/News')
 const Category = require('../models/Category')
 const { v4: uuidv4 } = require('uuid')
 
-async function createNews ({ title, content, categoryId, authorId, imageUrl, youtubeUrl, status, publishedAt }) {
+async function createNews ({ title, content, categoryId, authorId, imageUrl, youtubeUrl, status, publishedAt, isFeatured }) {
   const news = new News({
     _id: uuidv4(),
     title,
@@ -12,7 +12,8 @@ async function createNews ({ title, content, categoryId, authorId, imageUrl, you
     image_url: imageUrl || null,
     youtube_url: youtubeUrl || null,
     status: status || 'draft',
-    published_at: publishedAt || null
+    published_at: publishedAt || null,
+    is_featured: isFeatured || false
   })
   await news.save()
   return getNewsById(news._id)
@@ -29,6 +30,7 @@ async function updateNews (id, payload) {
   if (payload.youtubeUrl !== undefined) news.youtube_url = payload.youtubeUrl
   if (payload.status !== undefined) news.status = payload.status
   if (payload.publishedAt !== undefined) news.published_at = payload.publishedAt
+  if (payload.isFeatured !== undefined) news.is_featured = payload.isFeatured
   
   news.updated_at = new Date()
   await news.save()
@@ -47,7 +49,7 @@ async function getNewsById (id) {
     .populate('author', 'email')
 }
 
-async function listNews ({ category, search, status, page = 1, pageSize = 10 }) {
+async function listNews ({ category, search, status, page = 1, pageSize = 10, isFeatured }) {
   const skip = (Number(page) - 1) * Number(pageSize)
   const filter = {}
 
@@ -67,9 +69,13 @@ async function listNews ({ category, search, status, page = 1, pageSize = 10 }) 
     filter.status = status
   }
 
+  if (isFeatured !== undefined) {
+    filter.is_featured = isFeatured
+  }
+
   const [items, total] = await Promise.all([
     News.find(filter)
-      
+      .sort({ created_at: -1 })
       .skip(skip)
       .limit(Number(pageSize))
       .populate('category', 'name')

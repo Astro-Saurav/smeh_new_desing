@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { categoriesApi } from '../api/categoriesApi'
@@ -17,23 +17,9 @@ const initialForm = {
   imageUrl: '',
   youtubeUrl: '',
   status: 'draft',
-  publishedAt: ''
+  publishedAt: '',
+  isFeatured: false
 }
-
-// Maps category names to the public website section they appear in
-const CATEGORY_SECTION_MAP = {
-  'Campus Buzz':     'Homepage → Campus Buzz section',
-  'Latest Buzz':     'Homepage → Latest Buzz sidebar + Latest Buzz page',
-  'Beyond Campus':   'Beyond Campus page',
-  'Social Buzz':     'Social Buzz page',
-  'Manav Rachna TV': 'Homepage → Multimedia panel + MR TV page',
-  'Podcast':         'Podcast page',
-  'Blog':            'Blog page',
-  'Achievements':    'Achievements page',
-  'Announcement':    'Announcement page',
-  'Gallery':         'Digital Gallery page',
-}
-
 
 export function NewsPage () {
   const { user } = useAuth()
@@ -47,11 +33,6 @@ export function NewsPage () {
   const [form, setForm] = useState(initialForm)
   const [isUploadingImage, setIsUploadingImage] = useState(false)
 
-  /**
-   * Compresses an image using Canvas API before uploading.
-   * Resizes to max 1200px and converts to JPEG at 80% quality.
-   * Keeps base64 payload under Vercel's 4.5MB serverless body limit.
-   */
   const compressImage = (file) => new Promise((resolve, reject) => {
     const img = new Image()
     const objectUrl = URL.createObjectURL(file)
@@ -76,12 +57,10 @@ export function NewsPage () {
   const handleImageUpload = async (event) => {
     const file = event.target.files?.[0]
     if (!file) return
-
     if (!file.type.startsWith('image/')) {
       toast.error('Please select a valid image file')
       return
     }
-
     try {
       setIsUploadingImage(true)
       const compressed = await compressImage(file)
@@ -94,10 +73,7 @@ export function NewsPage () {
       toast.success('Image uploaded successfully!')
       event.target.value = null
     } catch (error) {
-      const msg = typeof error.response?.data === 'string'
-        ? error.response.data
-        : error.response?.data?.message || error.response?.data?.error || error.message || 'Image upload failed'
-      toast.error(String(msg))
+      toast.error('Image upload failed')
     } finally {
       setIsUploadingImage(false)
     }
@@ -128,11 +104,8 @@ export function NewsPage () {
       toast.success('News created')
       setForm(initialForm)
       queryClient.invalidateQueries({ queryKey: ['news'] })
-      queryClient.invalidateQueries({ queryKey: ['analytics-overview'] })
     },
-    onError: (error) => {
-      toast.error(error.response?.data?.message || 'Failed to create news')
-    }
+    onError: () => toast.error('Failed to create news')
   })
 
   const updateMutation = useMutation({
@@ -142,50 +115,21 @@ export function NewsPage () {
       setForm(initialForm)
       setEditingId(null)
       queryClient.invalidateQueries({ queryKey: ['news'] })
-      queryClient.invalidateQueries({ queryKey: ['analytics-overview'] })
     },
-    onError: (error) => {
-      toast.error(error.response?.data?.message || 'Failed to update news')
-    }
+    onError: () => toast.error('Failed to update news')
   })
 
   const deleteMutation = useMutation({
     mutationFn: (id) => newsApi.remove(id),
-    onMutate: async (id) => {
-      await queryClient.cancelQueries({ queryKey: ['news'] })
-      const previousSnapshots = queryClient.getQueriesData({ queryKey: ['news'] })
-
-      queryClient.setQueriesData({ queryKey: ['news'] }, (old) => {
-        if (!old?.items) {
-          return old
-        }
-
-        return {
-          ...old,
-          items: old.items.filter((item) => (item._id || item.id) !== id)
-        }
-      })
-
-      return { previousSnapshots }
-    },
     onSuccess: () => {
       toast.success('News deleted')
       queryClient.invalidateQueries({ queryKey: ['news'] })
-      queryClient.invalidateQueries({ queryKey: ['analytics-overview'] })
     },
-    onError: (error, _, context) => {
-      if (context?.previousSnapshots) {
-        for (const [key, value] of context.previousSnapshots) {
-          queryClient.setQueryData(key, value)
-        }
-      }
-      toast.error(error.response?.data?.message || 'Failed to delete news')
-    }
+    onError: () => toast.error('Failed to delete news')
   })
 
   const onSubmit = (event) => {
     event.preventDefault()
-
     const payload = {
       title: form.title,
       content: form.content,
@@ -193,14 +137,13 @@ export function NewsPage () {
       imageUrl: form.imageUrl || null,
       youtubeUrl: form.youtubeUrl || null,
       status: form.status,
+      isFeatured: !!form.isFeatured,
       publishedAt: form.publishedAt ? new Date(form.publishedAt).toISOString() : null
     }
-
     if (editingId) {
       updateMutation.mutate({ id: editingId, payload })
       return
     }
-
     createMutation.mutate(payload)
   }
 
@@ -213,6 +156,7 @@ export function NewsPage () {
       imageUrl: item.image_url || '',
       youtubeUrl: item.youtube_url || item.youtubeUrl || '',
       status: item.status,
+      isFeatured: !!item.is_featured,
       publishedAt: item.published_at ? new Date(item.published_at).toISOString().slice(0, 16) : ''
     })
   }
@@ -222,33 +166,26 @@ export function NewsPage () {
     setForm(initialForm)
   }
 
-  const clearFilters = () => {
-    setSearch('')
-    setCategory('')
-    setStatus('')
-    setPage(1)
-  }
-
   const pagination = newsQuery.data?.pagination
 
   return (
-    <div className="stack-lg">
+    <div className='stack-lg'>
       <PageHeader
-        eyebrow="Editorial"
-        title="News Management"
-        subtitle="Create, schedule, and update stories with a clear publishing workflow."
+        eyebrow='Editorial'
+        title='News Management'
+        subtitle='Create, schedule, and update stories.'
         actions={(
-          <button type="button" className="btn ghost" onClick={clearFilters}>
+          <button type='button' className='btn ghost' onClick={() => {setSearch(''); setCategory(''); setStatus(''); setPage(1)}}>
             Clear filters
           </button>
         )}
       />
 
-      <article className="panel stack-md">
+      <article className='panel stack-md'>
         <h3>{editingId ? 'Edit News' : 'Create News'}</h3>
-        <form className="stack-md" onSubmit={onSubmit}>
+        <form className='stack-md' onSubmit={onSubmit}>
           <input
-            placeholder="Title"
+            placeholder='Title'
             value={form.title}
             onChange={(event) => setForm((value) => ({ ...value, title: event.target.value }))}
             required
@@ -259,13 +196,13 @@ export function NewsPage () {
             onChange={(content) => setForm((value) => ({ ...value, content }))}
           />
 
-          <div className="grid-two">
+          <div className='grid-two'>
             <select
               value={form.categoryId}
               onChange={(event) => setForm((value) => ({ ...value, categoryId: event.target.value }))}
               required
             >
-              <option value="">Select category</option>
+              <option value=''>Select category</option>
               {(categoriesQuery.data || []).map((item) => (
                 <option key={item._id || item.id} value={item._id || item.id}>{item.name}</option>
               ))}
@@ -275,160 +212,79 @@ export function NewsPage () {
               value={form.status}
               onChange={(event) => setForm((value) => ({ ...value, status: event.target.value }))}
             >
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-              <option value="scheduled">Scheduled</option>
+              <option value='draft'>Draft</option>
+              <option value='published'>Published</option>
+              <option value='scheduled'>Scheduled</option>
             </select>
           </div>
 
-          <div className="grid-two">
+          <div className='flex items-center gap-2 px-1 py-2 bg-zinc-50 border border-zinc-100 rounded'>
+             <input 
+               type='checkbox' 
+               id='isFeatured' 
+               checked={form.isFeatured} 
+               onChange={(e) => setForm(v => ({...v, isFeatured: e.target.checked}))}
+             />
+             <label htmlFor='isFeatured' className='text-sm font-bold uppercase tracking-widest cursor-pointer'>
+               Mark as Featured
+             </label>
+          </div>
+
+          <div className='grid-two'>
             <input
-              placeholder="Image URL"
+              placeholder='Image URL'
               value={form.imageUrl}
               onChange={(event) => setForm((value) => ({ ...value, imageUrl: event.target.value }))}
             />
             <input
-              placeholder="YouTube URL"
+              placeholder='YouTube URL'
               value={form.youtubeUrl}
               onChange={(event) => setForm((value) => ({ ...value, youtubeUrl: event.target.value }))}
             />
           </div>
 
-          <div className="grid-two">
-            <div className="stack-sm">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                disabled={isUploadingImage}
-              />
-              {isUploadingImage && <p className="helper-text">Uploading image...</p>}
-            </div>
-            <input
-              type="datetime-local"
-              value={form.publishedAt}
-              onChange={(event) => setForm((value) => ({ ...value, publishedAt: event.target.value }))}
-              disabled={form.status === 'draft'}
-            />
-          </div>
-
-          <div className="action-row">
-            <button type="submit" className="btn primary" disabled={createMutation.isPending || updateMutation.isPending}>
+          <div className='action-row'>
+            <button type='submit' className='btn primary' disabled={createMutation.isPending || updateMutation.isPending}>
               {editingId ? 'Update news' : 'Create news'}
             </button>
             {editingId && (
-              <button type="button" className="btn ghost" onClick={resetForm}>Cancel edit</button>
+              <button type='button' className='btn ghost' onClick={resetForm}>Cancel edit</button>
             )}
           </div>
-          <p className="helper-text">
-            Tip: Use "Scheduled" status with a date-time to automate publishing through the backend scheduler.
-          </p>
         </form>
       </article>
 
-      <article className="panel stack-md">
-        <div className="grid-three">
-          <input placeholder="Search title/content" value={search} onChange={(event) => setSearch(event.target.value)} />
-          <select value={category} onChange={(event) => setCategory(event.target.value)}>
-            <option value="">All categories</option>
-            {(categoriesQuery.data || []).map((item) => (
-              <option key={item._id || item.id} value={item.name}>{item.name}</option>
-            ))}
-          </select>
-          <select value={status} onChange={(event) => setStatus(event.target.value)}>
-            <option value="">All status</option>
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-            <option value="scheduled">Scheduled</option>
-          </select>
+      <article className='panel stack-md'>
+        <div className='table-wrap'>
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(newsQuery.data?.items || []).map((item) => (
+                <tr key={item._id || item.id}>
+                  <td>
+                    <div className='flex flex-col gap-1'>
+                      <span className='font-bold'>{item.title}</span>
+                      {item.is_featured && <span className='badge warning text-[9px]'>FEATURED</span>}
+                    </div>
+                  </td>
+                  <td>{item.category?.name}</td>
+                  <td><span className={adge }>{item.status}</span></td>
+                  <td>
+                    <button type='button' className='btn ghost' onClick={() => startEdit(item)}>Edit</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-
-        {newsQuery.isLoading && <TableSkeleton rows={8} />}
-        {newsQuery.error && <p className="error">Unable to load news.</p>}
-
-        {!newsQuery.isLoading && !newsQuery.error && newsQuery.data.items.length === 0 && (
-          <EmptyState
-            title="No news found"
-            message="Try adjusting filters, or create a new story to get started."
-            action={(
-              <button type="button" className="btn ghost" onClick={clearFilters}>Reset filters</button>
-            )}
-          />
-        )}
-
-        {!newsQuery.isLoading && !newsQuery.error && newsQuery.data.items.length > 0 && (
-          <>
-            <div className="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Title</th>
-                    <th>Category</th>
-                    <th>Status</th>
-                    <th>Published At</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {newsQuery.data.items.map((item) => (
-                    <tr key={item._id || item.id}>
-                      <td>{item.title}</td>
-                      <td>{(item.category?.name || 'Uncategorized')}</td>
-                      <td><span className={`badge ${item.status}`}>{item.status}</span></td>
-                      <td>{item.published_at ? new Date(item.published_at).toLocaleString() : '-'}</td>
-                      <td>
-                        <div className="action-row">
-                          <button type="button" className="btn ghost" onClick={() => startEdit(item)}>Edit</button>
-                          {user?.role === 'admin' && (
-                            <button
-                              type="button"
-                              className="btn ghost danger"
-                              onClick={() => setPendingDelete(item)}
-                              disabled={deleteMutation.isPending}
-                            >
-                              Delete
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="pagination-row">
-              <button type="button" className="btn ghost" disabled={page <= 1} onClick={() => setPage((value) => value - 1)}>
-                Previous
-              </button>
-              <span>Page {pagination?.page || 1} of {pagination?.totalPages || 1}</span>
-              <button
-                type="button"
-                className="btn ghost"
-                disabled={!pagination || page >= pagination.totalPages}
-                onClick={() => setPage((value) => value + 1)}
-              >
-                Next
-              </button>
-            </div>
-          </>
-        )}
       </article>
-
-      <ConfirmDialog
-        open={Boolean(pendingDelete)}
-        title="Delete story"
-        message={`This will permanently remove "${pendingDelete?.title || ''}".`}
-        confirmLabel="Delete"
-        onCancel={() => setPendingDelete(null)}
-        onConfirm={() => {
-          if (pendingDelete) {
-            deleteMutation.mutate((pendingDelete._id || pendingDelete.id))
-            setPendingDelete(null)
-          }
-        }}
-        loading={deleteMutation.isPending}
-      />
     </div>
   )
 }

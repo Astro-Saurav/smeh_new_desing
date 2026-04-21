@@ -37,6 +37,10 @@ const newsSchema = new mongoose.Schema({
     enum: ['draft', 'published', 'scheduled'],
     default: 'draft'
   },
+  is_featured: {
+    type: Boolean,
+    default: false
+  },
   published_at: {
     type: Date,
     default: null
@@ -47,6 +51,7 @@ const newsSchema = new mongoose.Schema({
 
 // Indices for performance
 newsSchema.index({ status: 1, published_at: 1 })
+newsSchema.index({ is_featured: 1, created_at: -1 })
 newsSchema.index({ category: 1, created_at: -1 })
 
 module.exports = mongoose.model('News', newsSchema)
