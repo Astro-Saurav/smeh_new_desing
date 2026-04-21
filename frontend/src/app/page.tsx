@@ -131,11 +131,30 @@ export default function Home() {
     );
   }
 
+  // Guard: no news available after loading
+  if (allNews.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-white">
+        <div className="flex flex-col items-center gap-4 text-center px-6">
+          <div className="text-5xl">📰</div>
+          <h2 className="text-2xl font-black uppercase tracking-tighter">No Stories Yet</h2>
+          <p className="text-zinc-400 font-medium max-w-sm">Stories are being loaded. Please check back soon or refresh the page.</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-2 px-6 py-2 bg-zinc-950 text-white text-[11px] font-black uppercase tracking-widest hover:bg-primary transition-colors"
+          >
+            Refresh
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // Identify Featured Lead Story
   const featuredNews = allNews.filter(item => item.isFeatured);
   const leadStory = featuredNews[0] || allNews[0];
-  const sideHeadlines = allNews.filter(item => item.id !== leadStory.id).slice(0, 5);
-  const secondaryFeatures = allNews.filter(item => item.id !== leadStory.id && !sideHeadlines.some(s => s.id === item.id)).slice(0, 3);
+  const sideHeadlines = allNews.filter(item => item.id !== leadStory?.id).slice(0, 5);
+  const secondaryFeatures = allNews.filter(item => item.id !== leadStory?.id && !sideHeadlines.some(s => s.id === item.id)).slice(0, 3);
   const tickerItems = allNews.slice(0, 8);
 
   return (
@@ -153,11 +172,11 @@ export default function Home() {
               <span className="bg-primary text-white text-[9px] font-black px-2 py-0.5 uppercase tracking-widest">Featured</span>
               <span className="text-zinc-400 text-[10px] font-bold uppercase tracking-widest">Published Today</span>
             </div>
-            <Link href={leadStory.link} className="block">
+            <Link href={leadStory?.link || `#`} className="block">
               <div className="relative aspect-video mb-8 overflow-hidden bg-zinc-100 shadow-xl">
                 <Image 
-                  src={leadStory.image || '/placeholder.jpg'} 
-                  alt={leadStory.headline} 
+                  src={leadStory?.image || '/placeholder.jpg'} 
+                  alt={leadStory?.headline || `Featured Story`} 
                   fill 
                   className="object-cover transition-transform duration-1000 group-hover:scale-105" 
                   priority
@@ -165,17 +184,17 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
               </div>
               <h1 className="text-3xl md:text-5xl lg:text-6xl font-black font-headline tracking-tighter leading-[0.95] mb-6 group-hover:text-primary transition-colors">
-                {leadStory.headline}
+                {leadStory?.headline}
               </h1>
               <p className="text-zinc-500 text-lg md:text-xl font-medium leading-relaxed max-w-3xl mb-8">
-                {leadStory.description}
+                {leadStory?.description}
               </p>
             </Link>
             <div className="flex items-center gap-6 pt-6 border-t border-zinc-100">
               <span className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
                 <Clock className="w-4 h-4 text-primary" /> 2 minutes read
               </span>
-              {getYouTubeId(leadStory.youtubeUrl) && (
+              {leadStory?.youtubeUrl && getYouTubeId(leadStory.youtubeUrl) && (
                 <Link href={`https://www.youtube.com/watch?v=${getYouTubeId(leadStory.youtubeUrl)}`} target="_blank" className="text-[11px] font-black uppercase tracking-widest text-red-600 hover:text-red-700 transition-colors flex items-center gap-2">
                   <Youtube className="w-4 h-4" /> Watch Special Report
                 </Link>
@@ -251,3 +270,4 @@ export default function Home() {
     </div>
   );
 }
+
