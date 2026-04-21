@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+﻿import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { categoriesApi } from '../api/categoriesApi'
@@ -219,10 +219,10 @@ export function NewsPage () {
           </div>
 
           <div className='flex items-center gap-2 px-1 py-2 bg-zinc-50 border border-zinc-100 rounded'>
-             <input 
-               type='checkbox' 
-               id='isFeatured' 
-               checked={form.isFeatured} 
+             <input
+               type='checkbox'
+               id='isFeatured'
+               checked={form.isFeatured}
                onChange={(e) => setForm(v => ({...v, isFeatured: e.target.checked}))}
              />
              <label htmlFor='isFeatured' className='text-sm font-bold uppercase tracking-widest cursor-pointer'>
@@ -275,7 +275,7 @@ export function NewsPage () {
                     </div>
                   </td>
                   <td>{item.category?.name}</td>
-                  <td><span className={adge }>{item.status}</span></td>
+                  <td><span className={`badge ${item.status}`}>{item.status}</span></td>
                   <td>
                     <button type='button' className='btn ghost' onClick={() => startEdit(item)}>Edit</button>
                   </td>

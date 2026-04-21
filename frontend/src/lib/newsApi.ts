@@ -1,7 +1,7 @@
-const API_BASE_URL =
+﻿const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   (process.env.VERCEL_URL
-    ? https://
+    ? `https://${process.env.VERCEL_URL}`
     : 'https://smeh-new-desing.vercel.app');
 
 export type MainSiteNewsItem = {
@@ -44,11 +44,11 @@ function normalizeNewsItem(item: Record<string, unknown>, fallbackCategory: stri
 
   const description =
     cleanDescription.length > 180
-      ? ${cleanDescription.slice(0, 180)}...
+      ? `${cleanDescription.slice(0, 180)}...`
       : cleanDescription;
 
   const id = String(
-    item._id ?? item.id ?? ${headline}-
+    item._id ?? item.id ?? `${headline}-${Date.now()}`
   );
 
   const categoryName = resolveCategoryName(
@@ -63,7 +63,7 @@ function normalizeNewsItem(item: Record<string, unknown>, fallbackCategory: stri
     image: String(item.image || item.image_url || item.imageUrl || '/placeholder.jpg'),
     category: categoryName,
     youtubeUrl: String(item.youtube_url || item.youtubeUrl || ''),
-    link: String(item.link || /article/),
+    link: String(item.link || `/article/${id}`),
     isFeatured: !!(item.is_featured || item.isFeatured),
   };
 }
@@ -76,7 +76,7 @@ async function fetchJson(url: string): Promise<unknown> {
   });
 
   if (!response.ok) {
-    throw new Error(Request failed  for );
+    throw new Error(`Request failed with status ${response.status} for ${url}`);
   }
 
   return response.json();
@@ -106,41 +106,41 @@ export async function getNewsByCategory(
 ): Promise<MainSiteNewsItem[]> {
   const timeBuster = Date.now();
   try {
-    const url = ${API_BASE_URL}/api/news?page=1&pageSize=&status=published&category=&_t=;
+    const url = `${API_BASE_URL}/api/news?page=1&pageSize=${limit}&status=published&category=${encodeURIComponent(categoryName)}&_t=${timeBuster}`;
     const payload = await fetchJson(url);
     return extractItems(payload).map((item) => normalizeNewsItem(item, categoryName));
   } catch (error) {
-    console.error(Error fetching category " \:, error);
- return [];
- }
+    console.error(`Error fetching category "${categoryName}":`, error);
+    return [];
+  }
 }
 
 export async function getAllPublishedNews(limit = 20): Promise<MainSiteNewsItem[]> {
- const timeBuster = Date.now();
- try {
- const payload = await fetchJson(
- ${API_BASE_URL}/api/news?page=1&pageSize=&status=published&_t=
- );
- return extractItems(payload).map((item) => normalizeNewsItem(item, 'General'));
- } catch (error) {
- console.error('Error fetching all news:', error);
- return [];
- }
+  const timeBuster = Date.now();
+  try {
+    const payload = await fetchJson(
+      `${API_BASE_URL}/api/news?page=1&pageSize=${limit}&status=published&_t=${timeBuster}`
+    );
+    return extractItems(payload).map((item) => normalizeNewsItem(item, 'General'));
+  } catch (error) {
+    console.error('Error fetching all news:', error);
+    return [];
+  }
 }
 
 export async function listCategories(): Promise<CategoryItem[]> {
- const timeBuster = Date.now();
- try {
- const payload = await fetchJson(${API_BASE_URL}/api/categories?_t=);
- if (Array.isArray(payload)) {
- return payload.map((c: Record<string, unknown>) => ({
- id: String(c._id || c.id),
- name: String(c.name),
- }));
- }
- return [];
- } catch (error) {
- console.error('Error listing categories:', error);
- return [];
- }
+  const timeBuster = Date.now();
+  try {
+    const payload = await fetchJson(`${API_BASE_URL}/api/categories?_t=${timeBuster}`);
+    if (Array.isArray(payload)) {
+      return payload.map((c: Record<string, unknown>) => ({
+        id: String(c._id || c.id),
+        name: String(c.name),
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.error('Error listing categories:', error);
+    return [];
+  }
 }
