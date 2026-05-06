@@ -10,7 +10,8 @@ const createNewsSchema = z.object({
     imageUrl: z.string().url().optional().nullable(),
     youtubeUrl: z.string().url().optional().nullable(),
     status: statusEnum,
-    publishedAt: z.string().datetime().optional().nullable()
+    publishedAt: z.string().datetime().optional().nullable(),
+    isFeatured: z.boolean().optional()
   }),
   params: z.object({}),
   query: z.object({})
@@ -24,7 +25,8 @@ const updateNewsSchema = z.object({
     imageUrl: z.string().url().optional().nullable(),
     youtubeUrl: z.string().url().optional().nullable(),
     status: statusEnum.optional(),
-    publishedAt: z.string().datetime().optional().nullable()
+    publishedAt: z.string().datetime().optional().nullable(),
+    isFeatured: z.boolean().optional()
   }).refine((value) => Object.keys(value).length > 0, {
     message: 'At least one field is required for update'
   }),

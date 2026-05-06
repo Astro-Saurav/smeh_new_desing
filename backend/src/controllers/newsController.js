@@ -30,7 +30,8 @@ const create = asyncHandler(async (req, res) => {
     imageUrl: payload.imageUrl,
     youtubeUrl: payload.youtubeUrl,
     status: payload.status,
-    publishedAt: normalizePublishedAt(payload.status, payload.publishedAt)
+    publishedAt: normalizePublishedAt(payload.status, payload.publishedAt),
+    isFeatured: !!payload.isFeatured
   })
 
   return res.status(201).json(news)
