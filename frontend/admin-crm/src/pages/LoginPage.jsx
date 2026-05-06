@@ -7,8 +7,8 @@ import { Eye, EyeOff } from 'lucide-react'
 export function LoginPage () {
   const { login } = useAuth()
   const navigate = useNavigate()
-  const [email, setEmail] = useState('admin@smeh.manavrachna.net')
-  const [password, setPassword] = useState('admin@smeh@manavrachna')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -28,7 +28,7 @@ export function LoginPage () {
 
   return (
     <div className="auth-shell">
-      <form className="auth-card" onSubmit={onSubmit}>
+      <form className="auth-card" onSubmit={onSubmit} autoComplete="off">
         <p className="header-eyebrow">Secure Access</p>
         <h1>Manav Rachna Time CRM</h1>
         <p className="auth-subtitle">Sign in to manage college news, categories, media, and publishing schedules.</p>
@@ -40,6 +40,7 @@ export function LoginPage () {
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           required
+          autoComplete="new-password"
         />
 
         <label htmlFor="password">Password</label>
@@ -51,6 +52,7 @@ export function LoginPage () {
             onChange={(event) => setPassword(event.target.value)}
             required
             style={{ paddingRight: '40px' }}
+            autoComplete="new-password"
           />
           <button
             type="button"

@@ -1,3 +1,4 @@
+ = @'
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
@@ -173,7 +174,7 @@ export function NewsPage () {
       <PageHeader
         eyebrow='Editorial'
         title='News Management'
-        subtitle='Create, schedule, and update stories.'
+        subtitle='Create, schedule, and update stories with a clear publishing workflow.'
         actions={(
           <button type='button' className='btn ghost' onClick={() => {setSearch(''); setCategory(''); setStatus(''); setPage(1)}}>
             Clear filters
@@ -218,15 +219,15 @@ export function NewsPage () {
             </select>
           </div>
 
-          <div className='flex items-center gap-2 px-1 py-2 bg-zinc-50 border border-zinc-100 rounded'>
-             <input
-               type='checkbox'
-               id='isFeatured'
-               checked={form.isFeatured}
+          <div className='flex items-center gap-2 px-1'>
+             <input 
+               type='checkbox' 
+               id='isFeatured' 
+               checked={form.isFeatured} 
                onChange={(e) => setForm(v => ({...v, isFeatured: e.target.checked}))}
              />
              <label htmlFor='isFeatured' className='text-sm font-bold uppercase tracking-widest cursor-pointer'>
-               Mark as Featured
+               Mark as Featured Lead Story
              </label>
           </div>
 
@@ -277,10 +278,7 @@ export function NewsPage () {
                   <td>{item.category?.name}</td>
                   <td><span className={`badge ${item.status}`}>{item.status}</span></td>
                   <td>
-                    <div className="flex gap-2">
-                      <button type='button' className='btn ghost small' onClick={() => startEdit(item)}>Edit</button>
-                      <button type='button' className='btn danger-ghost small' onClick={() => setPendingDelete(item._id || item.id)}>Delete</button>
-                    </div>
+                    <button type='button' className='btn ghost' onClick={() => startEdit(item)}>Edit</button>
                   </td>
                 </tr>
               ))}
@@ -288,19 +286,7 @@ export function NewsPage () {
           </table>
         </div>
       </article>
-
-      <ConfirmDialog
-        open={!!pendingDelete}
-        title="Delete News Article"
-        message="Are you sure you want to permanently delete this news article? This action cannot be undone."
-        confirmLabel="Delete permanently"
-        onConfirm={() => {
-          deleteMutation.mutate(pendingDelete)
-          setPendingDelete(null)
-        }}
-        onCancel={() => setPendingDelete(null)}
-        loading={deleteMutation.isPending}
-      />
     </div>
   )
 }
+'@;  | Out-File -FilePath 'src\pages\NewsPage.jsx' -Encoding utf8
