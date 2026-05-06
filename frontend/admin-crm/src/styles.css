@@ -340,6 +340,70 @@ td {
   color: var(--muted);
 }
 
+/* Login Page Enhancements */
+.brand-badge {
+  background: var(--primary);
+  color: var(--primary-contrast);
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.login-header {
+  margin-bottom: 1.5rem;
+}
+
+.login-header h1 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 0.85rem;
+  color: var(--muted);
+}
+
+.input-with-icon input {
+  padding-left: 2.8rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.85rem;
+  background: none;
+  border: none;
+  color: var(--muted);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.login-footer {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--panel-border);
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
 .page-header {
   display: flex;
   justify-content: space-between;
