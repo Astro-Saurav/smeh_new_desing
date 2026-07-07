@@ -13,7 +13,8 @@ function authenticate (req, res, next) {
     req.user = verifyAccessToken(token)
     return next()
   } catch (error) {
-    return res.status(401).json({ message: 'Invalid or expired token' })
+    console.error('Token verification failed:', error.message)
+    return res.status(401).json({ message: 'Invalid or expired token', error: error.message })
   }
 }
 

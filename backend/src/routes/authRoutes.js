@@ -1,5 +1,5 @@
 const express = require('express')
-const { register, login, refresh, logout, me } = require('../controllers/authController')
+const { register, login, refresh, logout, me, changePassword } = require('../controllers/authController')
 const { validateRequest } = require('../middleware/validateRequest')
 const { loginSchema, registerSchema } = require('../validators/authSchemas')
 const { authenticate, authorize } = require('../middleware/authMiddleware')
@@ -11,6 +11,7 @@ authRouter.post('/refresh', refresh)
 authRouter.post('/logout', logout)
 authRouter.get('/me', authenticate, me)
 authRouter.post('/register', authenticate, authorize('admin'), validateRequest(registerSchema), register)
+authRouter.post('/change-password', authenticate, changePassword)
 
 module.exports = {
   authRouter

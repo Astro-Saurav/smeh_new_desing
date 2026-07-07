@@ -23,9 +23,9 @@ async function getCategoryCounts () {
   const results = await News.aggregate([
     { $group: { _id: '$category', count: { $sum: 1 } } }
   ])
-  
+
   const categories = await Category.find()
-  
+
   return categories.map(cat => {
     const stat = results.find(r => r._id && r._id.toString() === cat._id.toString())
     return {
@@ -33,7 +33,7 @@ async function getCategoryCounts () {
       name: cat.name,
       count: stat ? stat.count : 0
     }
-  }).sort((a,b) => b.count - a.count || a.name.localeCompare(b.name))
+  }).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
 }
 
 async function getMonthlyPublishTrend () {

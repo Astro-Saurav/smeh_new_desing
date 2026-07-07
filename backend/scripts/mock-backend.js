@@ -19,9 +19,16 @@ const mockData = {
     { id: '2', email: 'editor@example.com', role: 'editor', created_at: new Date() }
   ],
   categories: [
-    { id: 1, name: 'Technology', created_at: new Date() },
-    { id: 2, name: 'Sports', created_at: new Date() },
-    { id: 3, name: 'Entertainment', created_at: new Date() }
+    { id: '1', name: 'Campus Buzz', slug: 'campus-buzz' },
+    { id: '2', name: 'Beyond Campus', slug: 'beyond-campus' },
+    { id: '3', name: 'Social Buzz', slug: 'social-buzz' },
+    { id: '4', name: 'Manav Rachna TV', slug: 'manav-rachna-tv' },
+    { id: '5', name: 'Podcast', slug: 'podcast' },
+    { id: '6', name: 'Blog', slug: 'blog' },
+    { id: '7', name: 'Achievements', slug: 'achievements' },
+    { id: '8', name: 'Announcement', slug: 'announcement' },
+    { id: '9', name: 'Current Affairs', slug: 'current-affairs' },
+    { id: '10', name: 'Gallery', slug: 'gallery' }
   ],
   news: [
     {
@@ -54,11 +61,20 @@ const mockData = {
 };
 
 // Middleware
-app.use(express.json());
 app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true
 }));
+app.use(express.json());
+
+// Alias /api/v1 to /api for frontend compatibility
+app.use((req, res, next) => {
+  if (req.url.startsWith('/api/v1/')) {
+    req.url = req.url.replace('/api/v1/', '/api/');
+  }
+  next();
+});
+
 app.use(cookieParser());
 
 // Helper: Generate tokens
@@ -122,11 +138,14 @@ app.post('/api/auth/login', (req, res) => {
   });
 
   res.json({
-    accessToken,
-    user: {
-      id: user.id,
-      email: user.email,
-      role: user.role
+    success: true,
+    data: {
+      accessToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role
+      }
     }
   });
 });
@@ -178,7 +197,7 @@ app.post('/api/auth/register', authenticateToken, adminOnly, (req, res) => {
 
 // ==================== NEWS ENDPOINTS ====================
 
-app.get('/api/news', authenticateToken, (req, res) => {
+app.get('/api/news', (req, res) => {
   const { search, category, status, page = 1, limit = 10 } = req.query;
 
   let filtered = mockData.news;
@@ -206,8 +225,14 @@ app.get('/api/news', authenticateToken, (req, res) => {
   });
 });
 
-app.get('/api/news/:id', authenticateToken, (req, res) => {
+app.get('/api/news/:id', (req, res) => {
   const news = mockData.news.find(n => n.id === req.params.id);
+  if (!news) return res.status(404).json({ error: 'Not found' });
+  res.json(news);
+});
+
+app.get('/api/news/slug/:slug', (req, res) => {
+  const news = mockData.news.find(n => n.id === req.params.slug || n.slug === req.params.slug);
   if (!news) return res.status(404).json({ error: 'Not found' });
   res.json(news);
 });
@@ -256,7 +281,7 @@ app.delete('/api/news/:id', authenticateToken, adminOnly, (req, res) => {
 
 // ==================== CATEGORIES ENDPOINTS ====================
 
-app.get('/api/categories', authenticateToken, (req, res) => {
+app.get('/api/categories', (req, res) => {
   res.json(mockData.categories);
 });
 

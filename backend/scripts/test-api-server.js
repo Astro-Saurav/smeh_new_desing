@@ -284,6 +284,18 @@ app.put('/api/news/:id', (req, res) => {
   res.status(404).json({ error: 'News not found' });
 });
 
+app.get('/api/news/:id', (req, res) => {
+  const news = mockNews.find(n => n.id === req.params.id);
+  if (!news) return res.status(404).json({ error: 'Not found' });
+  res.json(news);
+});
+
+app.get('/api/news/slug/:slug', (req, res) => {
+  const news = mockNews.find(n => n.id === req.params.slug || n.slug === req.params.slug);
+  if (!news) return res.status(404).json({ error: 'Not found' });
+  res.json(news);
+});
+
 app.delete('/api/news/:id', (req, res) => {
   const index = mockNews.findIndex(a => a.id === req.params.id);
   if (index !== -1) {

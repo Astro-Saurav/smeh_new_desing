@@ -1,4 +1,4 @@
-﻿// SHARED: creates a clean news section page (Times of India style)
+// SHARED: creates a clean news section page (Times of India style)
 // Usage: wrap in a page component, pass categoryName, pageTitle, pageSubtitle
 
 "use client";
@@ -14,6 +14,12 @@ function getYouTubeId(url) {
   return m ? m[1] : null;
 }
 
+function getImageSrc(url) {
+  if (!url || url === "undefined") return "/logo.png";
+  if (url.startsWith('http') || url.startsWith('/')) return url;
+  return `/uploads/${url}`;
+}
+
 function timeAgo(dateStr) {
   if (!dateStr) return "";
   const d = new Date(dateStr);
@@ -26,37 +32,26 @@ function timeAgo(dateStr) {
 
 // Big card for the lead story
 function LeadCard({ story }) {
-  const ytId = getYouTubeId(story.youtubeUrl);
-  const img = story.image && story.image !== "undefined" ? story.image : "/placeholder.jpg";
+
+  const img = getImageSrc(story.image);
   return (
     <div className="group">
       <Link href={story.link}>
-        <div className="relative w-full aspect-video overflow-hidden bg-zinc-100 mb-4">
-          <Image src={img} alt={story.headline} fill className="object-cover group-hover:scale-105 transition-transform duration-700" priority />
-          {ytId && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-red-600/90 rounded-full p-3">
-                <PlayCircle className="w-8 h-8 text-white" />
-              </div>
-            </div>
-          )}
+        <div className="relative w-full aspect-video overflow-hidden bg-zinc-100 mb-5">
+          <Image src={img} alt={story.headline} fill className="object-cover group-hover:scale-[1.03] transition-transform duration-700" priority />
         </div>
+      </Link>
         <span className="text-[10px] font-black uppercase tracking-widest text-primary mb-2 block">{story.category}</span>
         <h2 className="text-2xl md:text-3xl font-black leading-tight group-hover:text-primary transition-colors mb-3">
           {story.headline}
         </h2>
         <p className="text-zinc-600 text-[15px] leading-relaxed line-clamp-3 mb-4">{story.description}</p>
-      </Link>
+      
       <div className="flex items-center gap-4">
         <span className="text-[11px] text-zinc-400 font-bold flex items-center gap-1">
           <Clock className="w-3 h-3" /> {timeAgo(story.publishedAt)}
         </span>
-        {ytId && (
-          <a href={`https://www.youtube.com/watch?v=${ytId}`} target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-[11px] font-black text-red-600 hover:text-red-700">
-            <Youtube className="w-3.5 h-3.5" /> Watch Video
-          </a>
-        )}
+
       </div>
     </div>
   );
@@ -64,12 +59,12 @@ function LeadCard({ story }) {
 
 // Medium card for sub-stories
 function MedCard({ story }) {
-  const ytId = getYouTubeId(story.youtubeUrl);
-  const img = story.image && story.image !== "undefined" ? story.image : "/placeholder.jpg";
+
+  const img = getImageSrc(story.image);
   return (
     <div className="group flex gap-4 border-b border-zinc-100 pb-5 last:border-0 last:pb-0">
       <Link href={story.link} className="block shrink-0">
-        <div className="relative w-24 h-20 overflow-hidden bg-zinc-100">
+        <div className="relative w-28 h-20 md:w-32 md:h-24 overflow-hidden bg-zinc-100">
           <Image src={img} alt={story.headline} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
         </div>
       </Link>
@@ -80,12 +75,7 @@ function MedCard({ story }) {
         </Link>
         <div className="flex items-center gap-3">
           <span className="text-[10px] text-zinc-400 flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {timeAgo(story.publishedAt)}</span>
-          {ytId && (
-            <a href={`https://www.youtube.com/watch?v=${ytId}`} target="_blank" rel="noopener noreferrer"
-              className="text-[10px] font-black text-red-600 flex items-center gap-1">
-              <Youtube className="w-3 h-3" /> Watch
-            </a>
-          )}
+
         </div>
       </div>
     </div>
@@ -94,7 +84,7 @@ function MedCard({ story }) {
 
 // Small list card for sidebar trending
 function SmallCard({ story, rank }) {
-  const img = story.image && story.image !== "undefined" ? story.image : "/placeholder.jpg";
+  const img = getImageSrc(story.image);
   return (
     <Link href={story.link} className="group flex gap-3 border-b border-zinc-100 pb-4 last:border-0">
       <span className="text-2xl font-black text-zinc-100 group-hover:text-primary shrink-0 leading-none mt-1">

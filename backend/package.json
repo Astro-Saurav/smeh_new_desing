@@ -7,28 +7,49 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
+    "workers": "node src/workers/runner.js",
     "lint": "eslint src --no-eslintrc --config .eslintrc.json",
-    "lint:fix": "eslint src --no-eslintrc --config .eslintrc.json --fix"
+    "lint:fix": "eslint src --no-eslintrc --config .eslintrc.json --fix",
+    "db:migrate": "npx prisma migrate deploy",
+    "db:migrate:dev": "npx prisma migrate dev",
+    "db:generate": "npx prisma generate",
+    "db:seed": "node prisma/seed.js",
+    "db:studio": "npx prisma studio",
+    "db:reset": "npx prisma migrate reset",
+    "postinstall": "npx prisma generate"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "engines": {
     "node": "20.x"
   },
   "dependencies": {
     "@azure/storage-blob": "^12.27.0",
+    "@prisma/client": "^5.22.0",
+    "axios": "^1.18.1",
     "bcrypt": "^6.0.0",
+    "bullmq": "^5.79.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^4.21.2",
     "express-rate-limit": "^7.5.0",
+    "form-data": "^4.0.6",
     "helmet": "^7.2.0",
+    "ioredis": "^5.11.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^9.4.1",
     "morgan": "^1.10.0",
     "mssql": "^11.0.1",
     "multer": "^1.4.5-lts.1",
     "node-cron": "^4.2.1",
+    "pg": "^8.22.0",
+    "prisma": "^5.22.0",
+    "sanitize-html": "^2.17.5",
+    "sharp": "^0.35.3",
     "uuid": "^11.1.0",
+    "winston": "^3.19.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {

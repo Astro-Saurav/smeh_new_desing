@@ -8,7 +8,7 @@ const cronRouter = express.Router()
 // Secure endpoint for Vercel Cron
 cronRouter.post('/publish', asyncHandler(async (req, res) => {
   const authHeader = req.headers['x-cron-secret']
-  
+
   // In production, require the secret
   if (env.nodeEnv === 'production' && authHeader !== env.cronSecret) {
     console.warn('[Cron] Unauthorized cron attempt detected')
@@ -17,7 +17,7 @@ cronRouter.post('/publish', asyncHandler(async (req, res) => {
 
   console.log('[Cron] Starting scheduled news publication...')
   const publishedItems = await publishScheduledNews()
-  
+
   return res.status(200).json({
     message: 'Cron executed successfully',
     publishedCount: publishedItems.length,

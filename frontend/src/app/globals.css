@@ -77,6 +77,8 @@
   }
   body {
     @apply bg-background text-foreground;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 }
 

@@ -7,8 +7,11 @@ const createNewsSchema = z.object({
     title: z.string().min(3).max(300),
     content: z.string().min(1),
     categoryId: z.string(),
-    imageUrl: z.string().url().optional().nullable(),
-    youtubeUrl: z.string().url().optional().nullable(),
+    imageUrl: z.string().optional().nullable().transform(v => v === '' ? null : v).pipe(z.string().url().optional().nullable()),
+    youtubeUrl: z.string().optional().nullable().transform(v => v === '' ? null : v).pipe(z.string().url().optional().nullable()),
+    excerpt: z.string().optional().nullable(),
+    thumbnailMediaId: z.string().uuid().optional().nullable(),
+    documentMediaId: z.string().uuid().optional().nullable(),
     status: statusEnum,
     publishedAt: z.string().datetime().optional().nullable(),
     isFeatured: z.boolean().optional()
@@ -22,8 +25,11 @@ const updateNewsSchema = z.object({
     title: z.string().min(3).max(300).optional(),
     content: z.string().min(1).optional(),
     categoryId: z.string().optional(),
-    imageUrl: z.string().url().optional().nullable(),
-    youtubeUrl: z.string().url().optional().nullable(),
+    imageUrl: z.string().optional().nullable().transform(v => v === '' ? null : v).pipe(z.string().url().optional().nullable()),
+    youtubeUrl: z.string().optional().nullable().transform(v => v === '' ? null : v).pipe(z.string().url().optional().nullable()),
+    excerpt: z.string().optional().nullable(),
+    thumbnailMediaId: z.string().uuid().optional().nullable(),
+    documentMediaId: z.string().uuid().optional().nullable(),
     status: statusEnum.optional(),
     publishedAt: z.string().datetime().optional().nullable(),
     isFeatured: z.boolean().optional()
@@ -44,6 +50,14 @@ const idParamSchema = z.object({
   query: z.object({})
 })
 
+const slugParamSchema = z.object({
+  body: z.object({}),
+  params: z.object({
+    slug: z.string().min(1)
+  }),
+  query: z.object({})
+})
+
 const listNewsSchema = z.object({
   body: z.object({}),
   params: z.object({}),
@@ -60,5 +74,6 @@ module.exports = {
   createNewsSchema,
   updateNewsSchema,
   idParamSchema,
-  listNewsSchema
+  listNewsSchema,
+  slugParamSchema
 }

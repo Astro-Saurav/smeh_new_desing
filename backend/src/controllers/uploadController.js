@@ -1,19 +1,26 @@
-﻿const { asyncHandler } = require('../middleware/asyncHandler')
-const { uploadBase64Image } = require('../services/uploadService')
+const { asyncHandler } = require('../middleware/asyncHandler')
+const { uploadMiddleware, saveUploadedFile } = require('../services/uploadService')
+const R = require('../utils/response')
 
-const uploadImage = asyncHandler(async (req, res) => {
-  const { base64Data, fileName, mimeType } = req.body
+const upload = [
+  uploadMiddleware.single('file'),
+  asyncHandler(async (req, res) => {
+    if (!req.file) {
+      return R.validationError(res, [{ field: 'file', message: 'No file uploaded or file type rejected' }])
+    }
 
-  if (!base64Data || !fileName || !mimeType) {
-    return res.status(400).json({ error: 'Missing fields: base64Data, fileName, mimeType are all required' })
-  }
+    const media = await saveUploadedFile(req.file)
 
-  const result = await uploadBase64Image({ base64Data, fileName, mimeType })
-
-  return res.status(201).json({
-    url: result.url,
-    blobName: result.blobName
+    return R.created(res, {
+      id: media.id,
+      file_name: media.file_name,
+      original_name: media.original_name,
+      file_path: media.file_path,
+      mime_type: media.mime_type,
+      file_size: media.file_size,
+      processing_status: media.processing_status
+    }, 'File uploaded. Processing queued.')
   })
-})
+]
 
-module.exports = { uploadImage }
+module.exports = { upload }

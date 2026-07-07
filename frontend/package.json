@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build && cd admin-crm && npm install --include=dev && npm run build && cd .. && mkdir -p public/admin && cp -r admin-crm/dist/* public/admin/",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"

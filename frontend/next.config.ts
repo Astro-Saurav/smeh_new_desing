@@ -1,7 +1,8 @@
-﻿import type {NextConfig} from 'next';
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   /* config options here */
+  output: 'standalone',
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -60,8 +61,22 @@ const nextConfig: NextConfig = {
         source: '/explore/:path*',
         destination: '/student-projects/:path*',
       },
-    ];
+      // Proxy API requests to backend during local development
+      {
+        source: '/api/:path*',
+        destination: process.env.INTERNAL_API_URL 
+          ? `${process.env.INTERNAL_API_URL}/api/:path*`
+          : 'http://localhost:8080/api/:path*',
+      },
+      // Proxy uploads to backend during local development
+      {
+        source: '/uploads/:path*',
+        destination: process.env.INTERNAL_API_URL 
+          ? `${process.env.INTERNAL_API_URL}/uploads/:path*`
+          : 'http://localhost:8080/uploads/:path*',
+      },
+    ]
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig

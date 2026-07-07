@@ -1,48 +1,74 @@
-const User = require('../models/User')
-const { v4: uuidv4 } = require('uuid')
+const { prisma } = require('../config/db')
 const { hashPassword } = require('../utils/password')
-const News = require('../models/News')
 
 async function findUserByEmail (email) {
-  return User.findOne({ email })
+  return prisma.user.findUnique({
+    where: { email: email.toLowerCase() },
+    include: { role: true }
+  })
 }
 
 async function findUserById (id) {
-  return User.findById(id)
+  return prisma.user.findUnique({
+    where: { id },
+    include: { role: true }
+  })
 }
 
-async function createUser ({ email, password, role }) {
+async function createUser ({ email, password, roleName = 'editor' }) {
   const passwordHash = await hashPassword(password)
-  const user = new User({
-    _id: uuidv4(),
-    email,
-    password_hash: passwordHash,
-    role
+
+  // Resolve role by name, create if it doesn't exist (dev convenience)
+  let role = await prisma.role.findUnique({ where: { name: roleName } })
+  if (!role) {
+    role = await prisma.role.create({ data: { name: roleName } })
+  }
+
+  return prisma.user.create({
+    data: {
+      email: email.toLowerCase(),
+      password_hash: passwordHash,
+      role_id: role.id
+    },
+    include: { role: true }
   })
-  await user.save()
-  return user
 }
 
 async function listUsers () {
-  const users = await User.find().select('-password_hash'); return users.sort((a, b) => (new Date(b.created_at) - new Date(a.created_at)));
+  return prisma.user.findMany({
+    where: { deleted_at: null },
+    select: {
+      id: true,
+      email: true,
+      role: { select: { name: true } },
+      is_2fa_enabled: true,
+      created_at: true,
+      updated_at: true
+    },
+    orderBy: { created_at: 'desc' }
+  })
 }
 
-async function deleteUserById (id) {
-  const hasNews = await News.exists({ author: id })
-
-  if (hasNews) {
-    return {
-      deleted: false,
-      reason: 'USER_HAS_NEWS'
-    }
+async function softDeleteUser (id) {
+  // Check for authored news
+  const newsCount = await prisma.news.count({ where: { created_by: id, deleted_at: null } })
+  if (newsCount > 0) {
+    return { deleted: false, reason: 'USER_HAS_NEWS' }
   }
 
-  const result = await User.findByIdAndDelete(id)
+  await prisma.user.update({
+    where: { id },
+    data: { deleted_at: new Date() }
+  })
+  return { deleted: true, reason: null }
+}
 
-  return {
-    deleted: !!result,
-    reason: null
-  }
+async function updateUserPassword (id, newPassword) {
+  const passwordHash = await hashPassword(newPassword)
+  return prisma.user.update({
+    where: { id },
+    data: { password_hash: passwordHash, password_changed_at: new Date() }
+  })
 }
 
 module.exports = {
@@ -50,5 +76,6 @@ module.exports = {
   findUserById,
   createUser,
   listUsers,
-  deleteUserById
+  softDeleteUser,
+  updateUserPassword
 }

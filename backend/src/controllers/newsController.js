@@ -2,95 +2,134 @@ const { asyncHandler } = require('../middleware/asyncHandler')
 const {
   createNews,
   updateNews,
-  deleteNews,
+  softDeleteNews,
+  hardDeleteNews,
+  restoreNews,
   getNewsById,
-  listNews
+  getNewsBySlug,
+  listNews,
+  getNewsRevisions,
+  restoreRevision,
+  incrementViews
 } = require('../services/newsService')
-
-function normalizePublishedAt (status, publishedAt) {
-  if (status === 'published' && !publishedAt) {
-    return new Date().toISOString()
-  }
-
-  if (status === 'draft') {
-    return null
-  }
-
-  return publishedAt || null
-}
+const { recordAudit } = require('../services/auditService')
+const R = require('../utils/response')
 
 const create = asyncHandler(async (req, res) => {
-  const payload = req.validated.body
+  const news = await createNews(req.validated.body, req.user.userId)
 
-  const news = await createNews({
-    title: payload.title,
-    content: payload.content,
-    categoryId: payload.categoryId,
-    authorId: req.user.userId,
-    imageUrl: payload.imageUrl,
-    youtubeUrl: payload.youtubeUrl,
-    status: payload.status,
-    publishedAt: normalizePublishedAt(payload.status, payload.publishedAt),
-    isFeatured: !!payload.isFeatured
+  await recordAudit({
+    userId: req.user.userId,
+    action: 'news.created',
+    targetTable: 'news',
+    targetId: news.id,
+    newValue: { title: news.title, status: news.status },
+    requestId: req.requestId,
+    ipAddress: req.ip,
+    userAgent: req.headers['user-agent']
   })
 
-  return res.status(201).json(news)
+  return R.created(res, news, 'Article created successfully')
 })
 
 const list = asyncHandler(async (req, res) => {
-  const { category, search, status, page = 1, pageSize = 10 } = req.validated.query
+  const { category, search, status, page = 1, limit = 10, featured, visibility } = req.validated?.query || req.query
 
-  const data = await listNews({
+  const result = await listNews({
     category,
     search,
     status,
-    page,
-    pageSize
+    page: Number(page),
+    limit: Number(limit),
+    isFeatured: featured === 'true' ? true : featured === 'false' ? false : undefined,
+    visibility
   })
 
-  return res.status(200).json(data)
+  return R.paginated(res, result.items, result.pagination, 'Articles retrieved')
 })
 
 const getById = asyncHandler(async (req, res) => {
-  const news = await getNewsById(req.validated.params.id)
+  const news = await getNewsById(req.params.id)
+  if (!news) return R.notFound(res, 'Article not found')
 
-  if (!news) {
-    return res.status(404).json({ message: 'News not found' })
-  }
+  // Async view increment (fire and forget)
+  incrementViews(news.id).catch(() => {})
 
-  return res.status(200).json(news)
+  return R.success(res, news)
+})
+
+const getBySlug = asyncHandler(async (req, res) => {
+  const news = await getNewsBySlug(req.params.slug)
+  if (!news) return R.notFound(res, 'Article not found')
+
+  incrementViews(news.id).catch(() => {})
+
+  return R.success(res, news)
 })
 
 const update = asyncHandler(async (req, res) => {
-  const payload = req.validated.body
+  const existing = await getNewsById(req.params.id)
+  const news = await updateNews(req.params.id, req.validated?.body || req.body, req.user.userId)
+  if (!news) return R.notFound(res, 'Article not found')
 
-  if (payload.status) {
-    payload.publishedAt = normalizePublishedAt(payload.status, payload.publishedAt)
-  }
+  await recordAudit({
+    userId: req.user.userId,
+    action: 'news.updated',
+    targetTable: 'news',
+    targetId: news.id,
+    oldValue: existing ? { status: existing.status, title: existing.title } : undefined,
+    newValue: { status: news.status, title: news.title },
+    requestId: req.requestId,
+    ipAddress: req.ip,
+    userAgent: req.headers['user-agent']
+  })
 
-  const news = await updateNews(req.validated.params.id, payload)
-
-  if (!news) {
-    return res.status(404).json({ message: 'News not found' })
-  }
-
-  return res.status(200).json(news)
+  return R.success(res, news, 'Article updated successfully')
 })
 
 const remove = asyncHandler(async (req, res) => {
-  const isDeleted = await deleteNews(req.validated.params.id)
+  const deleted = await hardDeleteNews(req.params.id)
+  if (!deleted) return R.notFound(res, 'Article not found')
 
-  if (!isDeleted) {
-    return res.status(404).json({ message: 'News not found' })
-  }
+  await recordAudit({
+    userId: req.user.userId,
+    action: 'news.deleted',
+    targetTable: 'news',
+    targetId: req.params.id,
+    requestId: req.requestId,
+    ipAddress: req.ip,
+    userAgent: req.headers['user-agent']
+  })
 
-  return res.status(204).send()
+  return R.noContent(res)
+})
+
+const restore = asyncHandler(async (req, res) => {
+  const restored = await restoreNews(req.params.id)
+  if (!restored) return R.notFound(res, 'Article not found or not deleted')
+  return R.success(res, null, 'Article restored to draft')
+})
+
+const getRevisions = asyncHandler(async (req, res) => {
+  const revisions = await getNewsRevisions(req.params.id)
+  return R.success(res, revisions, 'Revisions retrieved')
+})
+
+const restoreToRevision = asyncHandler(async (req, res) => {
+  const { version } = req.params
+  const news = await restoreRevision(req.params.id, version, req.user.userId)
+  if (!news) return R.notFound(res, 'Revision not found')
+  return R.success(res, news, `Restored to version ${version}`)
 })
 
 module.exports = {
   create,
   list,
   getById,
+  getBySlug,
   update,
-  remove
+  remove,
+  restore,
+  getRevisions,
+  restoreToRevision
 }

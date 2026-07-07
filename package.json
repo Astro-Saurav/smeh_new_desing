@@ -11,6 +11,7 @@
     "admin:dev": "npm --prefix frontend/admin-crm run dev",
     "admin:build": "npm --prefix frontend/admin-crm run build",
     "backend:dev": "npm --prefix backend run dev",
+    "backend:mock": "npm --prefix backend run mock",
     "backend:start": "npm --prefix backend run start",
     "backend:lint": "npm --prefix backend run lint"
   }

@@ -1,0 +1,21 @@
+FROM node:20-alpine AS base
+WORKDIR /app
+RUN apk add --no-cache python3 make g++
+
+COPY package*.json ./
+COPY prisma ./prisma
+RUN npm ci --only=production --legacy-peer-deps
+
+COPY . .
+RUN npm run build 2>/dev/null || true
+
+# Create upload and log directories
+RUN mkdir -p /var/www/mrt/uploads /var/www/mrt/logs
+
+# Non-root user
+RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
+RUN chown -R nodejs:nodejs /var/www/mrt
+USER nodejs
+
+# Run all workers in a single process manager
+CMD ["node", "src/workers/runner.js"]

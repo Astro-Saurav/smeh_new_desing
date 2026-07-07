@@ -1,33 +1,68 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Clock, Youtube, PlayCircle, Tag, User } from "lucide-react";
+import { ArrowLeft, Clock, Youtube, PlayCircle, Tag, User, Download } from "lucide-react";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://smeh-new-desing.vercel.app";
+const getBaseUrl = () => {
+  if (typeof window !== 'undefined') return ''; // Proxy through Next.js
+  if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
+  return "https://smeh-new-desing.vercel.app";
+};
+const API_BASE_URL = getBaseUrl();
 
-function getYouTubeId(url) {
+interface RawArticle {
+  id: string;
+  _id?: string;
+  title?: string;
+  headline?: string;
+  content?: string;
+  description?: string;
+  image?: string;
+  image_url?: string;
+  imageUrl?: string;
+  youtube_url?: string;
+  youtubeUrl?: string;
+  published_at?: string;
+  publishedAt?: string;
+  created_at?: string;
+  createdAt?: string;
+  category?: any;
+  author?: {
+    email?: string;
+  };
+  thumbnail?: {
+    file_path?: string;
+  };
+  document?: {
+    file_path?: string;
+    original_name?: string;
+  };
+}
+
+function getYouTubeId(url: string | null | undefined) {
   if (!url) return null;
   const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/);
   return m ? m[1] : null;
 }
 
-function safeImg(url) {
-  return url && url !== "undefined" && url !== "" ? url : null;
+function getImageUrl(url: string | null | undefined) {
+  if (!url || url === "undefined" || url === "") return null;
+  if (url.startsWith('http')) return url;
+  if (url.startsWith('/')) return url;
+  return `/uploads/${url}`;
 }
 
-function formatDate(dateStr) {
+function formatDate(dateStr: string | null | undefined) {
   if (!dateStr) return "";
   return new Date(dateStr).toLocaleDateString("en-IN", {
     weekday: "long", year: "numeric", month: "long", day: "numeric"
   });
 }
 
-function resolveCategoryName(cat) {
+function resolveCategoryName(cat: any) {
   if (!cat) return "General";
   if (typeof cat === "string") return cat;
   if (typeof cat === "object") return cat.name || "General";
@@ -37,16 +72,30 @@ function resolveCategoryName(cat) {
 export default function ArticlePage() {
   const { id } = useParams();
   const router = useRouter();
-  const [article, setArticle] = useState(null);
+  const [article, setArticle] = useState<RawArticle | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
-    fetch(`${API_BASE_URL}/api/news/${id}`, { cache: "no-store" })
-      .then(r => r.json())
+    fetch(`${API_BASE_URL}/api/news/slug/${id}`, { cache: "no-store" })
+      .then(async r => {
+        if (!r.ok) {
+          if (r.status === 404) {
+             setArticle(null);
+             return null;
+          }
+          throw new Error("Failed to load");
+        }
+        return r.json();
+      })
       .then(data => {
-        setArticle(data);
+        if (data === null) {
+           setLoading(false);
+           return;
+        }
+        const actualArticle = data.data && data.success !== undefined ? data.data : data;
+        setArticle(actualArticle);
         setLoading(false);
       })
       .catch(e => {
@@ -73,7 +122,7 @@ export default function ArticlePage() {
   );
 
   const categoryName = resolveCategoryName(article.category);
-  const imgSrc = safeImg(article.image_url || article.image || article.imageUrl);
+  const imgSrc = getImageUrl(article.thumbnail?.file_path || article.image_url || article.image || article.imageUrl);
   const ytId = getYouTubeId(article.youtube_url || article.youtubeUrl);
   const publishedDate = formatDate(article.published_at || article.created_at);
   const authorEmail = article.author?.email || "";
@@ -121,8 +170,8 @@ export default function ArticlePage() {
 
         {/* Lead Image */}
         {imgSrc && (
-          <div className="relative w-full aspect-video overflow-hidden bg-zinc-100 mb-8">
-            <Image src={imgSrc} alt={article.title} fill className="object-cover" priority />
+          <div className="relative w-full aspect-[21/9] md:aspect-video overflow-hidden bg-zinc-50 mb-10 rounded-xl shadow-sm border border-zinc-100">
+            <Image src={imgSrc} alt={article.title || article.headline || 'Untitled'} fill className="object-cover" priority unoptimized={true} />
           </div>
         )}
 
@@ -136,7 +185,7 @@ export default function ArticlePage() {
             <div className="relative w-full aspect-video overflow-hidden bg-zinc-900">
               <iframe
                 src={`https://www.youtube.com/embed/${ytId}`}
-                title={article.title}
+                title={article.title || article.headline || 'Untitled'}
                 allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 className="absolute inset-0 w-full h-full"
@@ -149,6 +198,25 @@ export default function ArticlePage() {
               className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-black text-red-600 hover:text-red-700"
             >
               <Youtube className="w-3.5 h-3.5" /> Open on YouTube
+            </a>
+          </div>
+        )}
+
+        {/* Document Download */}
+        {article.document && article.document.file_path && (
+          <div className="mb-8 p-5 bg-zinc-50 border border-zinc-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-[13px] font-black uppercase tracking-wider text-zinc-800 mb-1">Attached Document</h3>
+              <p className="text-sm text-zinc-500">{article.document.original_name || 'Additional information available for download'}</p>
+            </div>
+            <a
+              href={`/uploads/${article.document.file_path}`}
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-red-600 text-white text-[12px] font-black uppercase tracking-widest rounded hover:bg-red-700 transition"
+            >
+              <Download className="w-4 h-4" /> Download (for more info)
             </a>
           </div>
         )}

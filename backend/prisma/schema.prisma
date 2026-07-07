@@ -1,0 +1,423 @@
+// ============================================================
+// Prisma Schema — Manav Rachna Time (MRT) Enterprise System
+// Database: PostgreSQL
+// ORM: Prisma v5+
+// ============================================================
+
+// ─────────────────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────
+// RBAC: Roles & Permissions
+// ─────────────────────────────────────────────────────────
+
+model Role {
+  id          String       @id @default(uuid())
+  name        String       @unique
+  users       User[]
+  permissions Permission[]
+  created_at  DateTime     @default(now())
+
+  @@map("roles")
+}
+
+model Permission {
+  id         String   @id @default(uuid())
+  action     String
+  role_id    String
+  role       Role     @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  created_at DateTime @default(now())
+
+  @@unique([action, role_id])
+  @@map("permissions")
+}
+
+// ─────────────────────────────────────────────────────────
+// Users & Auth
+// ─────────────────────────────────────────────────────────
+
+model User {
+  id                  String    @id @default(uuid())
+  email               String    @unique
+  password_hash       String
+  role_id             String
+  role                Role      @relation(fields: [role_id], references: [id])
+  is_2fa_enabled      Boolean   @default(false)
+  twofa_secret        String?
+  password_changed_at DateTime?
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+  deleted_at          DateTime?
+
+  // Relations
+  news_created           News[]                   @relation("NewsAuthor")
+  news_updated           News[]                   @relation("NewsUpdater")
+  refresh_tokens         RefreshToken[]
+  login_history          LoginHistory[]
+  audit_logs             AuditLog[]
+  sessions               Session[]
+  notifications          Notification[]
+  password_resets        PasswordResetToken[]
+  email_verifications    EmailVerificationToken[]
+  api_keys               ApiKey[]
+  news_revisions         NewsRevision[]
+  homepage_grids_updated HomepageGrid[]
+
+  @@index([email])
+  @@index([deleted_at])
+  @@map("users")
+}
+
+model RefreshToken {
+  id          String    @id @default(uuid())
+  user_id     String
+  user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  token_hash  String
+  expires_at  DateTime
+  revoked_at  DateTime?
+  replaced_by String?
+  created_at  DateTime  @default(now())
+
+  @@index([user_id])
+  @@index([expires_at])
+  @@map("refresh_tokens")
+}
+
+model Session {
+  id            String   @id @default(uuid())
+  user_id       String
+  user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  session_token String   @unique
+  ip_address    String
+  user_agent    String?
+  expires_at    DateTime
+  created_at    DateTime @default(now())
+
+  @@index([user_id])
+  @@index([session_token])
+  @@map("sessions")
+}
+
+model LoginHistory {
+  id         String   @id @default(uuid())
+  user_id    String?
+  user       User?    @relation(fields: [user_id], references: [id], onDelete: SetNull)
+  ip_address String
+  user_agent String?
+  status     String // 'success' | 'failed' | 'locked'
+  created_at DateTime @default(now())
+
+  @@index([user_id])
+  @@index([created_at])
+  @@map("login_history")
+}
+
+model FailedLogin {
+  id           String    @id @default(uuid())
+  ip_address   String
+  email        String
+  count        Int       @default(1)
+  locked_until DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+
+  @@unique([ip_address, email])
+  @@index([ip_address])
+  @@map("failed_logins")
+}
+
+model PasswordResetToken {
+  id         String    @id @default(uuid())
+  user_id    String
+  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  token_hash String
+  expires_at DateTime
+  used_at    DateTime?
+  created_at DateTime  @default(now())
+
+  @@index([user_id])
+  @@map("password_reset_tokens")
+}
+
+model EmailVerificationToken {
+  id          String    @id @default(uuid())
+  user_id     String
+  user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  token_hash  String
+  expires_at  DateTime
+  verified_at DateTime?
+  created_at  DateTime  @default(now())
+
+  @@index([user_id])
+  @@map("email_verification_tokens")
+}
+
+model ApiKey {
+  id         String    @id @default(uuid())
+  name       String
+  key_hash   String    @unique
+  user_id    String
+  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  is_active  Boolean   @default(true)
+  expires_at DateTime?
+  created_at DateTime  @default(now())
+
+  @@index([user_id])
+  @@map("api_keys")
+}
+
+// ─────────────────────────────────────────────────────────
+// Media Library
+// ─────────────────────────────────────────────────────────
+
+model Media {
+  id                String   @id @default(uuid())
+  file_name         String
+  original_name     String
+  file_path         String // relative to upload root
+  mime_type         String
+  file_signature    String? // detected magic bytes type
+  file_size         Int // bytes
+  width             Int?
+  height            Int?
+  // Generated variants (paths relative to upload root)
+  path_webp         String?
+  path_avif         String?
+  path_thumb        String?
+  path_medium       String?
+  path_large        String?
+  // Processing state
+  processing_status String   @default("pending") // pending | done | error
+  created_at        DateTime @default(now())
+
+  news_images     NewsImage[]
+  news_thumbnails News[]      @relation("NewsThumbnail")
+  news_documents  News[]      @relation("NewsDocument")
+  seo_images      News[]      @relation("NewsSeoImage")
+
+  @@index([created_at])
+  @@map("media")
+}
+
+// ─────────────────────────────────────────────────────────
+// Content: Categories, Tags
+// ─────────────────────────────────────────────────────────
+
+model Category {
+  id         String   @id @default(uuid())
+  name       String   @unique
+  slug       String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  news           News[]
+  homepage_grids HomepageGrid[]
+
+  @@index([slug])
+  @@map("categories")
+}
+
+model Tag {
+  id         String   @id @default(uuid())
+  name       String   @unique
+  slug       String   @unique
+  created_at DateTime @default(now())
+
+  news_tags NewsTag[]
+
+  @@index([slug])
+  @@map("tags")
+}
+
+// ─────────────────────────────────────────────────────────
+// News / Articles
+// ─────────────────────────────────────────────────────────
+
+model News {
+  id                   String    @id @default(uuid())
+  // Core content
+  title                String
+  slug                 String    @unique
+  excerpt              String?
+  content              String
+  youtube_url          String?
+  // Relations
+  category_id          String
+  category             Category  @relation(fields: [category_id], references: [id])
+  created_by           String
+  author               User      @relation("NewsAuthor", fields: [created_by], references: [id])
+  updated_by           String?
+  updated_by_user      User?     @relation("NewsUpdater", fields: [updated_by], references: [id])
+  thumbnail_media_id   String?
+  thumbnail            Media?    @relation("NewsThumbnail", fields: [thumbnail_media_id], references: [id])
+  document_media_id    String?
+  document             Media?    @relation("NewsDocument", fields: [document_media_id], references: [id])
+  // SEO
+  seo_title            String?
+  seo_description      String?
+  meta_keywords        String?
+  canonical_url        String?
+  seo_image_media_id   String?
+  seo_image            Media?    @relation("NewsSeoImage", fields: [seo_image_media_id], references: [id])
+  // Publishing & Workflow
+  status               String    @default("draft") // draft | scheduled | published | archived
+  visibility           String    @default("public") // public | private
+  is_featured          Boolean   @default(false)
+  is_pinned            Boolean   @default(false)
+  featured_order       Int?
+  allow_comments       Boolean   @default(true)
+  language             String    @default("en")
+  publish_version      Int       @default(1)
+  scheduled_publish_at DateTime?
+  published_at         DateTime?
+  // Engagement metrics
+  views_count          Int       @default(0)
+  likes_count          Int       @default(0)
+  shares_count         Int       @default(0)
+  reading_time         Int? // minutes
+  // Soft delete & timestamps
+  deleted_at           DateTime?
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @updatedAt
+
+  // Relations
+  images    NewsImage[]
+  tags      NewsTag[]
+  revisions NewsRevision[]
+
+  // Full-text search index (generated column — applied via migration SQL)
+  @@index([slug])
+  @@index([status, published_at])
+  @@index([is_featured, created_at(sort: Desc)])
+  @@index([category_id, created_at(sort: Desc)])
+  @@index([category_id, status, published_at(sort: Desc)]) // Homepage optimized
+  @@index([created_by])
+  @@index([deleted_at])
+  @@index([scheduled_publish_at])
+  @@map("news")
+}
+
+model NewsImage {
+  id         String @id @default(uuid())
+  news_id    String
+  news       News   @relation(fields: [news_id], references: [id], onDelete: Cascade)
+  media_id   String
+  media      Media  @relation(fields: [media_id], references: [id], onDelete: Cascade)
+  sort_order Int    @default(0)
+
+  @@unique([news_id, media_id])
+  @@map("news_images")
+}
+
+model NewsTag {
+  news_id String
+  news    News   @relation(fields: [news_id], references: [id], onDelete: Cascade)
+  tag_id  String
+  tag     Tag    @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+
+  @@id([news_id, tag_id])
+  @@map("news_tags")
+}
+
+model NewsRevision {
+  id             String   @id @default(uuid())
+  news_id        String
+  news           News     @relation(fields: [news_id], references: [id], onDelete: Cascade)
+  version_number Int
+  title          String
+  excerpt        String?
+  content        String
+  editor_id      String
+  editor         User     @relation(fields: [editor_id], references: [id])
+  created_at     DateTime @default(now())
+
+  @@unique([news_id, version_number])
+  @@index([news_id])
+  @@map("news_revisions")
+}
+
+// ─────────────────────────────────────────────────────────
+// System: Audit, Notifications, Settings
+// ─────────────────────────────────────────────────────────
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  user_id      String?
+  user         User?    @relation(fields: [user_id], references: [id], onDelete: SetNull)
+  action       String
+  target_table String
+  target_id    String?
+  old_value    String?
+  new_value    String?
+  request_id   String?
+  ip_address   String?
+  user_agent   String?
+  created_at   DateTime @default(now())
+
+  @@index([user_id])
+  @@index([target_table, target_id])
+  @@index([created_at])
+  @@map("audit_logs")
+}
+
+model Notification {
+  id         String   @id @default(uuid())
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  title      String
+  message    String
+  is_read    Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  @@index([user_id, is_read])
+  @@map("notifications")
+}
+
+model SystemSetting {
+  id         String   @id @default(uuid())
+  key        String   @unique
+  value      String
+  updated_at DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
+// ─────────────────────────────────────────────────────────
+// Homepage Grid Configuration
+// ─────────────────────────────────────────────────────────
+
+model HomepageGrid {
+  id             String   @id @default(uuid())
+  category_id    String   @unique
+  category       Category @relation(fields: [category_id], references: [id])
+  section_title  String
+  display_order  Int      @unique
+  layout_type    String   @default("FEATURED")
+  article_limit  Int      @default(10)
+  featured_limit Int      @default(1)
+  visibility     String   @default("PUBLIC")
+  show_view_all  Boolean  @default(true)
+
+  // Soft audit: who last updated this grid config
+  updated_by String?
+  updater    User?   @relation(fields: [updated_by], references: [id], onDelete: SetNull)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([display_order])
+  @@index([visibility, display_order])
+  @@map("homepage_grids")
+}

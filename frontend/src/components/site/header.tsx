@@ -1,32 +1,33 @@
-﻿"use client";
+"use client";
 
 import { Menu } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from "@/components/ui/sheet";
+import { usePathname } from "next/navigation";
 
 export function SiteHeader() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const pathname = usePathname();
 
   const navLinks = [
-    { name: "Campus Buzz", url: "/campus-buzz" },
-    { name: "Beyond Campus", url: "/beyond-campus" },
-    { name: "Social Buzz", url: "/social-buzz" },
-    { name: "Manav Rachna TV", url: "/mr-tv" },
-    { name: "Podcast", url: "/podcast" },
-    { name: "Blog", url: "/blog" },
-    { name: "Achievements", url: "/achievements" },
-    { name: "Announcement", url: "/announcement" },
-    { name: "Gallery", url: "/gallery" },
+    { name: "Campus Buzz", url: "/category/campus-buzz" },
+    { name: "Beyond Campus", url: "/category/beyond-campus" },
+    { name: "Social Buzz", url: "/category/social-buzz" },
+    { name: "Manav Rachna TV", url: "/category/mr-tv" },
+    { name: "Podcast", url: "/category/podcast" },
+    { name: "Blog", url: "/category/blog" },
+    { name: "Current Affairs", url: "/category/current-affairs" },
+    { name: "Achievements", url: "/category/achievements" },
+    { name: "Announcement", url: "/category/announcement" },
+    { name: "Gallery", url: "/category/gallery" },
     { name: "Contact", url: "/contact" },
   ];
 
-  if (!mounted) return <div className="h-20 bg-white" />;
+  if (pathname?.startsWith('/admin') || pathname?.startsWith('/login')) return null;
 
   return (
-    <div className="w-full flex flex-col bg-white border-b border-zinc-200">
+    <div className="w-full flex flex-col bg-white border-b border-zinc-200 sticky top-0 z-50 md:static">
       {/* Global Black Bar - Centered Elite Branding */}
       <div className="w-full bg-black text-white h-16 md:h-24 flex items-center px-4 md:px-8 relative shadow-2xl">
         {/* Centered Professional Masthead */}
@@ -62,7 +63,7 @@ export function SiteHeader() {
               <SheetTrigger asChild>
                 <Menu className="w-6 h-6 sm:w-7 sm:h-7 cursor-pointer text-zinc-500 hover:text-white transition-colors" />
               </SheetTrigger>
-              <SheetContent side="left" className="bg-black text-white border-none p-0 w-85 shadow-2xl flex flex-col h-[100dvh]">
+              <SheetContent side="left" className="bg-black text-white border-none p-0 w-[85vw] max-w-[320px] shadow-2xl flex flex-col h-[100dvh]">
                 {/* Accessibility: Title for Screen Readers */}
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 
@@ -81,7 +82,7 @@ export function SiteHeader() {
                 </div>
 
                 {/* Scrollable Navigation Area (Hidden Scrollbar) */}
-                <div className="flex-1 overflow-y-auto overflow-x-hidden pt-4 pb-20 no-scrollbar">
+                <div className="flex-1 overflow-y-auto overflow-x-hidden pt-4 pb-20 no-scrollbar overscroll-contain" data-lenis-prevent="true">
                     <div className="flex flex-col">
                       {navLinks.map(link => (
                         <SheetClose key={link.name} asChild>

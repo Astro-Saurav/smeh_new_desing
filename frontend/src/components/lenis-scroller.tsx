@@ -15,5 +15,5 @@ export function LenisScroller({ children }: { children: React.ReactNode }) {
     requestAnimationFrame(raf)
   }, [])
  
-  return children;
+  return <div className="contents">{children}</div>;
 }

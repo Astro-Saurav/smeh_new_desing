@@ -1,31 +1,46 @@
-const Category = require('../models/Category')
-const { v4: uuidv4 } = require('uuid')
-const News = require('../models/News')
-
-async function createCategory ({ name }) {
-  const category = new Category({ 
-    _id: uuidv4(),
-    name: name.trim() 
-  })
-  await category.save()
-  return category
-}
+const { prisma } = require('../config/db')
+const { slugify } = require('../utils/slug')
 
 async function listCategories () {
-  const categories = await Category.find(); return categories.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+  return prisma.category.findMany({
+    orderBy: { name: 'asc' }
+  })
 }
 
-async function deleteCategoryById (id) {
-  const hasNews = await News.exists({ category: id })
-  if (hasNews) {
-    return { deleted: false, reason: 'CATEGORY_HAS_NEWS' }
-  }
-  const result = await Category.findByIdAndDelete(id)
-  return { deleted: !!result, reason: null }
+async function createCategory (name) {
+  const slug = slugify(name)
+  return prisma.category.create({
+    data: { name: name.trim(), slug }
+  })
+}
+
+async function updateCategory (id, name) {
+  const existing = await prisma.category.findUnique({ where: { id } })
+  if (!existing) return null
+
+  const slug = slugify(name)
+  return prisma.category.update({
+    where: { id },
+    data: { name: name.trim(), slug }
+  })
+}
+
+async function deleteCategory (id) {
+  const newsCount = await prisma.news.count({ where: { category_id: id, deleted_at: null } })
+  if (newsCount > 0) return { deleted: false, reason: 'CATEGORY_HAS_NEWS' }
+
+  await prisma.category.delete({ where: { id } })
+  return { deleted: true }
+}
+
+async function findCategoryById (id) {
+  return prisma.category.findUnique({ where: { id } })
 }
 
 module.exports = {
-  deleteCategoryById,
+  listCategories,
   createCategory,
-  listCategories
+  updateCategory,
+  deleteCategory,
+  findCategoryById
 }
