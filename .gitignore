@@ -49,3 +49,7 @@ firebase-debug.log
 firestore-debug.log
 # Removed unnecessary files
 /delete/
+
+backend/uploads/
+frontend/public/uploads/
+auto_deploy.sh
