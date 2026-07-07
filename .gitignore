@@ -53,3 +53,6 @@ firestore-debug.log
 backend/uploads/
 frontend/public/uploads/
 auto_deploy.sh
+
+*.db
+*.sqlite
