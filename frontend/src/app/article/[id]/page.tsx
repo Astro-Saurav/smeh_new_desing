@@ -157,11 +157,6 @@ export default function ArticlePage() {
                 <Clock className="w-3.5 h-3.5" /> {publishedDate}
               </span>
             )}
-            {authorEmail && (
-              <span className="flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5" /> {authorEmail}
-              </span>
-            )}
             <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-sm">
               {categoryName}
             </span>
