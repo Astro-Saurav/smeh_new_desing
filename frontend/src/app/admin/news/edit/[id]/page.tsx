@@ -98,9 +98,6 @@ export default function EditNewsPage() {
       if (!formData.title.trim()) {
         throw new Error('Title is required')
       }
-      if (!formData.content.trim()) {
-        throw new Error('Content is required')
-      }
       if (!formData.category_id) {
         throw new Error('Category is required')
       }
@@ -262,7 +259,7 @@ export default function EditNewsPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Summary</label>
+            <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Summary (Optional)</label>
             <textarea
               name="excerpt"
               value={formData.excerpt}
@@ -276,7 +273,7 @@ export default function EditNewsPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Content *</label>
+            <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Content (Optional)</label>
             <textarea
               name="content"
               value={formData.content}
@@ -284,7 +281,6 @@ export default function EditNewsPage() {
               placeholder="Full article content"
               rows={5}
               className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 hover:border-zinc-600 rounded text-white text-sm placeholder-zinc-600 focus:border-red-600 focus:outline-none resize-none font-mono text-xs transition"
-              required
             />
           </div>
 

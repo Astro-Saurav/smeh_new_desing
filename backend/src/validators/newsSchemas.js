@@ -5,7 +5,7 @@ const statusEnum = z.enum(['draft', 'published', 'scheduled'])
 const createNewsSchema = z.object({
   body: z.object({
     title: z.string().min(3).max(300),
-    content: z.string().min(1),
+    content: z.string().optional().nullable(),
     categoryId: z.string(),
     imageUrl: z.string().optional().nullable().transform(v => v === '' ? null : v).pipe(z.string().url().optional().nullable()),
     youtubeUrl: z.string().optional().nullable().transform(v => v === '' ? null : v).pipe(z.string().url().optional().nullable()),
@@ -23,7 +23,7 @@ const createNewsSchema = z.object({
 const updateNewsSchema = z.object({
   body: z.object({
     title: z.string().min(3).max(300).optional(),
-    content: z.string().min(1).optional(),
+    content: z.string().optional().nullable(),
     categoryId: z.string().optional(),
     imageUrl: z.string().optional().nullable().transform(v => v === '' ? null : v).pipe(z.string().url().optional().nullable()),
     youtubeUrl: z.string().optional().nullable().transform(v => v === '' ? null : v).pipe(z.string().url().optional().nullable()),

@@ -45,7 +45,7 @@ async function createNews (payload, authorId) {
     title: payload.title,
     slug,
     excerpt: payload.excerpt || null,
-    content: payload.content,
+    content: payload.content || '',
     youtube_url: payload.youtubeUrl || null,
     category_id: payload.categoryId,
     created_by: authorId,
