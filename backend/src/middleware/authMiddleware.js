@@ -18,6 +18,20 @@ function authenticate (req, res, next) {
   }
 }
 
+function optionalAuthenticate (req, res, next) {
+  const authHeader = req.headers.authorization
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return next()
+  }
+  const token = authHeader.slice(7)
+  try {
+    req.user = verifyAccessToken(token)
+  } catch (error) {
+    // Ignore invalid tokens for optional routes
+  }
+  return next()
+}
+
 function authorize (...roles) {
   return (req, res, next) => {
     if (!req.user || !roles.includes(req.user.role)) {
@@ -30,5 +44,6 @@ function authorize (...roles) {
 
 module.exports = {
   authenticate,
+  optionalAuthenticate,
   authorize
 }

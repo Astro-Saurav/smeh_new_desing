@@ -37,7 +37,12 @@ export default function EditNewsPage() {
       setCategories(Array.isArray(catData) ? catData : (Array.isArray(catData?.data) ? catData.data : []))
 
       // Fetch the specific news article directly
-      const newsRes = await fetch(`/api/v1/news/${id}`)
+      const token = localStorage.getItem('token') || ''
+      const newsRes = await fetch(`/api/v1/news/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
       const newsData = await newsRes.json()
       const article = newsData?.data || null
 

@@ -52,6 +52,10 @@ const getById = asyncHandler(async (req, res) => {
   const news = await getNewsById(req.params.id)
   if (!news) return R.notFound(res, 'Article not found')
 
+  if (news.status !== 'published' && (!req.user || !['admin', 'editor'].includes(req.user.role))) {
+    return R.notFound(res, 'Article not found')
+  }
+
   // Async view increment (fire and forget)
   incrementViews(news.id).catch(() => {})
 
@@ -61,6 +65,10 @@ const getById = asyncHandler(async (req, res) => {
 const getBySlug = asyncHandler(async (req, res) => {
   const news = await getNewsBySlug(req.params.slug)
   if (!news) return R.notFound(res, 'Article not found')
+
+  if (news.status !== 'published' && (!req.user || !['admin', 'editor'].includes(req.user.role))) {
+    return R.notFound(res, 'Article not found')
+  }
 
   incrementViews(news.id).catch(() => {})
 

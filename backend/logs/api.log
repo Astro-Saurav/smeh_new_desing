@@ -811,3 +811,6 @@
 {"level":"info","message":"Deleted file: C:\\Users\\0501s\\Music\\smeh_new_desing\\backend\\uploads\\documents\\2ff7eba0-0e7f-4713-84df-9ec0c8baa00d.pdf","timestamp":"2026-07-07T20:12:46.4646+05:30"}
 {"level":"info","message":"Media record 941275a3-033e-4bd4-9e3e-810358e9c377 deleted","timestamp":"2026-07-07T20:12:46.4646+05:30"}
 {"key":"homepage:v1","level":"info","message":"Homepage cache invalidated","timestamp":"2026-07-07T20:12:46.4646+05:30"}
+{"level":"info","message":"Redis connected","timestamp":"2026-07-07T20:32:37.3737+05:30"}
+{"level":"info","message":"SQLite connected via Prisma","timestamp":"2026-07-07T20:32:37.3737+05:30"}
+{"environment":"development","level":"info","message":"MRT API running","pid":27000,"port":8080,"timestamp":"2026-07-07T20:32:37.3737+05:30"}
