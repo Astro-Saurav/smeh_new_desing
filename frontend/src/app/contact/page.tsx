@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -71,19 +71,7 @@ export default function ContactPage() {
                </form>
             </div>
 
-            {/* Specialized Departments */}
-            <div className="space-y-10">
-               <h3 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400">Section Desks</h3>
-               <div className="grid md:grid-cols-2 gap-8">
-                  {departments.map((dept, i) => (
-                    <div key={i} className="group border border-zinc-100 p-8 hover:bg-zinc-50 transition-all duration-500 relative">
-                       <h4 className="text-base font-black uppercase tracking-tight mb-3 group-hover:text-primary transition-colors">{dept.title}</h4>
-                       <p className="text-zinc-500 text-xs leading-relaxed mb-6">{dept.description}</p>
-                       {dept.email && <span className="text-[10px] font-black text-zinc-400 italic underline tracking-wider">{dept.email}</span>}
-                    </div>
-                  ))}
-               </div>
-            </div>
+
           </div>
 
           {/* Sidebar Info */}
@@ -115,26 +103,11 @@ export default function ContactPage() {
                             <p className="text-zinc-900 text-sm font-bold italic underline">thefourthestate@manavrachna.com</p>
                          </div>
                       </div>
-                      <div className="flex gap-8">
-                         <div className="w-12 h-12 bg-zinc-100 flex items-center justify-center shrink-0">
-                            <Phone className="w-5 h-5 text-zinc-950" />
-                         </div>
-                         <div className="space-y-2">
-                            <p className="font-black text-[10px] uppercase tracking-widest text-primary">Digital Helpline</p>
-                            <p className="text-zinc-900 text-sm font-bold">+91-129-419-8100</p>
-                         </div>
-                      </div>
+
                    </div>
                 </div>
 
-                <div className="bg-zinc-950 text-white p-10 border-l-4 border-primary shadow-2xl">
-                   <h4 className="text-primary font-black uppercase text-[10px] tracking-[0.3em] mb-6">Support Desk</h4>
-                   <h3 className="text-2xl font-black tracking-tighter leading-tight mb-8">Need Immediate Assistance?</h3>
-                   <p className="text-zinc-400 text-sm leading-relaxed mb-10 font-medium font-serif italic">Our administrative support desk is available from 09:00 AM to 05:00 PM for all institutional queries.</p>
-                   <Link href="/faq" className="w-full bg-primary text-white font-black uppercase text-[11px] tracking-widest py-4 hover:bg-white hover:text-zinc-950 transition-all flex items-center justify-center gap-3">
-                      View Digital FAQ <ArrowUpRight className="w-4 h-4" />
-                   </Link>
-                </div>
+
 
                 <div className="flex items-center gap-6 pt-10">
                    <div className="flex-1 h-px bg-zinc-100" />
