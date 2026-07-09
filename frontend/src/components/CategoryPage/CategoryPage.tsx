@@ -9,6 +9,7 @@ import { SidebarStories } from "./SidebarStories";
 import { OlderStories } from "./OlderStories";
 import { LoadMoreButton } from "./LoadMoreButton";
 import { Skeleton } from "./Skeleton";
+import { GalleryGrid } from "./GalleryGrid";
 
 export function CategoryPage({ slug }: { slug: string }) {
   const [data, setData] = useState<CategoryFeedResponse | null>(null);
@@ -62,6 +63,9 @@ export function CategoryPage({ slug }: { slug: string }) {
   if (loading) return <Skeleton />;
   if (error || !data) return <div className="min-h-screen flex items-center justify-center text-zinc-400"><p>Category not found or no news published yet.</p></div>;
 
+  const isGallery = slug === "gallery" || data.category.slug === "gallery";
+  const allStories = isGallery ? [...data.hero, ...data.secondary, ...data.sidebar, ...data.older] : [];
+
   return (
     <div className="bg-white min-h-screen">
       <main className="container mx-auto px-4 md:px-8 py-8">
@@ -71,26 +75,32 @@ export function CategoryPage({ slug }: { slug: string }) {
           </h1>
         </div>
         
-        {data.hero.length > 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            <div className={`${data.sidebar.length > 0 ? "lg:col-span-7 lg:border-r lg:pr-10" : "lg:col-span-12"} border-zinc-100`}>
-              <HeroGrid lead={data.hero[0]} />
-              
-              {data.secondary.length > 0 && (
-                <div className="pt-8 border-t border-zinc-100">
-                  <SecondaryStories stories={data.secondary} />
+        {isGallery ? (
+          <GalleryGrid items={allStories} />
+        ) : (
+          <>
+            {data.hero.length > 0 && (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                <div className={`${data.sidebar.length > 0 ? "lg:col-span-7 lg:border-r lg:pr-10" : "lg:col-span-12"} border-zinc-100`}>
+                  <HeroGrid lead={data.hero[0]} />
+                  
+                  {data.secondary.length > 0 && (
+                    <div className="pt-8 border-t border-zinc-100">
+                      <SecondaryStories stories={data.secondary} />
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            
-            {data.sidebar.length > 0 && (
-              <SidebarStories stories={data.sidebar} />
+                
+                {data.sidebar.length > 0 && (
+                  <SidebarStories stories={data.sidebar} />
+                )}
+              </div>
             )}
-          </div>
-        )}
-        
-        {data.older.length > 0 && (
-          <OlderStories stories={data.older} />
+            
+            {data.older.length > 0 && (
+              <OlderStories stories={data.older} />
+            )}
+          </>
         )}
         
         <LoadMoreButton 
