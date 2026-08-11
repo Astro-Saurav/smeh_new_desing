@@ -12,7 +12,7 @@ function fromEnv (keys, defaultValue) {
 
 const env = {
   // Server
-  port: Number(process.env.PORT || 8080),
+  port: Number(process.env.PORT || 8081),
   nodeEnv: process.env.NODE_ENV || 'development',
   clientOrigin: fromEnv(['CLIENT_ORIGIN'], 'http://localhost:3000'),
 
