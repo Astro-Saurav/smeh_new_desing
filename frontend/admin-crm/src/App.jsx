@@ -7,6 +7,7 @@ import { NewsPage } from './pages/NewsPage'
 import { CategoriesPage } from './pages/CategoriesPage'
 import { MediaPage } from './pages/MediaPage'
 import { UsersPage } from './pages/UsersPage'
+import { EditorialBoardAdmin } from './pages/EditorialBoardAdmin'
 
 function ProtectedRoute ({ children }) {
   const { token, initialized } = useAuth()
@@ -52,6 +53,7 @@ export default function App () {
         <Route path="news" element={<NewsPage />} />
         <Route path="categories" element={<CategoriesPage />} />
         <Route path="media" element={<MediaPage />} />
+        <Route path="editorial" element={<EditorialBoardAdmin />} />
         <Route
           path="users"
           element={(

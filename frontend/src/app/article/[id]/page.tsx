@@ -30,8 +30,14 @@ interface RawArticle {
   created_at?: string;
   createdAt?: string;
   category?: any;
+  title_font?: string;
+  excerpt_font?: string;
+  content_font?: string;
+  author_name?: string;
   author?: {
     email?: string;
+    name?: string;
+    username?: string;
   };
   thumbnail?: {
     file_path?: string;
@@ -78,7 +84,7 @@ export default function ArticlePage() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`${API_BASE_URL}/api/news/slug/${id}`, { cache: "no-store" })
+    fetch(`${API_BASE_URL}/api/v1/news/slug/${id}`, { cache: "no-store" })
       .then(async r => {
         if (!r.ok) {
           if (r.status === 404) {
@@ -126,6 +132,7 @@ export default function ArticlePage() {
   const ytId = getYouTubeId(article.youtube_url || article.youtubeUrl);
   const publishedDate = formatDate(article.published_at || article.created_at);
   const authorEmail = article.author?.email || "";
+  const authorName = article.author_name || article.author?.name || article.author?.username || article.author?.email || 'MRT Bureau';
 
   return (
     <div className="bg-white min-h-screen">
@@ -147,7 +154,10 @@ export default function ArticlePage() {
 
         {/* Article Header */}
         <div className="mb-8 border-b border-zinc-100 pb-8">
-          <h1 className="text-3xl md:text-5xl font-black leading-tight tracking-tight mb-6 text-zinc-950">
+          <h1 
+            className="text-3xl md:text-5xl font-black leading-tight tracking-tight mb-6 text-zinc-950"
+            style={article.title_font ? { fontFamily: article.title_font } : undefined}
+          >
             {article.title}
           </h1>
 
@@ -160,6 +170,11 @@ export default function ArticlePage() {
             <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-sm">
               {categoryName}
             </span>
+            {authorName && (
+              <span className="flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5" /> {authorName}
+              </span>
+            )}
           </div>
         </div>
 
@@ -197,29 +212,56 @@ export default function ArticlePage() {
           </div>
         )}
 
-        {/* Document Download */}
-        {article.document && article.document.file_path && (
-          <div className="mb-8 p-5 bg-zinc-50 border border-zinc-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h3 className="text-[13px] font-black uppercase tracking-wider text-zinc-800 mb-1">Attached Document</h3>
-              <p className="text-sm text-zinc-500">{article.document.original_name || 'Additional information available for download'}</p>
+        {/* Document Inline Viewer */}
+        {article.document && article.document.file_path && (() => {
+          const docUrl = `/uploads/${article.document.file_path}`;
+          const isPdf = article.document.file_path.toLowerCase().endsWith('.pdf');
+          const fullUrl = typeof window !== 'undefined'
+            ? `${window.location.origin}${docUrl}`
+            : docUrl;
+          return (
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-[13px] font-black uppercase tracking-wider text-zinc-400">
+                  {article.document.original_name || 'Document'}
+                </h3>
+                <a
+                  href={docUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-[11px] font-bold text-zinc-400 hover:text-zinc-600 transition"
+                >
+                  <Download className="w-3 h-3" /> Open in new tab
+                </a>
+              </div>
+              {isPdf ? (
+                <div className="w-full" style={{ height: '80vh' }}>
+                  <iframe
+                    src={`${docUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                    className="w-full h-full"
+                    title={article.document.original_name || 'Document'}
+                    style={{ border: 'none', display: 'block' }}
+                  />
+                </div>
+              ) : (
+                <div className="w-full" style={{ height: '80vh' }}>
+                  <iframe
+                    src={`https://docs.google.com/gview?url=${encodeURIComponent(fullUrl)}&embedded=true`}
+                    className="w-full h-full"
+                    title={article.document.original_name || 'Document'}
+                    style={{ border: 'none', display: 'block' }}
+                  />
+                </div>
+              )}
             </div>
-            <a
-              href={`/uploads/${article.document.file_path}`}
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-red-600 text-white text-[12px] font-black uppercase tracking-widest rounded hover:bg-red-700 transition"
-            >
-              <Download className="w-4 h-4" /> Download (for more info)
-            </a>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Article Body — render full HTML from rich editor */}
         {article.content && (
           <div
             className="prose prose-zinc max-w-none text-[16px] leading-loose"
+            style={article.content_font ? { fontFamily: article.content_font } : undefined}
             dangerouslySetInnerHTML={{ __html: article.content }}
           />
         )}

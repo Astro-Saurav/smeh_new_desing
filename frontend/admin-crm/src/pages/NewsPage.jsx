@@ -18,7 +18,8 @@ const initialForm = {
   youtubeUrl: '',
   status: 'draft',
   publishedAt: '',
-  isFeatured: false
+  isFeatured: false,
+  authorName: ''
 }
 
 export function NewsPage () {
@@ -138,7 +139,8 @@ export function NewsPage () {
       youtubeUrl: form.youtubeUrl || null,
       status: form.status,
       isFeatured: !!form.isFeatured,
-      publishedAt: form.publishedAt ? new Date(form.publishedAt).toISOString() : null
+      publishedAt: form.publishedAt ? new Date(form.publishedAt).toISOString() : null,
+      authorName: form.authorName || undefined
     }
     if (editingId) {
       updateMutation.mutate({ id: editingId, payload })
@@ -157,7 +159,8 @@ export function NewsPage () {
       youtubeUrl: item.youtube_url || item.youtubeUrl || '',
       status: item.status,
       isFeatured: !!item.is_featured,
-      publishedAt: item.published_at ? new Date(item.published_at).toISOString().slice(0, 16) : ''
+      publishedAt: item.published_at ? new Date(item.published_at).toISOString().slice(0, 16) : '',
+      authorName: item.author_name || ''
     })
   }
 
@@ -184,12 +187,19 @@ export function NewsPage () {
       <article className='panel stack-md'>
         <h3>{editingId ? 'Edit News' : 'Create News'}</h3>
         <form className='stack-md' onSubmit={onSubmit}>
-          <input
-            placeholder='Title'
-            value={form.title}
-            onChange={(event) => setForm((value) => ({ ...value, title: event.target.value }))}
-            required
-          />
+          <div className='grid-two'>
+            <input
+              placeholder='Title'
+              value={form.title}
+              onChange={(event) => setForm((value) => ({ ...value, title: event.target.value }))}
+              required
+            />
+            <input
+              placeholder='Author Name (Optional)'
+              value={form.authorName}
+              onChange={(event) => setForm((value) => ({ ...value, authorName: event.target.value }))}
+            />
+          </div>
 
           <RichEditor
             value={form.content}

@@ -1,125 +1,172 @@
 "use client";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { MapPin, Mail, Phone, Send, ArrowUpRight, Globe, MessageSquare, Newspaper } from 'lucide-react';
-import Link from 'next/link';
+import Image from "next/image";
+import { MapPin, Mail, Clock } from "lucide-react";
 
 export default function ContactPage() {
-  const departments = [
-    { title: "Newsroom & Editorial", email: "news@manavrachnatimes.com", description: "Submit news tips, scoops, and campus stories directly to our editors." },
-    { title: "Manav Rachna TV", href: "#", description: "Technical inquiries regarding digital broadcast and studio bookings." },
-    { title: "PR & Advertising", email: "media.relations@mriirs.edu.in", description: "Collaboration requests, corporate relations, and advertising sponsorships." },
-    { title: "Technical Support", description: "Inquiries regarding website stability, digital archives, and user access." }
-  ];
-
   return (
-    <div className="bg-white min-h-screen font-sans">
-      {/* Editorial Header */}
-      <div className="bg-zinc-50 border-b border-zinc-100 py-16 md:py-24 mb-12">
-        <div className="container mx-auto px-4 md:px-8">
-           <div className="flex items-center gap-3 mb-8">
-              <span className="w-12 h-[2px] bg-primary" />
-              <span className="text-[11px] font-black uppercase tracking-[0.4em] text-primary">Global Desk</span>
-           </div>
-           <h1 className="text-5xl md:text-8xl font-black tracking-tighter uppercase italic leading-[0.85]">
-             The NEWSROOM <br />
-             <span className="text-primary italic">Contact</span>
-           </h1>
-           <p className="text-zinc-500 text-lg md:text-xl font-medium mt-8 max-w-2xl leading-relaxed">
-             Direct access to the School of Media and Humanities. Connect with our dedicated desks for story tips, academic inquiries, or technical support.
-           </p>
-        </div>
-      </div>
+    <div className="bg-white font-sans">
 
-      <main className="container mx-auto px-4 md:px-8 pb-32">
-        <div className="grid lg:grid-cols-12 gap-16 lg:gap-24">
-          {/* Main Contact Form */}
-          <div className="lg:col-span-7 space-y-16">
-            <div className="bg-white p-0 md:p-12 border-0 md:border border-zinc-100">
-               <div className="mb-12 border-b border-zinc-100 pb-10">
-                  <h2 className="text-sm font-black uppercase tracking-[0.2em] text-zinc-950 mb-4 flex items-center gap-3">
-                     <Newspaper className="w-4 h-4 text-primary" /> Send a Professional Brief
-                  </h2>
-                  <p className="text-zinc-500 text-sm leading-relaxed max-w-lg">Outline your inquiry with precision. Our editorial desk reviews all verified submissions within 24 operational hours.</p>
-               </div>
-               
-               <form className="space-y-10">
-                  <div className="grid md:grid-cols-2 gap-10">
-                     <div className="space-y-4">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-950">Full Name</Label>
-                        <Input className="rounded-none border-0 border-b-2 border-zinc-100 focus:border-primary focus:ring-0 transition-all px-0 h-10 text-base placeholder:text-zinc-300" placeholder="e.g. Rahul Sharma" />
-                     </div>
-                     <div className="space-y-4">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-950">Professional Email</Label>
-                        <Input className="rounded-none border-0 border-b-2 border-zinc-100 focus:border-primary focus:ring-0 transition-all px-0 h-10 text-base placeholder:text-zinc-300" type="email" placeholder="rahul@example.com" />
-                     </div>
-                  </div>
-                  <div className="space-y-4">
-                     <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-950">Subject / Department</Label>
-                     <Input className="rounded-none border-0 border-b-2 border-zinc-100 focus:border-primary focus:ring-0 transition-all px-0 h-10 text-base placeholder:text-zinc-300" placeholder="e.g. Story Tip, Admissions Query" />
-                  </div>
-                  <div className="space-y-4">
-                     <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-950">Detailed Message</Label>
-                     <Textarea className="rounded-none border-0 border-b-2 border-zinc-100 focus:border-primary focus:ring-0 transition-all px-0 min-h-[150px] text-base placeholder:text-zinc-300 resize-none" placeholder="Provide a comprehensive summary of your inquiry..." />
-                  </div>
-                  <Button className="rounded-none bg-zinc-950 hover:bg-primary text-white h-16 px-12 text-[11px] font-black uppercase tracking-[0.3em] transition-all shadow-xl w-full md:w-auto">
-                     Dispatch Message <Send className="w-4 h-4 ml-4" />
-                  </Button>
-               </form>
+      {/* ── HERO: slim professional page header ── */}
+      <section className="relative w-full bg-zinc-950 overflow-hidden border-b border-zinc-800">
+        {/* subtle dot-grid */}
+        <div
+          aria-hidden
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, #666 1px, transparent 1px)",
+            backgroundSize: "24px 24px",
+          }}
+        />
+
+        {/* decorative faded logo */}
+        <div
+          aria-hidden
+          className="absolute right-6 top-1/2 -translate-y-1/2 opacity-[0.07] pointer-events-none select-none"
+        >
+          <Image
+            src="/new_logo.png"
+            alt=""
+            width={220}
+            height={220}
+            className="object-contain grayscale"
+            priority={false}
+          />
+        </div>
+
+        {/* Hero text — compact */}
+        <div className="relative z-10 max-w-5xl mx-auto px-6 md:px-12 py-10 md:py-12">
+          {/* breadcrumb label */}
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-6 h-[2px] bg-red-600" />
+            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-red-500">
+              Contact Us
+            </span>
+          </div>
+
+          <h1 className="text-2xl md:text-3xl font-black text-white leading-tight mb-2">
+            Let&apos;s Connect<span className="text-red-600">.</span>
+          </h1>
+
+          <p className="text-zinc-400 text-sm max-w-md leading-relaxed">
+            Open to ideas, feedback, collaborations and conversations —
+            reach out to us anytime.
+          </p>
+        </div>
+      </section>
+
+      {/* ── INFO SECTION ── */}
+      <section className="bg-zinc-100 py-14 md:py-16">
+        <div className="max-w-5xl mx-auto px-6 md:px-12 grid md:grid-cols-2 gap-12 md:gap-16">
+
+          {/* LEFT — Contact Information */}
+          <div>
+            {/* section label */}
+            <div className="flex items-center gap-3 mb-8">
+              <span className="text-[11px] font-black uppercase tracking-[0.2em] text-red-600">
+                Contact Information
+              </span>
+              <div className="flex-1 h-[2px] bg-red-600 max-w-[40px]" />
             </div>
 
-
-          </div>
-
-          {/* Sidebar Info */}
-          <div className="lg:col-span-5 space-y-16">
-             <div className="sticky top-24 space-y-16">
+            <div className="space-y-7">
+              {/* Location */}
+              <div className="flex gap-4 items-start pb-7 border-b border-zinc-300">
+                <div className="w-10 h-10 rounded-xl bg-zinc-900 flex items-center justify-center shrink-0">
+                  <MapPin className="w-4 h-4 text-white" />
+                </div>
                 <div>
-                   <h3 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-950 mb-10 pb-4 border-b-2 border-zinc-950 flex items-center gap-3">
-                      <Globe className="w-4 h-4" /> Global Headquarters
-                   </h3>
-                   <div className="space-y-12">
-                      <div className="flex gap-8">
-                         <div className="w-12 h-12 bg-zinc-100 flex items-center justify-center shrink-0">
-                            <MapPin className="w-5 h-5 text-zinc-950" />
-                         </div>
-                         <div className="space-y-2">
-                            <p className="font-black text-[10px] uppercase tracking-widest text-primary">Main Campus</p>
-                            <p className="text-zinc-900 text-sm font-bold leading-relaxed">
-                               Sector 43, Aravalli Hills,<br/>
-                               Delhi - Surajkund Road, Faridabad, 121004
-                            </p>
-                         </div>
-                      </div>
-                      <div className="flex gap-8">
-                         <div className="w-12 h-12 bg-zinc-100 flex items-center justify-center shrink-0">
-                            <Mail className="w-5 h-5 text-zinc-950" />
-                         </div>
-                         <div className="space-y-2">
-                            <p className="font-black text-[10px] uppercase tracking-widest text-primary">Electronic Media</p>
-                            <p className="text-zinc-900 text-sm font-bold italic underline">thefourthestate@manavrachna.com</p>
-                         </div>
-                      </div>
-
-                   </div>
+                  <p className="text-sm font-black text-zinc-900 mb-1">Location</p>
+                  <p className="text-sm text-zinc-600 leading-relaxed">
+                    School of Media Studies and Humanities (SMeH)
+                    <br />
+                    Manav Rachna Campus, Faridabad,
+                    <br />
+                    Haryana, India – 121004
+                  </p>
                 </div>
+              </div>
 
-
-
-                <div className="flex items-center gap-6 pt-10">
-                   <div className="flex-1 h-px bg-zinc-100" />
-                   <div className="flex gap-4">
-                      <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Online & Active</span>
-                   </div>
+              {/* Email */}
+              <div className="flex gap-4 items-start pb-7 border-b border-zinc-300">
+                <div className="w-10 h-10 rounded-xl bg-zinc-900 flex items-center justify-center shrink-0">
+                  <Mail className="w-4 h-4 text-white" />
                 </div>
-             </div>
+                <div>
+                  <p className="text-sm font-black text-zinc-900 mb-1">Email</p>
+                  <a
+                    href="mailto:manavrachnatimes@mriu.edu.in"
+                    className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors"
+                  >
+                    manavrachnatimes@mriu.edu.in
+                  </a>
+                </div>
+              </div>
+
+              {/* Office Hours */}
+              <div className="flex gap-4 items-start">
+                <div className="w-10 h-10 rounded-xl bg-zinc-900 flex items-center justify-center shrink-0">
+                  <Clock className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-black text-zinc-900 mb-1">Office Hours</p>
+                  <p className="text-sm text-zinc-600">
+                    Monday – Friday: 9:00 AM – 5:00 PM
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
+
+          {/* RIGHT — Find Us Here */}
+          <div>
+            {/* section label */}
+            <div className="flex items-center gap-3 mb-8">
+              <span className="text-[11px] font-black uppercase tracking-[0.2em] text-red-600">
+                Find Us Here
+              </span>
+              <div className="flex-1 h-[2px] bg-red-600 max-w-[40px]" />
+            </div>
+
+            {/* Campus photo with logo badge — full width */}
+            <div className="relative w-full mb-6">
+              <Image
+                src="/MRIIRS.webp"
+                alt="Manav Rachna Campus"
+                width={900}
+                height={480}
+                className="w-full h-[280px] object-cover grayscale rounded-sm"
+              />
+              {/* red logo badge at bottom-left */}
+              <div className="absolute bottom-0 left-0 w-16 h-16 bg-red-600 flex items-center justify-center">
+                <Image
+                  src="/new_logo.png"
+                  alt="MR Logo"
+                  width={44}
+                  height={44}
+                  className="object-contain brightness-0 invert"
+                />
+              </div>
+            </div>
+
+            {/* tagline below the image */}
+            <div className="flex flex-col">
+              <h2 className="text-2xl font-black text-zinc-900 leading-snug mb-3">
+                Rooted on Campus.{" "}
+                <span className="text-red-600">Reaching Beyond.</span>
+              </h2>
+              <p className="text-sm text-zinc-500 leading-relaxed mb-4">
+                Manav Rachna Times is a student-run platform telling
+                stories that matter — on campus and beyond.
+              </p>
+              <div className="w-10 h-[2px] bg-red-600" />
+            </div>
+          </div>
+
         </div>
-      </main>
+      </section>
+
     </div>
   );
 }

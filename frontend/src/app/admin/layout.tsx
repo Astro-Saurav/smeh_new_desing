@@ -77,6 +77,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             open={sidebarOpen}
           />
           <NavItem
+            href="/admin/editorial"
+            icon="👥"
+            label="Editorial Board"
+            open={sidebarOpen}
+          />
+          <NavItem
             href="/admin/settings"
             icon="⚙️"
             label="Settings"

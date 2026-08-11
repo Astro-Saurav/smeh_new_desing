@@ -15,7 +15,7 @@ function getYouTubeId(url) {
 }
 
 function getImageSrc(url) {
-  if (!url || url === "undefined") return "/logo.png";
+  if (!url || url === "undefined") return "/new_logo.png";
   if (url.startsWith('http') || url.startsWith('/')) return url;
   return `/uploads/${url}`;
 }

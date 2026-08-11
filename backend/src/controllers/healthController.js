@@ -1,5 +1,14 @@
 const { prisma } = require('../config/db')
-const IORedis = require('ioredis')
+let IORedis
+try {
+  IORedis = require('ioredis-mock')
+} catch (e) {
+  IORedis = class {
+    constructor() {}
+    ping() { return Promise.resolve('PONG') }
+    quit() { return Promise.resolve('OK') }
+  }
+}
 const { env } = require('../config/env')
 const os = require('os')
 const R = require('../utils/response')

@@ -18,7 +18,7 @@ const env = {
 
   // JWT
   jwtSecret: fromEnv(['JWT_SECRET']),
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '15m',
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '60m',
   refreshJwtSecret: fromEnv(['REFRESH_JWT_SECRET']),
   refreshJwtExpiresIn: process.env.REFRESH_JWT_EXPIRES_IN || '7d',
   refreshCookieName: process.env.REFRESH_COOKIE_NAME || 'mrt_refresh_token',
@@ -33,7 +33,7 @@ const env = {
 
   // Uploads
   uploadBasePath: fromEnv(['UPLOAD_BASE_PATH'], './uploads'),
-  maxUploadSizeBytes: Number(process.env.MAX_UPLOAD_SIZE_BYTES || 20 * 1024 * 1024), // 20MB
+  maxUploadSizeBytes: Number(process.env.MAX_UPLOAD_SIZE_BYTES || 50 * 1024 * 1024), // 50MB
 
   // PM2
   pm2MaxMemory: process.env.PM2_MAX_MEMORY || '1G',

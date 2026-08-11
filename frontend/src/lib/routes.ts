@@ -23,6 +23,13 @@ export const routes = {
   achievements: () => '/category/achievements',
   announcement: () => '/category/announcement',
   gallery: () => '/category/gallery',
+  studentsVoices: () => '/category/students-voices',
+  entertainmentLifestyle: () => '/category/entertainment-lifestyle',
+  sports: () => '/category/sports',
+  /** Static pages */
+  aboutUs: () => '/about',
+  editorialBoard: () => '/about/editorial-board',
+  contact: () => '/contact',
 
   /** Admin routes */
   admin: {

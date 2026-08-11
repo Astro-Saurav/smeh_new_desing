@@ -10,6 +10,8 @@ interface Category {
   name: string
 }
 
+const FONTS = ['Inter', 'Playfair Display', 'Merriweather', 'Lato', 'Source Serif 4']
+
 export default function CreateNewsPage() {
   const router = useRouter()
   const [categories, setCategories] = useState<Category[]>([])
@@ -26,6 +28,10 @@ export default function CreateNewsPage() {
     category_id: '',
     youtube_url: '',
     status: 'draft',
+    titleFont: 'Inter',
+    excerptFont: 'Inter',
+    contentFont: 'Inter',
+    authorName: '',
   })
 
   useEffect(() => {
@@ -131,6 +137,10 @@ export default function CreateNewsPage() {
         status: formData.status,
         thumbnailMediaId,
         documentMediaId,
+        titleFont: formData.titleFont,
+        excerptFont: formData.excerptFont,
+        contentFont: formData.contentFont,
+        authorName: formData.authorName || null,
       }
 
       const res = await fetch('/api/v1/news', {
@@ -234,6 +244,19 @@ export default function CreateNewsPage() {
             </div>
           </div>
 
+          <div>
+            <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Author Name (Optional)</label>
+            <input
+              type="text"
+              name="authorName"
+              value={formData.authorName}
+              onChange={handleInputChange}
+              placeholder="E.g., John Doe"
+              maxLength={100}
+              className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 hover:border-zinc-600 rounded text-white text-sm placeholder-zinc-600 focus:border-red-600 focus:outline-none transition"
+            />
+          </div>
+
           {/* Excerpt */}
           <div>
             <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Summary (Optional)</label>
@@ -300,6 +323,43 @@ export default function CreateNewsPage() {
               placeholder="https://youtube.com/watch?v=..."
               className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 hover:border-zinc-600 rounded text-white text-sm placeholder-zinc-600 focus:border-red-600 focus:outline-none transition"
             />
+          </div>
+
+          {/* Typography Settings */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Title Font</label>
+              <select
+                name="titleFont"
+                value={formData.titleFont}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 hover:border-zinc-600 rounded text-white text-sm focus:border-red-600 focus:outline-none transition"
+              >
+                {FONTS.map(f => <option key={f} value={f}>{f}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Summary Font</label>
+              <select
+                name="excerptFont"
+                value={formData.excerptFont}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 hover:border-zinc-600 rounded text-white text-sm focus:border-red-600 focus:outline-none transition"
+              >
+                {FONTS.map(f => <option key={f} value={f}>{f}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Content Font</label>
+              <select
+                name="contentFont"
+                value={formData.contentFont}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 hover:border-zinc-600 rounded text-white text-sm focus:border-red-600 focus:outline-none transition"
+              >
+                {FONTS.map(f => <option key={f} value={f}>{f}</option>)}
+              </select>
+            </div>
           </div>
 
           {/* Submit Buttons */}
