@@ -1,6 +1,16 @@
 const { prisma } = require('../config/db')
 const logger = require('../utils/logger')
 
+function safeStringify(val) {
+  if (val === undefined || val === null) return null
+  if (typeof val === 'string') return val
+  try {
+    return JSON.stringify(val)
+  } catch (err) {
+    return String(val)
+  }
+}
+
 /**
  * Record an audit log entry
  * @param {object} params
@@ -31,9 +41,9 @@ async function recordAudit ({
         user_id: userId || null,
         action,
         target_table: targetTable,
-        target_id: targetId ? String(targetId) : null,
-        old_value: oldValue != null ? JSON.stringify(oldValue) : null,
-        new_value: newValue != null ? JSON.stringify(newValue) : null,
+        target_id: targetId != null ? String(targetId) : null,
+        old_value: safeStringify(oldValue),
+        new_value: safeStringify(newValue),
         request_id: requestId || null,
         ip_address: ipAddress || null,
         user_agent: userAgent || null
