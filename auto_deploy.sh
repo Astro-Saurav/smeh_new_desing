@@ -3,7 +3,10 @@ PROJECT_DIR="/root/smeh_new_desing"
 BRANCH="main"
 
 cd $PROJECT_DIR || exit
+
+echo "Fetching latest from origin/$BRANCH..."
 git fetch origin $BRANCH
+
 LOCAL=$(git rev-parse HEAD)
 REMOTE=$(git rev-parse origin/$BRANCH)
 
@@ -13,14 +16,17 @@ if [ "$LOCAL" = "$REMOTE" ]; then
 fi
 
 echo "Changes detected! Starting deployment..."
+
+# Stash any local changes (e.g. log files) so pull doesn't abort
+git stash --include-untracked
 git pull origin $BRANCH
+git stash drop 2>/dev/null
 
 echo "Updating Backend..."
 cd $PROJECT_DIR/backend
 npm install
 npx prisma db push
 npx prisma generate
-npx prisma db seed
 mkdir -p uploads/documents
 pm2 restart mrt-backend
 
