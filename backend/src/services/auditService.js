@@ -32,8 +32,8 @@ async function recordAudit ({
         action,
         target_table: targetTable,
         target_id: targetId ? String(targetId) : null,
-        old_value: oldValue || undefined,
-        new_value: newValue || undefined,
+        old_value: oldValue != null ? JSON.stringify(oldValue) : null,
+        new_value: newValue != null ? JSON.stringify(newValue) : null,
         request_id: requestId || null,
         ip_address: ipAddress || null,
         user_agent: userAgent || null
