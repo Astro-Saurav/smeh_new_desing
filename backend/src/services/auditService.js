@@ -65,49 +65,60 @@ async function recordLoginEvent ({ userId, ipAddress, userAgent, status }) {
 
 /**
  * Track failed login and return lockout status
+ * Wrapped in try/catch so DB errors never crash the login endpoint
  */
 async function trackFailedLogin ({ ipAddress, email, maxAttempts, lockoutMinutes }) {
-  const existing = await prisma.failedLogin.findUnique({
-    where: { ip_address_email: { ip_address: ipAddress, email } }
-  })
-
-  if (existing) {
-    // If already locked and lock hasn't expired, return locked
-    if (existing.locked_until && existing.locked_until > new Date()) {
-      return { locked: true, lockedUntil: existing.locked_until }
-    }
-
-    // Increment
-    const updated = await prisma.failedLogin.update({
-      where: { ip_address_email: { ip_address: ipAddress, email } },
-      data: {
-        count: { increment: 1 },
-        locked_until: existing.count + 1 >= maxAttempts
-          ? new Date(Date.now() + lockoutMinutes * 60 * 1000)
-          : null
-      }
+  try {
+    const existing = await prisma.failedLogin.findUnique({
+      where: { ip_address_email: { ip_address: ipAddress, email } }
     })
 
-    if (updated.locked_until) {
-      return { locked: true, lockedUntil: updated.locked_until }
-    }
-    return { locked: false, attempts: updated.count }
-  }
+    if (existing) {
+      // If already locked and lock hasn't expired, return locked
+      if (existing.locked_until && existing.locked_until > new Date()) {
+        return { locked: true, lockedUntil: existing.locked_until }
+      }
 
-  // First failure
-  await prisma.failedLogin.create({
-    data: { ip_address: ipAddress, email, count: 1 }
-  })
-  return { locked: false, attempts: 1 }
+      // Increment
+      const updated = await prisma.failedLogin.update({
+        where: { ip_address_email: { ip_address: ipAddress, email } },
+        data: {
+          count: { increment: 1 },
+          locked_until: existing.count + 1 >= maxAttempts
+            ? new Date(Date.now() + lockoutMinutes * 60 * 1000)
+            : null
+        }
+      })
+
+      if (updated.locked_until) {
+        return { locked: true, lockedUntil: updated.locked_until }
+      }
+      return { locked: false, attempts: updated.count }
+    }
+
+    // First failure
+    await prisma.failedLogin.create({
+      data: { ip_address: ipAddress, email, count: 1 }
+    })
+    return { locked: false, attempts: 1 }
+  } catch (err) {
+    // If failed_logins table is missing or DB error — allow login to proceed
+    logger.error('Failed to track failed login', { error: err.message })
+    return { locked: false, attempts: 0 }
+  }
 }
 
 /**
  * Reset failed login counter on success
  */
 async function clearFailedLogins ({ ipAddress, email }) {
-  await prisma.failedLogin.deleteMany({
-    where: { ip_address: ipAddress, email }
-  })
+  try {
+    await prisma.failedLogin.deleteMany({
+      where: { ip_address: ipAddress, email }
+    })
+  } catch (err) {
+    logger.error('Failed to clear failed logins', { error: err.message })
+  }
 }
 
 module.exports = {
