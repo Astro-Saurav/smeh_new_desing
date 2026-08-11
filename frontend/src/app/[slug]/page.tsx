@@ -21,6 +21,9 @@ export default function CategoryPage() {
     'achievements': 'Achievements',
     'announcement': 'Announcement',
     'gallery': 'Gallery',
+    'students-voices': 'Students Voices',
+    'entertainment-lifestyle': 'Entertainment & Lifestyle',
+    'sports': 'Sports',
   }
 
   const categoryName = categoryMap[slug] || 'Category'

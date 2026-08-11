@@ -66,14 +66,14 @@ const nextConfig: NextConfig = {
         source: '/api/:path*',
         destination: process.env.INTERNAL_API_URL 
           ? `${process.env.INTERNAL_API_URL}/api/:path*`
-          : 'http://localhost:8080/api/:path*',
+          : 'http://localhost:8081/api/:path*',
       },
       // Proxy uploads to backend during local development
       {
         source: '/uploads/:path*',
         destination: process.env.INTERNAL_API_URL 
           ? `${process.env.INTERNAL_API_URL}/uploads/:path*`
-          : 'http://localhost:8080/uploads/:path*',
+          : 'http://localhost:8081/uploads/:path*',
       },
     ]
   },

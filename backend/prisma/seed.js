@@ -72,7 +72,11 @@ async function main () {
     { name: 'MR-TV', slug: 'mr-tv' },
     { name: 'Podcast', slug: 'podcast' },
     { name: 'Social Buzz', slug: 'social-buzz' },
-    { name: 'Beyond Campus', slug: 'beyond-campus' }
+    { name: 'Beyond Campus', slug: 'beyond-campus' },
+    // ─── New categories per editorial review ──────────────────
+    { name: 'Entertainment & Lifestyle', slug: 'entertainment-lifestyle' },
+    { name: 'Sports', slug: 'sports' },
+    { name: 'Students Voices', slug: 'students-voices' }
   ]
 
   for (const cat of categoryData) {

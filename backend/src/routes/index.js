@@ -9,6 +9,7 @@ const { cronRouter } = require('./cronRoutes')
 const { homepageRouter } = require('./homepageRoutes')
 const { gridRouter } = require('./gridRoutes')
 const { settingsRouter } = require('./settingsRoutes')
+const { editorialRouter } = require('./editorialRoutes')
 const { live, ready, health } = require('../controllers/healthController')
 
 const apiRouter = express.Router()
@@ -29,6 +30,7 @@ apiRouter.use('/v1/cron', cronRouter)
 apiRouter.use('/v1/homepage', homepageRouter)
 apiRouter.use('/v1/grids', gridRouter)
 apiRouter.use('/v1/settings', settingsRouter)
+apiRouter.use('/v1/editorial', editorialRouter)
 
 // ─── Backward-compatible unversioned aliases ──────────────
 apiRouter.use('/auth', authRouter)
@@ -41,6 +43,7 @@ apiRouter.use('/cron', cronRouter)
 apiRouter.use('/homepage', homepageRouter)
 apiRouter.use('/grids', gridRouter)
 apiRouter.use('/settings', settingsRouter)
+apiRouter.use('/editorial', editorialRouter)
 
 // ─── Category Feed (Dynamic Route) ────────────────────────
 const { getFeed } = require('../controllers/categoryController')

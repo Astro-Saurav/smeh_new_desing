@@ -17,7 +17,8 @@ export default async function HomePage() {
     gallery,
     blog,
     announcement,
-    achievements
+    achievements,
+    studentsVoices
   ] = await Promise.all([
     getAllPublishedNews(8),
     getNewsByCategory('Campus Buzz', 10),
@@ -29,6 +30,7 @@ export default async function HomePage() {
     getNewsByCategory('Blog', 8),
     getNewsByCategory('Announcement', 8),
     getNewsByCategory('Achievements', 6),
+    getNewsByCategory('Students Voices', 4),
   ])
 
   const mainStory = heroStories[0]
@@ -55,6 +57,7 @@ export default async function HomePage() {
         thumbnail: a.image,
         published_at: null,
         youtube_url: a.youtubeUrl,
+        author: a.author,
         category: { id: a.category, name: a.category, slug: a.category.toLowerCase().replace(/\s+/g, '-') }
       }))
     },
@@ -77,6 +80,7 @@ export default async function HomePage() {
         thumbnail: a.image,
         published_at: null,
         youtube_url: a.youtubeUrl,
+        author: a.author,
         category: { id: a.category, name: a.category, slug: a.category.toLowerCase().replace(/\s+/g, '-') }
       }))
     },
@@ -99,6 +103,7 @@ export default async function HomePage() {
         thumbnail: a.image,
         published_at: null,
         youtube_url: a.youtubeUrl,
+        author: a.author,
         category: { id: a.category, name: a.category, slug: a.category.toLowerCase().replace(/\s+/g, '-') }
       }))
     },
@@ -121,6 +126,7 @@ export default async function HomePage() {
         thumbnail: a.image,
         published_at: null,
         youtube_url: a.youtubeUrl,
+        author: a.author,
         category: { id: a.category, name: a.category, slug: a.category.toLowerCase().replace(/\s+/g, '-') }
       }))
     },
@@ -143,6 +149,7 @@ export default async function HomePage() {
         thumbnail: a.image,
         published_at: null,
         youtube_url: a.youtubeUrl,
+        author: a.author,
         category: { id: a.category, name: a.category, slug: a.category.toLowerCase().replace(/\s+/g, '-') }
       }))
     },
@@ -151,7 +158,7 @@ export default async function HomePage() {
       category: 'Gallery',
       categorySlug: 'gallery',
       title: 'Gallery',
-      layout: 'STANDARD' as const,
+      layout: 'BENTO' as const,
       featuredLimit: 0,
       articleLimit: 8,
       showViewAll: true,
@@ -165,6 +172,7 @@ export default async function HomePage() {
         thumbnail: a.image,
         published_at: null,
         youtube_url: a.youtubeUrl,
+        author: a.author,
         category: { id: a.category, name: a.category, slug: a.category.toLowerCase().replace(/\s+/g, '-') }
       }))
     },
@@ -187,6 +195,7 @@ export default async function HomePage() {
         thumbnail: a.image,
         published_at: null,
         youtube_url: a.youtubeUrl,
+        author: a.author,
         category: { id: a.category, name: a.category, slug: a.category.toLowerCase().replace(/\s+/g, '-') }
       }))
     },
@@ -209,6 +218,7 @@ export default async function HomePage() {
         thumbnail: a.image,
         published_at: null,
         youtube_url: a.youtubeUrl,
+        author: a.author,
         category: { id: a.category, name: a.category, slug: a.category.toLowerCase().replace(/\s+/g, '-') }
       }))
     },
@@ -231,6 +241,30 @@ export default async function HomePage() {
         thumbnail: a.image,
         published_at: null,
         youtube_url: a.youtubeUrl,
+        author: a.author,
+        category: { id: a.category, name: a.category, slug: a.category.toLowerCase().replace(/\s+/g, '-') }
+      }))
+    },
+    {
+      id: 'students-voices',
+      category: 'Students Voices',
+      categorySlug: 'students-voices',
+      title: 'Students Voices',
+      layout: 'GRID_2X2' as const,
+      featuredLimit: 0,
+      articleLimit: 4,
+      showViewAll: true,
+      hasMore: studentsVoices.length >= 4,
+      articleCount: studentsVoices.length,
+      articles: studentsVoices.map(a => ({
+        id: a.id,
+        slug: a.slug,
+        title: a.headline,
+        excerpt: a.description,
+        thumbnail: a.image,
+        published_at: null,
+        youtube_url: a.youtubeUrl,
+        author: a.author,
         category: { id: a.category, name: a.category, slug: a.category.toLowerCase().replace(/\s+/g, '-') }
       }))
     }

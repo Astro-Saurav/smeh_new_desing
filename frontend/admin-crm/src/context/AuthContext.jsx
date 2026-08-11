@@ -32,9 +32,14 @@ export function AuthProvider ({ children }) {
   }
 
   async function refresh () {
-    const data = await authApi.refresh()
-    updateSession(data)
-    return data
+    try {
+      const data = await authApi.refresh()
+      updateSession(data)
+      return data
+    } catch (error) {
+      updateSession({ token: null, user: null })
+      throw error
+    }
   }
 
   async function logout () {

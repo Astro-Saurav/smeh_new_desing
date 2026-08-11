@@ -18,6 +18,7 @@ export type MainSiteNewsItem = {
   link: string;
   isFeatured: boolean;
   slug: string;
+  author?: string;
 };
 
 export type CategoryItem = {
@@ -81,7 +82,21 @@ function normalizeNewsItem(item: Record<string, unknown>, fallbackCategory: stri
     }
   }
 
-  const image = rawImage ? String(rawImage) : '/logo.png';
+  const image = rawImage ? String(rawImage) : '/new_logo.png';
+
+  let authorStr = 'MRT Bureau';
+  if (item.author_name) {
+    authorStr = String(item.author_name);
+  } else if (item.author && typeof item.author === 'object') {
+    const authorObj = item.author as { email?: string, name?: string };
+    if (authorObj.name) {
+      authorStr = authorObj.name;
+    } else if (authorObj.email) {
+      authorStr = authorObj.email.split('@')[0].replace(/[._]/g, ' ');
+    }
+  } else if (typeof item.author === 'string') {
+    authorStr = item.author;
+  }
 
   return {
     id,
@@ -93,6 +108,7 @@ function normalizeNewsItem(item: Record<string, unknown>, fallbackCategory: stri
     link: item.link ? String(item.link) : `/article/${slug}`,
     isFeatured: !!(item.is_featured || item.isFeatured),
     slug,
+    author: authorStr,
   };
 }
 

@@ -3,7 +3,7 @@ import Image from "next/image";
 import type { MainSiteNewsItem } from "@/lib/newsApi";
 
 function safeImg(url: string | null | undefined) {
-  if (!url || url === "undefined" || url === "") return "/logo.png";
+  if (!url || url === "undefined" || url === "") return "/new_logo.png";
   if (url.startsWith('http') || url.startsWith('/')) return url;
   return `/uploads/${url}`;
 }

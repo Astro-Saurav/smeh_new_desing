@@ -28,11 +28,15 @@ const NEWS_SELECT = {
   canonical_url: true,
   scheduled_publish_at: true,
   published_at: true,
+  title_font: true,
+  excerpt_font: true,
+  content_font: true,
   created_at: true,
   updated_at: true,
   deleted_at: true,
   category: { select: { id: true, name: true, slug: true } },
   author: { select: { id: true, email: true, role: { select: { name: true } } } },
+  author_name: true,
   thumbnail: { select: { id: true, file_path: true, path_webp: true, path_avif: true, path_thumb: true } },
   document: { select: { id: true, file_path: true, original_name: true, mime_type: true } },
   tags: { include: { tag: { select: { id: true, name: true, slug: true } } } }
@@ -59,8 +63,12 @@ async function createNews (payload, authorId) {
     seo_description: payload.seoDescription || null,
     meta_keywords: payload.metaKeywords || null,
     canonical_url: payload.canonicalUrl || null,
+    author_name: payload.authorName || null,
     thumbnail_media_id: payload.thumbnailMediaId || null,
     document_media_id: payload.documentMediaId || null,
+    title_font: payload.titleFont || 'Inter',
+    excerpt_font: payload.excerptFont || 'Inter',
+    content_font: payload.contentFont || 'Inter',
     reading_time: payload.readingTime ? Number(payload.readingTime) : estimateReadingTime(payload.content),
     published_at: payload.status === 'published' ? new Date() : null,
     scheduled_publish_at: payload.scheduledPublishAt ? new Date(payload.scheduledPublishAt) : null
@@ -106,10 +114,14 @@ async function updateNews (id, payload, editorId) {
       updateData.published_at = new Date()
     }
   }
+  if (payload.authorName !== undefined) updateData.author_name = payload.authorName
   if (payload.isFeatured !== undefined) updateData.is_featured = payload.isFeatured
   if (payload.isPinned !== undefined) updateData.is_pinned = payload.isPinned
   if (payload.thumbnailMediaId !== undefined) updateData.thumbnail_media_id = payload.thumbnailMediaId
   if (payload.documentMediaId !== undefined) updateData.document_media_id = payload.documentMediaId
+  if (payload.titleFont !== undefined) updateData.title_font = payload.titleFont || 'Inter'
+  if (payload.excerptFont !== undefined) updateData.excerpt_font = payload.excerptFont || 'Inter'
+  if (payload.contentFont !== undefined) updateData.content_font = payload.contentFont || 'Inter'
   if (payload.seoTitle !== undefined) updateData.seo_title = payload.seoTitle
   if (payload.seoDescription !== undefined) updateData.seo_description = payload.seoDescription
   if (payload.scheduledPublishAt !== undefined) {

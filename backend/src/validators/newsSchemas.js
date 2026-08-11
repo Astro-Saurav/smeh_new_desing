@@ -1,6 +1,8 @@
 const { z } = require('zod')
 
 const statusEnum = z.enum(['draft', 'published', 'scheduled'])
+const SUPPORTED_FONTS = ['Inter', 'Playfair Display', 'Merriweather', 'Lato', 'Source Serif 4']
+const fontEnum = z.enum(SUPPORTED_FONTS)
 
 const createNewsSchema = z.object({
   body: z.object({
@@ -14,7 +16,11 @@ const createNewsSchema = z.object({
     documentMediaId: z.string().uuid().optional().nullable(),
     status: statusEnum,
     publishedAt: z.string().datetime().optional().nullable(),
-    isFeatured: z.boolean().optional()
+    isFeatured: z.boolean().optional(),
+    titleFont: fontEnum.optional().nullable(),
+    excerptFont: fontEnum.optional().nullable(),
+    contentFont: fontEnum.optional().nullable(),
+    authorName: z.string().optional().nullable()
   }),
   params: z.object({}),
   query: z.object({})
@@ -32,7 +38,11 @@ const updateNewsSchema = z.object({
     documentMediaId: z.string().uuid().optional().nullable(),
     status: statusEnum.optional(),
     publishedAt: z.string().datetime().optional().nullable(),
-    isFeatured: z.boolean().optional()
+    isFeatured: z.boolean().optional(),
+    titleFont: fontEnum.optional().nullable(),
+    excerptFont: fontEnum.optional().nullable(),
+    contentFont: fontEnum.optional().nullable(),
+    authorName: z.string().optional().nullable()
   }).refine((value) => Object.keys(value).length > 0, {
     message: 'At least one field is required for update'
   }),

@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { BarChart3, FolderKanban, ImageUp, LogOut, Newspaper, Users } from 'lucide-react'
+import { BarChart3, FolderKanban, ImageUp, LogOut, Newspaper, Users, UsersRound } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { ThemeToggle } from './ThemeToggle'
 
@@ -8,6 +8,7 @@ const navItems = [
   { to: '/news', icon: Newspaper, label: 'Manage News' },
   { to: '/categories', icon: FolderKanban, label: 'Categories' },
   { to: '/media', icon: ImageUp, label: 'Media Upload' },
+  { to: '/editorial', icon: UsersRound, label: 'Editorial Board', roles: ['admin', 'editor'] },
   { to: '/users', icon: Users, label: 'Users', roles: ['admin'] }
 ]
 

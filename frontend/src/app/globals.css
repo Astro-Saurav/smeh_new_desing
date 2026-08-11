@@ -82,6 +82,32 @@
   }
 }
 
+/* ─── Font Switcher System ──────────────────────────────────────────────────── */
+/* Default font is Inter (matches existing design). Changing data-font on <html> */
+/* instantly switches fonts site-wide with no flash. */
+:root {
+  --font-heading: 'Inter', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+[data-font="playfair"] {
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+}
+[data-font="merriweather"] {
+  --font-heading: 'Merriweather', serif;
+  --font-body: 'Merriweather', serif;
+}
+[data-font="lato"] {
+  --font-heading: 'Lato', sans-serif;
+  --font-body: 'Lato', sans-serif;
+}
+[data-font="source-serif"] {
+  --font-heading: 'Source Serif 4', serif;
+  --font-body: 'Source Serif 4', serif;
+}
+.font-heading { font-family: var(--font-heading); }
+.font-body    { font-family: var(--font-body); }
+
 /* Custom Styled Scrollbar */
 @layer base {
   ::-webkit-scrollbar {
