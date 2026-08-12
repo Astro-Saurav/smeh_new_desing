@@ -15,7 +15,6 @@ export default async function HomePage() {
     podcast,
     mrTv,
     gallery,
-    blog,
     announcement,
     achievements,
     studentsVoices
@@ -27,10 +26,9 @@ export default async function HomePage() {
     getNewsByCategory('Podcast', 8),
     getNewsByCategory('Manav Rachna TV', 6),
     getNewsByCategory('Gallery', 8),
-    getNewsByCategory('Blog', 8),
     getNewsByCategory('Announcement', 8),
     getNewsByCategory('Achievements', 6),
-    getNewsByCategory('Students Voices', 4),
+    getNewsByCategory('Students Voices', 4)
   ])
 
   const mainStory = heroStories[0]
@@ -176,29 +174,7 @@ export default async function HomePage() {
         category: { id: a.category, name: a.category, slug: a.category.toLowerCase().replace(/\s+/g, '-') }
       }))
     },
-    {
-      id: 'blog',
-      category: 'Blog',
-      categorySlug: 'blog',
-      title: 'Blog',
-      layout: 'MAGAZINE' as const,
-      featuredLimit: 1,
-      articleLimit: 8,
-      showViewAll: true,
-      hasMore: blog.length >= 8,
-      articleCount: blog.length,
-      articles: blog.map(a => ({
-        id: a.id,
-        slug: a.slug,
-        title: a.headline,
-        excerpt: a.description,
-        thumbnail: a.image,
-        published_at: null,
-        youtube_url: a.youtubeUrl,
-        author: a.author,
-        category: { id: a.category, name: a.category, slug: a.category.toLowerCase().replace(/\s+/g, '-') }
-      }))
-    },
+
     {
       id: 'announcement',
       category: 'Announcement',

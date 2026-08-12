@@ -17,7 +17,6 @@ export default function CategoryPage() {
     'social-buzz': 'Social Buzz',
     'mr-tv': 'Manav Rachna TV',
     'podcast': 'Podcast',
-    'blog': 'Blog',
     'achievements': 'Achievements',
     'announcement': 'Announcement',
     'gallery': 'Gallery',

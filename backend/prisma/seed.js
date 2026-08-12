@@ -106,6 +106,39 @@ async function main () {
   }
   console.log(`✓ System settings seeded`)
 
+  // ─── Editorial Roles ────────────────────────────────────
+  const editorialRoles = [
+    'Student Editor-in-Chief',
+    'Editors/Section Editors',
+    'Features Editor/s',
+    'Reporters',
+    'Photojournalists & Multimedia Producers'
+  ]
+
+  let displayOrder = 1
+  for (const roleName of editorialRoles) {
+    await prisma.editorialRole.upsert({
+      where: { name: roleName },
+      update: { display_order: displayOrder },
+      create: { name: roleName, display_order: displayOrder }
+    })
+    displayOrder++
+  }
+  console.log(`✓ Editorial roles seeded`)
+
+  // ─── Migrate Blog to Students Voices ─────────────────────
+  const blogCategory = await prisma.category.findUnique({ where: { slug: 'blog' } })
+  const studentsVoicesCategory = await prisma.category.findUnique({ where: { slug: 'students-voices' } })
+  
+  if (blogCategory && studentsVoicesCategory) {
+    await prisma.news.updateMany({
+      where: { category_id: blogCategory.id },
+      data: { category_id: studentsVoicesCategory.id }
+    })
+    // Optionally remove blog category or mark it inactive
+    console.log(`✓ Migrated Blog data to Students Voices`)
+  }
+
   console.log('\n✅ Seeding complete!')
 }
 

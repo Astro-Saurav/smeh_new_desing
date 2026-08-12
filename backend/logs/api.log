@@ -2975,3 +2975,33 @@
 {"action":"news.updated","error":"\nInvalid `prisma.auditLog.create()` invocation in\n/home/astro/Documents/code/smeh_new_desing/backend/src/services/auditService.js:29:27\n\n  26   userAgent\n  27 }) {\n  28   try {\n→ 29     await prisma.auditLog.create({\n           data: {\n             user_id: \"bd81ba57-3306-4cc6-add3-eb423611f991\",\n             action: \"news.updated\",\n             target_table: \"news\",\n             target_id: \"2856cac4-e699-4297-87be-e78443f6a0a4\",\n             old_value: {\n               status: \"published\",\n               title: \"test\"\n             },\n             ~~~~~~~~~~~~~~~~~~~~~\n             new_value: {\n               status: \"published\",\n               title: \"test\"\n             },\n             request_id: \"bde46e55-d3aa-4cf2-bdfd-847f1ebcb100\",\n             ip_address: \"::1\",\n             user_agent: \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"\n           }\n         })\n\nArgument `old_value`: Invalid value provided. Expected String or Null, provided Object.","level":"error","message":"Failed to write audit log","timestamp":"2026-08-12T03:09:00.000+05:30"}
 {"level":"info","message":"SQLite connected via Prisma","timestamp":"2026-08-12T03:12:26.2626+05:30"}
 {"environment":"development","level":"info","message":"MRT API running","pid":124666,"port":8081,"timestamp":"2026-08-12T03:12:26.2626+05:30"}
+{"level":"info","message":"SQLite connected via Prisma","timestamp":"2026-08-12T04:14:22.2222+05:30"}
+{"environment":"development","level":"info","message":"MRT API running","pid":151948,"port":8081,"timestamp":"2026-08-12T04:14:22.2222+05:30"}
+{"level":"info","message":"SQLite connected via Prisma","timestamp":"2026-08-12T04:15:34.3434+05:30"}
+{"environment":"development","level":"info","message":"MRT API running","pid":152545,"port":8081,"timestamp":"2026-08-12T04:15:34.3434+05:30"}
+{"level":"info","message":"SQLite connected via Prisma","timestamp":"2026-08-12T04:20:28.2828+05:30"}
+{"environment":"development","level":"info","message":"MRT API running","pid":154602,"port":8081,"timestamp":"2026-08-12T04:20:28.2828+05:30"}
+{"level":"info","message":"SQLite connected via Prisma","timestamp":"2026-08-12T04:29:15.1515+05:30"}
+{"environment":"development","level":"info","message":"MRT API running","pid":200006,"port":8081,"timestamp":"2026-08-12T04:29:15.1515+05:30"}
+{"level":"info","message":"SQLite connected via Prisma","timestamp":"2026-08-12T04:40:00.000+05:30"}
+{"environment":"development","level":"info","message":"MRT API running","pid":37,"port":8081,"timestamp":"2026-08-12T04:40:00.000+05:30"}
+{"level":"info","message":"SQLite connected via Prisma","timestamp":"2026-08-12T04:40:28.2828+05:30"}
+{"environment":"development","level":"info","message":"MRT API running","pid":38,"port":8081,"timestamp":"2026-08-12T04:40:28.2828+05:30"}
+{"level":"info","message":"SQLite connected via Prisma","timestamp":"2026-08-12T04:45:40.4040+05:30"}
+{"environment":"development","level":"info","message":"MRT API running","pid":47,"port":8081,"timestamp":"2026-08-12T04:45:40.4040+05:30"}
+{"level":"info","message":"SQLite connected via Prisma","timestamp":"2026-08-12T04:47:40.4040+05:30"}
+{"environment":"development","level":"info","message":"MRT API running","pid":73,"port":8081,"timestamp":"2026-08-12T04:47:40.4040+05:30"}
+{"level":"info","message":"SQLite connected via Prisma","timestamp":"2026-08-12T04:48:12.1212+05:30"}
+{"environment":"development","level":"info","message":"MRT API running","pid":99,"port":8081,"timestamp":"2026-08-12T04:48:12.1212+05:30"}
+{"level":"info","message":"SQLite connected via Prisma","timestamp":"2026-08-12T04:57:26.2626+05:30"}
+{"environment":"development","level":"info","message":"MRT API running","pid":125,"port":8081,"timestamp":"2026-08-12T04:57:26.2626+05:30"}
+{"level":"info","message":"SQLite connected via Prisma","timestamp":"2026-08-12T05:43:40.4040+05:30"}
+{"environment":"development","level":"info","message":"MRT API running","pid":102,"port":8081,"timestamp":"2026-08-12T05:43:40.4040+05:30"}
+{"level":"info","message":"SQLite connected via Prisma","timestamp":"2026-08-12T05:44:18.1818+05:30"}
+{"environment":"development","level":"info","message":"MRT API running","pid":24,"port":8081,"timestamp":"2026-08-12T05:44:18.1818+05:30"}
+{"level":"info","message":"SQLite connected via Prisma","timestamp":"2026-08-12T05:44:31.3131+05:30"}
+{"environment":"development","level":"info","message":"MRT API running","pid":599,"port":8081,"timestamp":"2026-08-12T05:44:31.3131+05:30"}
+{"level":"info","message":"SQLite connected via Prisma","timestamp":"2026-08-12T05:44:38.3838+05:30"}
+{"environment":"development","level":"info","message":"MRT API running","pid":25,"port":8081,"timestamp":"2026-08-12T05:44:38.3838+05:30"}
+{"level":"info","message":"SQLite connected via Prisma","timestamp":"2026-08-12T05:47:50.5050+05:30"}
+{"environment":"development","level":"info","message":"MRT API running","pid":1564,"port":8081,"timestamp":"2026-08-12T05:47:50.5050+05:30"}

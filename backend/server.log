@@ -1,0 +1,12 @@
+
+> manav-rachna-time-backend@1.0.0 start
+> node src/server.js
+
+[dotenv@17.3.1] injecting env (7) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+04:40:28 [[34mdebug[39m] Prisma Query {"query":"SELECT 1","duration_ms":0}
+04:40:28 [[32minfo[39m] SQLite connected via Prisma
+04:40:28 [[32minfo[39m] MRT API running {"port":8081,"environment":"development","pid":38}
+04:40:29 [[34mdebug[39m] Prisma Query {"query":"SELECT `main`.`failed_logins`.`id`, `main`.`failed_logins`.`ip_address`, `main`.`failed_logins`.`email`, `main`.`failed_logins`.`count`, `main`.`failed_logins`.`locked_until`, `main`.`failed_logins`.`created_at`, `main`.`failed_logins`.`updated_at` FROM `main`.`failed_logins` WHERE ((`main`.`failed_logins`.`ip_address` = ? AND `main`.`failed_logins`.`email` = ?) AND 1=1) LIMIT ? OFFSET ?","duration_ms":0}
+04:40:30 [[34mdebug[39m] Prisma Query {"query":"INSERT INTO `main`.`failed_logins` (`id`, `ip_address`, `email`, `count`, `created_at`, `updated_at`) VALUES (?,?,?,?,?,?) RETURNING `id` AS `id`, `ip_address` AS `ip_address`, `email` AS `email`, `count` AS `count`, `locked_until` AS `locked_until`, `created_at` AS `created_at`, `updated_at` AS `updated_at`","duration_ms":6}
+04:40:30 [[34mdebug[39m] Prisma Query {"query":"SELECT `main`.`users`.`id`, `main`.`users`.`email`, `main`.`users`.`password_hash`, `main`.`users`.`role_id`, `main`.`users`.`is_2fa_enabled`, `main`.`users`.`twofa_secret`, `main`.`users`.`password_changed_at`, `main`.`users`.`created_at`, `main`.`users`.`updated_at`, `main`.`users`.`deleted_at` FROM `main`.`users` WHERE (`main`.`users`.`email` = ? AND 1=1) LIMIT ? OFFSET ?","duration_ms":0}
+04:40:30 [[34mdebug[39m] Prisma Query {"query":"INSERT INTO `main`.`login_history` (`id`, `user_id`, `ip_address`, `user_agent`, `status`, `created_at`) VALUES (?,?,?,?,?,?) RETURNING `id` AS `id`, `user_id` AS `user_id`, `ip_address` AS `ip_address`, `user_agent` AS `user_agent`, `status` AS `status`, `created_at` AS `created_at`","duration_ms":5}

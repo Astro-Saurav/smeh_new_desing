@@ -19,7 +19,6 @@ export const routes = {
   socialBuzz: () => '/category/social-buzz',
   manavRachnaTV: () => '/category/mr-tv',
   podcast: () => '/category/podcast',
-  blog: () => '/category/blog',
   achievements: () => '/category/achievements',
   announcement: () => '/category/announcement',
   gallery: () => '/category/gallery',
