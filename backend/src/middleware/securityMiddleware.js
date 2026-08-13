@@ -13,13 +13,18 @@ function getRedisClient () {
   if (redisClient) return redisClient
   try {
     const { default: Redis } = require('ioredis')
+    // enableOfflineQueue defaults to TRUE — commands are queued until connected
+    // Do NOT set enableOfflineQueue:false here; it causes RedisStore to crash on init
     redisClient = new Redis(env.redisUrl, {
-      enableOfflineQueue: false,
-      maxRetriesPerRequest: 1,
-      lazyConnect: true
+      maxRetriesPerRequest: 3,
+      connectTimeout: 5000,
+      retryStrategy: (times) => (times > 3 ? null : Math.min(times * 200, 2000))
     })
     redisClient.on('error', (err) => {
       logger.warn('[Redis] Rate-limit store connection error (falling back to memory):', err.message)
+    })
+    redisClient.on('connect', () => {
+      logger.info('[Redis] Rate-limit store connected')
     })
   } catch (err) {
     logger.warn('[Redis] Could not initialise ioredis for rate limiting:', err.message)
@@ -28,12 +33,17 @@ function getRedisClient () {
 }
 
 function buildRedisStore (prefix) {
-  const client = getRedisClient()
-  if (!client) return undefined // fall back to in-memory
-  return new RedisStore({
-    sendCommand: (...args) => client.call(...args),
-    prefix
-  })
+  try {
+    const client = getRedisClient()
+    if (!client) return undefined // fall back to in-memory
+    return new RedisStore({
+      sendCommand: (...args) => client.call(...args),
+      prefix
+    })
+  } catch (err) {
+    logger.warn('[Redis] buildRedisStore failed, falling back to in-memory:', err.message)
+    return undefined
+  }
 }
 
 // ─── Global rate limit: 1000 requests per 15 minutes ─────────────────────
