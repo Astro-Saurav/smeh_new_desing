@@ -24,8 +24,8 @@ app.use(cors({
   credentials: true
 }))
 app.use(cookieParser())
-app.use(express.json({ limit: '100mb' }))
-app.use(express.urlencoded({ extended: true, limit: '100mb' }))
+app.use(express.json({ limit: '2mb' }))
+app.use(express.urlencoded({ extended: true, limit: '2mb' }))
 app.use(morgan(env.nodeEnv === 'production' ? 'combined' : 'dev'))
 
 // Standard security guards

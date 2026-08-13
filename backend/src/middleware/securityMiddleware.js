@@ -1,10 +1,25 @@
 const helmet = require('helmet')
 const sanitizeHtml = require('sanitize-html')
 
-// Express-rate-limit setup - DISABLED for development
-const globalRateLimiter = (req, res, next) => next()
+const rateLimit = require('express-rate-limit')
 
-const authRateLimiter = (req, res, next) => next()
+// Global rate limit: 1000 requests per 15 minutes
+const globalRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 1000,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { message: 'Too many requests, please try again later.' }
+})
+
+// Auth rate limit: 20 requests per 15 minutes
+const authRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { message: 'Too many authentication attempts, please try again later.' }
+})
 
 // Helmet configured for Strict Content Security Policy
 const helmetMiddleware = helmet({
@@ -23,30 +38,44 @@ const helmetMiddleware = helmet({
   crossOriginEmbedderPolicy: false
 })
 
+// Recursive sanitization helper
+function sanitizeData (data, keyName = '') {
+  if (typeof data === 'string') {
+    if (keyName === 'content') {
+      return sanitizeHtml(data, {
+        allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'iframe']),
+        allowedAttributes: {
+          ...sanitizeHtml.defaults.allowedAttributes,
+          iframe: ['src', 'width', 'height', 'frameborder', 'allowfullscreen'],
+          img: ['src', 'alt', 'width', 'height']
+        }
+      })
+    }
+    return sanitizeHtml(data, {
+      allowedTags: [],
+      allowedAttributes: {}
+    })
+  }
+
+  if (Array.isArray(data)) {
+    return data.map(item => sanitizeData(item, keyName))
+  }
+
+  if (typeof data === 'object' && data !== null) {
+    const sanitizedObj = {}
+    for (const [key, value] of Object.entries(data)) {
+      sanitizedObj[key] = sanitizeData(value, key)
+    }
+    return sanitizedObj
+  }
+
+  return data
+}
+
 // Request body sanitization helper for HTML strings
 function sanitizeRequestBody (req, res, next) {
   if (req.body) {
-    for (const key of Object.keys(req.body)) {
-      if (typeof req.body[key] === 'string') {
-        // Allow select styling elements for news content, otherwise strip all tags
-        if (key === 'content') {
-          req.body[key] = sanitizeHtml(req.body[key], {
-            allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'iframe']),
-            allowedAttributes: {
-              ...sanitizeHtml.defaults.allowedAttributes,
-              iframe: ['src', 'width', 'height', 'frameborder', 'allowfullscreen'],
-              img: ['src', 'alt', 'width', 'height']
-            }
-          })
-        } else {
-          // Standard text strip
-          req.body[key] = sanitizeHtml(req.body[key], {
-            allowedTags: [],
-            allowedAttributes: {}
-          })
-        }
-      }
-    }
+    req.body = sanitizeData(req.body)
   }
   next()
 }
