@@ -1,6 +1,19 @@
 #!/bin/bash
 PROJECT_DIR="/root/smeh_new_desing"
 BRANCH="main"
+MAINTENANCE_FILE="/var/www/manavrachnatimes.com/html/maintenance.html"
+
+if [ -f "$PROJECT_DIR/.maintenance_lock" ]; then
+    if [ "$1" != "--force" ]; then
+        echo "Site is currently in maintenance mode."
+        echo "Auto deployment is suspended."
+        exit 0
+    else
+        echo "Manual forced run detected. Lifting maintenance mode..."
+        rm -f "$PROJECT_DIR/.maintenance_lock"
+        rm -f "$MAINTENANCE_FILE"
+    fi
+fi
 
 cd $PROJECT_DIR || exit
 
