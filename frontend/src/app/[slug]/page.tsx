@@ -64,7 +64,7 @@ export default function CategoryPage() {
       <main className="container mx-auto px-4 md:px-8 py-8 md:py-12">
         {/* Header */}
         <div className="border-b-4 border-zinc-900 mb-8 pb-4 flex items-center justify-between">
-          <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase">{categoryName}</h1>
+          <h1 className="text-2xl md:text-3xl font-black tracking-tight uppercase">{categoryName}</h1>
           <Link href="/" className="text-red-500 font-bold text-sm hover:text-red-600">
             ← Back
           </Link>
