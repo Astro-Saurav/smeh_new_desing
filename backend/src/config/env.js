@@ -33,7 +33,7 @@ const env = {
 
   // Uploads
   uploadBasePath: fromEnv(['UPLOAD_BASE_PATH'], './uploads'),
-  maxUploadSizeBytes: Number(process.env.MAX_UPLOAD_SIZE_BYTES || 50 * 1024 * 1024), // 50MB
+  maxUploadSizeBytes: Number(process.env.MAX_UPLOAD_SIZE_BYTES || 100 * 1024 * 1024), // 100MB
 
   // PM2
   pm2MaxMemory: process.env.PM2_MAX_MEMORY || '1G',

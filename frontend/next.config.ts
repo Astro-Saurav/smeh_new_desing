@@ -3,9 +3,9 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
-    middlewareClientMaxBodySize: '50mb',
+    middlewareClientMaxBodySize: '100mb',
     serverActions: {
-      bodySizeLimit: '50mb',
+      bodySizeLimit: '100mb',
     },
   },
   typescript: {
