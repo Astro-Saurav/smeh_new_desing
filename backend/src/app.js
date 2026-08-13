@@ -26,12 +26,13 @@ app.set('trust proxy', 1)
 app.use(requestId)
 
 // ─── HTTPS redirect (works behind Nginx via X-Forwarded-Proto) ───────────
-app.use((req, res, next) => {
-  if (env.nodeEnv === 'production' && req.protocol !== 'https') {
-    return res.redirect(301, `https://${req.hostname}${req.originalUrl}`)
-  }
-  return next()
-})
+// Nginx handles this at the edge. Doing this here behind Next.js rewrites causes infinite redirect loops.
+// app.use((req, res, next) => {
+//   if (env.nodeEnv === 'production' && req.protocol !== 'https') {
+//     return res.redirect(301, `https://${req.hostname}${req.originalUrl}`)
+//   }
+//   return next()
+// })
 
 // ─── Generate CSP nonce per request ──────────────────────────────────────
 app.use(generateNonce)
