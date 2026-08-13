@@ -12,6 +12,8 @@ if [ -f "$PROJECT_DIR/.maintenance_lock" ]; then
         echo "Manual forced run detected. Lifting maintenance mode..."
         rm -f "$PROJECT_DIR/.maintenance_lock"
         rm -f "$MAINTENANCE_FILE"
+        echo "Restarting PM2 services..."
+        pm2 restart mrt-backend mrt-frontend 2>/dev/null || pm2 start mrt-backend mrt-frontend 2>/dev/null || true
     fi
 fi
 

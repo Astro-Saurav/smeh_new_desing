@@ -181,6 +181,24 @@ async function hardDeleteNews (id) {
   if (news.document_media_id) mediaIds.add(news.document_media_id)
   news.images.forEach(img => mediaIds.add(img.media_id))
 
+  // Extract inline media from rich text content
+  if (news.content) {
+    const inlinePaths = []
+    const regex = /\/uploads\/([^"'\s>]+)/g
+    let match
+    while ((match = regex.exec(news.content)) !== null) {
+      inlinePaths.push(match[1]) // e.g. 'news/filename.jpg'
+    }
+
+    if (inlinePaths.length > 0) {
+      const inlineMedia = await prisma.media.findMany({
+        where: { file_path: { in: inlinePaths } },
+        select: { id: true }
+      })
+      inlineMedia.forEach(m => mediaIds.add(m.id))
+    }
+  }
+
   // Delete physical files and media records
   for (const mediaId of mediaIds) {
     await deleteMediaFiles(mediaId)
