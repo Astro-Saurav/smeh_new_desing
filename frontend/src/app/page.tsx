@@ -334,7 +334,7 @@ export default async function HomePage() {
           <div className="lg:col-span-8">
             {mainStory ? (
               <Link href={mainStory.link || '#'} className="group block relative overflow-hidden rounded-xl shadow-md aspect-[16/9] bg-zinc-900">
-                <Image
+                <SafeImage
                   src={mainStory.image}
                   alt={mainStory.headline}
                   fill
