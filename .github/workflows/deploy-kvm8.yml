@@ -1,0 +1,57 @@
+name: Deploy to KVM8 (Hostinger)
+
+# ─── Trigger ──────────────────────────────────────────────────────────────────
+# Runs automatically on every push to `main`.
+# Can also be triggered manually from the GitHub Actions UI.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:   # manual trigger button in GitHub UI
+
+# Only one deploy at a time — if a new push lands while a deploy is in progress,
+# GitHub will cancel the in-progress run and start a fresh one.
+concurrency:
+  group: deploy-kvm8
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: SSH → KVM8 → auto_deploy.sh
+    runs-on: ubuntu-latest
+    timeout-minutes: 20   # hard cap; alert if build hangs
+
+    steps:
+      # ── 1. Checkout (for context/artifacts; actual code is pulled on server) ──
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. SSH into KVM8 and run the existing auto_deploy.sh ──────────────────
+      - name: Deploy to KVM8
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host:     ${{ secrets.KVM8_HOST }}
+          username: ${{ secrets.KVM8_USER }}
+          key:      ${{ secrets.KVM8_SSH_KEY }}
+          port:     ${{ secrets.KVM8_PORT || 22 }}
+
+          # The script lives in the project root on KVM8.
+          # chmod is idempotent — safe to run every time.
+          script: |
+            set -euo pipefail
+            chmod +x /root/smeh_new_desing/auto_deploy.sh
+            /root/smeh_new_desing/auto_deploy.sh
+      # ── 3. Post deploy summary ────────────────────────────────────────────────
+      - name: Print deploy summary
+        if: success()
+        run: |
+          echo "✅ Deployed commit ${{ github.sha }} to KVM8 successfully."
+          echo "   Branch : ${{ github.ref_name }}"
+          echo "   Trigger: ${{ github.event_name }}"
+          echo "   Actor  : ${{ github.actor }}"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Deploy FAILED for commit ${{ github.sha }}"
+          echo "   Check the logs above or SSH into KVM8 and inspect:"
+          echo "   tail -50 /root/smeh_new_desing/auto_deploy.log"
