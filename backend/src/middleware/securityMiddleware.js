@@ -1,5 +1,4 @@
 const helmet = require('helmet')
-const rateLimit = require('express-rate-limit')
 const sanitizeHtml = require('sanitize-html')
 
 // Express-rate-limit setup - DISABLED for development
@@ -13,12 +12,12 @@ const helmetMiddleware = helmet({
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "blob:", "https:"],
-      mediaSrc: ["'self'", "https://www.youtube.com"],
-      frameSrc: ["'self'", "https://www.youtube.com"],
-      connectSrc: ["'self'", "https:"]
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
+      mediaSrc: ["'self'", 'https://www.youtube.com'],
+      frameSrc: ["'self'", 'https://www.youtube.com'],
+      connectSrc: ["'self'", 'https:']
     }
   },
   crossOriginEmbedderPolicy: false

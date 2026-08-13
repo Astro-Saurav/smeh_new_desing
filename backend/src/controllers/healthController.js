@@ -4,9 +4,8 @@ try {
   IORedis = require('ioredis-mock')
 } catch (e) {
   IORedis = class {
-    constructor() {}
-    ping() { return Promise.resolve('PONG') }
-    quit() { return Promise.resolve('OK') }
+    ping () { return Promise.resolve('PONG') }
+    quit () { return Promise.resolve('OK') }
   }
 }
 const { env } = require('../config/env')

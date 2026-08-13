@@ -5,7 +5,7 @@ const R = require('../utils/response')
 
 const getSettings = asyncHandler(async (req, res) => {
   const settings = await prisma.systemSetting.findMany()
-  
+
   // Convert array of {key, value} to a single object
   const settingsObj = {}
   settings.forEach(s => {

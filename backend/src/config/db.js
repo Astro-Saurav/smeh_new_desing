@@ -29,7 +29,7 @@ prisma.$on('error', (e) => {
 async function connectDB () {
   try {
     // Just a simple query to ensure SQLite is connected
-    await prisma.$queryRaw`SELECT 1`;
+    await prisma.$queryRaw`SELECT 1`
     logger.info('SQLite connected via Prisma')
   } catch (err) {
     logger.error('SQLite connection failed', { message: err.message })

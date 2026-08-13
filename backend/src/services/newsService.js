@@ -167,11 +167,11 @@ async function softDeleteNews (id) {
 }
 
 async function hardDeleteNews (id) {
-  const news = await prisma.news.findUnique({ 
+  const news = await prisma.news.findUnique({
     where: { id },
-    include: { images: true } 
+    include: { images: true }
   })
-  
+
   if (!news) return false
 
   // Gather all associated media IDs
@@ -188,7 +188,7 @@ async function hardDeleteNews (id) {
 
   // Delete the news record (this cascades to NewsImage, NewsTag, NewsRevision due to schema)
   await prisma.news.delete({ where: { id } })
-  
+
   invalidateHomepageCache()
   return true
 }
@@ -308,12 +308,12 @@ async function ensureUniqueSlug (baseSlug, excludeId = null) {
   }
 }
 
-async function getCategoryFeed(slug, cursor, limit = 12) {
+async function getCategoryFeed (slug, cursor, limit = 12) {
   const category = await prisma.category.findUnique({ where: { slug } })
   if (!category) return null
 
   const where = { category_id: category.id, status: 'published', deleted_at: null }
-  
+
   // Base query args
   const args = {
     where,
@@ -388,4 +388,3 @@ module.exports = {
   incrementViews,
   getCategoryFeed
 }
-

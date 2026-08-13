@@ -23,7 +23,7 @@ const ARTICLE_SELECT = {
   title: true,
   slug: true,
   excerpt: true,
-  content: true,       // used as fallback when excerpt is null
+  content: true, // used as fallback when excerpt is null
   published_at: true,
   youtube_url: true,
   thumbnail: {

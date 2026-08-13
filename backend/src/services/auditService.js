@@ -1,7 +1,7 @@
 const { prisma } = require('../config/db')
 const logger = require('../utils/logger')
 
-function safeStringify(val) {
+function safeStringify (val) {
   if (val === undefined || val === null) return null
   if (typeof val === 'string') return val
   try {

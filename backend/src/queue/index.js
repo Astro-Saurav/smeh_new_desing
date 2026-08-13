@@ -9,7 +9,7 @@ try {
     maxRetriesPerRequest: null,
     enableReadyCheck: false
   })
-} catch(e) {
+} catch (e) {
   redisConnection = {
     on: () => {},
     quit: () => {}

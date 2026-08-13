@@ -3005,3 +3005,5 @@
 {"environment":"development","level":"info","message":"MRT API running","pid":25,"port":8081,"timestamp":"2026-08-12T05:44:38.3838+05:30"}
 {"level":"info","message":"SQLite connected via Prisma","timestamp":"2026-08-12T05:47:50.5050+05:30"}
 {"environment":"development","level":"info","message":"MRT API running","pid":1564,"port":8081,"timestamp":"2026-08-12T05:47:50.5050+05:30"}
+{"level":"info","message":"SQLite connected via Prisma","timestamp":"2026-08-12T05:52:52.5252+05:30"}
+{"environment":"development","level":"info","message":"MRT API running","pid":2499,"port":8081,"timestamp":"2026-08-12T05:52:52.5252+05:30"}

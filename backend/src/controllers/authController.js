@@ -197,7 +197,7 @@ const me = asyncHandler(async (req, res) => {
 
 const changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body
-  
+
   if (!currentPassword || !newPassword) {
     return R.badRequest(res, 'Current and new password are required')
   }

@@ -2,7 +2,6 @@ const { asyncHandler } = require('../middleware/asyncHandler')
 const {
   createNews,
   updateNews,
-  softDeleteNews,
   hardDeleteNews,
   restoreNews,
   getNewsById,

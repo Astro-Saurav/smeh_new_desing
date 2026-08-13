@@ -9,7 +9,7 @@ async function startServer () {
     await connectDB()
 
     const server = app.listen(env.port, () => {
-      logger.info(`MRT API running`, {
+      logger.info('MRT API running', {
         port: env.port,
         environment: env.nodeEnv,
         pid: process.pid

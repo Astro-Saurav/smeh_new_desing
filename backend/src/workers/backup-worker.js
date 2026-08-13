@@ -8,7 +8,7 @@ function runBackupScript (type) {
   return new Promise((resolve, reject) => {
     const scriptPath = path.resolve(__dirname, '../../scripts/backup.sh')
     logger.cron(`[backup-worker] Running backup script: ${scriptPath} ${type}`)
-    
+
     exec(`bash "${scriptPath}" ${type}`, (error, stdout, stderr) => {
       if (error) {
         logger.error('[backup-worker] Backup execution error', { error: error.message, stderr })

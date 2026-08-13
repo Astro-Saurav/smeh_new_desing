@@ -36,11 +36,11 @@ const BLOCKED_EXTENSIONS = new Set([
 
 // Magic number signatures for common image formats
 const MAGIC_NUMBERS = [
-  { bytes: [0xFF, 0xD8, 0xFF], type: 'jpeg' },              // JPEG
-  { bytes: [0x89, 0x50, 0x4E, 0x47], type: 'png' },         // PNG
-  { bytes: [0x47, 0x49, 0x46, 0x38], type: 'gif' },         // GIF
-  { bytes: [0x52, 0x49, 0x46, 0x46], type: 'webp' },        // RIFF (WebP)
-  { bytes: [0x00, 0x00, 0x00], type: 'avif' }               // AVIF (fragile — supplement with MIME)
+  { bytes: [0xFF, 0xD8, 0xFF], type: 'jpeg' }, // JPEG
+  { bytes: [0x89, 0x50, 0x4E, 0x47], type: 'png' }, // PNG
+  { bytes: [0x47, 0x49, 0x46, 0x38], type: 'gif' }, // GIF
+  { bytes: [0x52, 0x49, 0x46, 0x46], type: 'webp' }, // RIFF (WebP)
+  { bytes: [0x00, 0x00, 0x00], type: 'avif' } // AVIF (fragile — supplement with MIME)
 ]
 
 /**
@@ -86,7 +86,7 @@ function createMulterStorage () {
       const isImage = file.mimetype.startsWith('image/')
       const subfolder = isImage ? 'news' : 'documents'
       const dest = path.join(UPLOAD_ROOT, subfolder)
-      
+
       if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true })
       cb(null, dest)
     },
