@@ -64,19 +64,17 @@ async function main () {
 
   // ─── Default Categories ────────────────────────────────
   const categoryData = [
-    { name: 'Campus Buzz', slug: 'campus-buzz' },
-    { name: 'Announcement', slug: 'announcement' },
-    { name: 'Current Affairs', slug: 'current-affairs' },
-    { name: 'Blog', slug: 'blog' },
-    { name: 'Gallery', slug: 'gallery' },
-    { name: 'MR-TV', slug: 'mr-tv' },
-    { name: 'Podcast', slug: 'podcast' },
-    { name: 'Social Buzz', slug: 'social-buzz' },
-    { name: 'Beyond Campus', slug: 'beyond-campus' },
-    // ─── New categories per editorial review ──────────────────
+    { name: 'Beyond Campus',             slug: 'beyond-campus' },
+    { name: 'Current Affairs',           slug: 'current-affairs' },
     { name: 'Entertainment & Lifestyle', slug: 'entertainment-lifestyle' },
-    { name: 'Sports', slug: 'sports' },
-    { name: 'Students Voices', slug: 'students-voices' }
+    { name: 'Sports',                    slug: 'sports' },
+    { name: 'Campus Buzz',               slug: 'campus-buzz' },
+    { name: 'Social Buzz',               slug: 'social-buzz' },
+    { name: 'MR TV',                     slug: 'mr-tv' },
+    { name: 'MR Podcast',                slug: 'podcast' },
+    { name: 'Students Voices',           slug: 'students-voices' },
+    { name: 'Photo Gallery',             slug: 'gallery' },
+    { name: 'Announcement',              slug: 'announcement' },
   ]
 
   for (const cat of categoryData) {

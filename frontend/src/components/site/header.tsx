@@ -9,16 +9,24 @@ import { usePathname } from "next/navigation";
 
 
 // ─── Navigation Config ───────────────────────────────────────────────────────
+// "Beyond Campus" has a dropdown. All others are flat links.
 const navConfig = [
-  { name: "The Campus Buzz", url: "/category/the-campus-buzz" },
+  {
+    name: "Beyond Campus",
+    url: "/category/beyond-campus",
+    children: [
+      { name: "Current Affairs",             url: "/category/current-affairs" },
+      { name: "Entertainment & Lifestyle Feature", url: "/category/entertainment-lifestyle" },
+      { name: "Sports",                      url: "/category/sports" },
+    ],
+  },
+  { name: "Campus Buzz",     url: "/category/campus-buzz" },
   { name: "Social Buzz",     url: "/category/social-buzz" },
-  { name: "Spotlight",       url: "/category/spotlight" },
-  { name: "Beyond Campus",   url: "/category/beyond-campus" },
-  { name: "Achievers",       url: "/category/achievers" },
-  { name: "Opinion",         url: "/category/opinion" },
-  { name: "Announcement",    url: "/category/announcement" },
-  { name: "Events",          url: "/category/events" },
-  { name: "Notice",          url: "/category/notice" },
+  { name: "MR TV",           url: "/category/mr-tv" },
+  { name: "MR Podcast",      url: "/category/podcast" },
+  { name: "Students Voices", url: "/category/students-voices" },
+  { name: "Photo Gallery",   url: "/category/gallery" },
+  { name: "Announcements",   url: "/category/announcement" },
   { name: "About Us",        url: "/about" },
   { name: "Contact",         url: "/contact" },
 ];
