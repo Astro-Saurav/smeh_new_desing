@@ -11,6 +11,9 @@ export default async function HomePage() {
     heroStories,
     campusBuzz,
     beyondCampus,
+    currentAffairs,
+    entertainmentLifestyle,
+    sports,
     socialBuzz,
     podcast,
     mrTv,
@@ -22,9 +25,12 @@ export default async function HomePage() {
     getAllPublishedNews(8),
     getNewsByCategory('Campus Buzz', 10),
     getNewsByCategory('Beyond Campus', 8),
+    getNewsByCategory('Current Affairs', 6),
+    getNewsByCategory('Entertainment & Lifestyle', 6),
+    getNewsByCategory('Sports', 6),
     getNewsByCategory('Social Buzz', 10),
     getNewsByCategory('Podcast', 8),
-    getNewsByCategory('Manav Rachna TV', 6),
+    getNewsByCategory('MR-TV', 6),
     getNewsByCategory('Gallery', 8),
     getNewsByCategory('Announcement', 8),
     getNewsByCategory('Achievements', 6),
@@ -71,6 +77,75 @@ export default async function HomePage() {
       hasMore: beyondCampus.length >= 8,
       articleCount: beyondCampus.length,
       articles: beyondCampus.map(a => ({
+        id: a.id,
+        slug: a.slug,
+        title: a.headline,
+        excerpt: a.description,
+        thumbnail: a.image,
+        published_at: null,
+        youtube_url: a.youtubeUrl,
+        author: a.author,
+        category: { id: a.category, name: a.category, slug: a.category.toLowerCase().replace(/\s+/g, '-') }
+      }))
+    },
+    {
+      id: 'current-affairs',
+      category: 'Current Affairs',
+      categorySlug: 'current-affairs',
+      title: 'Current Affairs',
+      layout: 'STANDARD' as const,
+      featuredLimit: 0,
+      articleLimit: 6,
+      showViewAll: true,
+      hasMore: currentAffairs.length >= 6,
+      articleCount: currentAffairs.length,
+      articles: currentAffairs.map(a => ({
+        id: a.id,
+        slug: a.slug,
+        title: a.headline,
+        excerpt: a.description,
+        thumbnail: a.image,
+        published_at: null,
+        youtube_url: a.youtubeUrl,
+        author: a.author,
+        category: { id: a.category, name: a.category, slug: a.category.toLowerCase().replace(/\s+/g, '-') }
+      }))
+    },
+    {
+      id: 'entertainment-lifestyle',
+      category: 'Entertainment & Lifestyle',
+      categorySlug: 'entertainment-lifestyle',
+      title: 'Entertainment & Lifestyle',
+      layout: 'STANDARD' as const,
+      featuredLimit: 0,
+      articleLimit: 6,
+      showViewAll: true,
+      hasMore: entertainmentLifestyle.length >= 6,
+      articleCount: entertainmentLifestyle.length,
+      articles: entertainmentLifestyle.map(a => ({
+        id: a.id,
+        slug: a.slug,
+        title: a.headline,
+        excerpt: a.description,
+        thumbnail: a.image,
+        published_at: null,
+        youtube_url: a.youtubeUrl,
+        author: a.author,
+        category: { id: a.category, name: a.category, slug: a.category.toLowerCase().replace(/\s+/g, '-') }
+      }))
+    },
+    {
+      id: 'sports',
+      category: 'Sports',
+      categorySlug: 'sports',
+      title: 'Sports',
+      layout: 'STANDARD' as const,
+      featuredLimit: 0,
+      articleLimit: 6,
+      showViewAll: true,
+      hasMore: sports.length >= 6,
+      articleCount: sports.length,
+      articles: sports.map(a => ({
         id: a.id,
         slug: a.slug,
         title: a.headline,
@@ -130,7 +205,7 @@ export default async function HomePage() {
     },
     {
       id: 'mr-tv',
-      category: 'Manav Rachna TV',
+      category: 'MR-TV',
       categorySlug: 'mr-tv',
       title: 'Manav Rachna TV',
       layout: 'VIDEO' as const,
@@ -174,7 +249,6 @@ export default async function HomePage() {
         category: { id: a.category, name: a.category, slug: a.category.toLowerCase().replace(/\s+/g, '-') }
       }))
     },
-
     {
       id: 'announcement',
       category: 'Announcement',

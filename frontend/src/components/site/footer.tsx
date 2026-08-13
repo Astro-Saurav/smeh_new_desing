@@ -20,6 +20,8 @@ export function SiteFooter() {
         { name: "Beyond Campus", href: "/category/beyond-campus" },
         { name: "Social Buzz", href: "/category/social-buzz" },
         { name: "Current Affairs", href: "/category/current-affairs" },
+        { name: "Entertainment & Lifestyle", href: "/category/entertainment-lifestyle" },
+        { name: "Sports", href: "/category/sports" },
         { name: "Students Voices", href: "/category/students-voices" },
       ]
     },
