@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { SafeImage } from "@/components/SafeImage";
 import type { MainSiteNewsItem } from "@/lib/newsApi";
 
 function safeImg(url: string | null | undefined) {
@@ -17,7 +17,7 @@ export function OlderStories({ stories }: { stories: MainSiteNewsItem[] }) {
         <div key={`older-${story.id}-${i}`} className="group">
           <Link href={story.link}>
             <div className="relative aspect-video overflow-hidden bg-zinc-50 rounded-lg shadow-sm border border-zinc-100 mb-3">
-              <Image src={safeImg(story.image)} alt={story.headline} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized={true} onError={(e) => { if (!e.currentTarget.src.includes('/new_logo.png')) { e.currentTarget.srcset = ''; e.currentTarget.src = '/new_logo.png'; } }} />
+              <SafeImage src={safeImg(story.image)} alt={story.headline} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
             </div>
             <span className="text-[9px] font-black uppercase tracking-wider text-primary mb-1 block">{story.category}</span>
             <h4 className="text-[13px] font-black leading-snug group-hover:text-primary transition-colors mb-1.5 break-words hyphens-auto line-clamp-3">{story.headline}</h4>

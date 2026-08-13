@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { SafeImage } from "@/components/SafeImage";
 import type { MainSiteNewsItem } from "@/lib/newsApi";
 
 function safeImg(url: string | null | undefined) {
@@ -20,14 +20,12 @@ export function HeroGrid({ lead }: { lead?: MainSiteNewsItem }) {
       href={lead.link}
       className="group relative block overflow-hidden rounded-xl shadow-md aspect-[16/9] bg-zinc-900"
     >
-      <Image
+      <SafeImage
         src={safeImg(lead.image)}
         alt={lead.headline}
         fill
         className="object-cover group-hover:scale-105 transition-transform duration-700"
         priority
-        unoptimized={true}
-        onError={(e) => { if (!e.currentTarget.src.includes('/new_logo.png')) { e.currentTarget.srcset = ''; e.currentTarget.src = '/new_logo.png'; } }}
       />
       {/* Dark gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />

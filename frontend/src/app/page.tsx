@@ -1,5 +1,5 @@
-import Image from 'next/image'
 import Link from 'next/link'
+import { SafeImage } from '@/components/SafeImage'
 import { getAllPublishedNews, getNewsByCategory } from '@/lib/newsApi'
 import { DynamicCategoryGrid } from '@/components/DynamicCategoryGrid'
 
@@ -370,13 +370,11 @@ export default async function HomePage() {
               <Link key={story.id} href={story.link || '#'} className="flex gap-3 group items-start min-w-0 border-b border-zinc-100 pb-4 last:border-0 last:pb-0">
                 {/* Thumbnail */}
                 <div className="relative w-24 h-16 flex-shrink-0 overflow-hidden rounded-lg bg-zinc-100">
-                  <Image
+                  <SafeImage
                     src={story.image || '/new_logo.png'}
                     alt={story.headline}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    unoptimized={true}
-                    onError={(e) => { if (!e.currentTarget.src.includes('/new_logo.png')) { e.currentTarget.srcset = ''; e.currentTarget.src = '/new_logo.png'; } }}
                   />
                 </div>
                 {/* Text */}

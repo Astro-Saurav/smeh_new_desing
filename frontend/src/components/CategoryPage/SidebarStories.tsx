@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { SafeImage } from "@/components/SafeImage";
 import type { MainSiteNewsItem } from "@/lib/newsApi";
 
 function safeImg(url: string | null | undefined) {
@@ -28,13 +28,11 @@ export function SidebarStories({ stories, title = "Latest Headlines" }: { storie
           >
             {/* Thumbnail */}
             <div className="relative w-24 h-16 flex-shrink-0 overflow-hidden rounded-lg bg-zinc-100">
-              <Image
+              <SafeImage
                 src={safeImg(story.image)}
                 alt={story.headline}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
-                unoptimized={true}
-                onError={(e) => { if (!e.currentTarget.src.includes('/new_logo.png')) { e.currentTarget.srcset = ''; e.currentTarget.src = '/new_logo.png'; } }}
               />
             </div>
             {/* Text */}
