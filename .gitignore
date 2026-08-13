@@ -62,3 +62,4 @@ ignor/
 *.py
 backend/logs/
 backend/test_db.js
+pm2_jlist.json
