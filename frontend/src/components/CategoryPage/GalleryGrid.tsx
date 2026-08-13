@@ -8,7 +8,7 @@ function safeImg(url: string | null | undefined) {
   return `/uploads/${url}`;
 }
 
-export function AsymmetricalGrid({ items }: { items: MainSiteNewsItem[] }) {
+export function GalleryGrid({ items }: { items: MainSiteNewsItem[] }) {
   if (items.length === 0) return null;
 
   return (

@@ -332,12 +332,12 @@ export function DynamicCategoryGrid({ grid, loading = false }: DynamicCategoryGr
                   unoptimized={true}
                   onError={(e) => { if (!e.currentTarget.src.includes(PLACEHOLDER_IMAGE)) { e.currentTarget.srcset = ''; e.currentTarget.src = PLACEHOLDER_IMAGE; } }}
                 />
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3 sm:p-4">
                   <div className="text-white">
-                    <span className="text-[10px] font-bold uppercase tracking-wider mb-1 block text-red-400">
+                    <span className="text-[10px] font-bold uppercase tracking-wider mb-1 block text-red-400 drop-shadow-md">
                       {article.category.name}
                     </span>
-                    <h3 className="font-bold text-sm sm:text-base leading-tight line-clamp-3 drop-shadow-md">
+                    <h3 className="font-bold text-sm sm:text-base leading-tight line-clamp-3 drop-shadow-md group-hover:text-red-400 transition-colors">
                       {article.title}
                     </h3>
                   </div>
