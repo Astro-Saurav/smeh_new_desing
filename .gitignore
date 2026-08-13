@@ -59,3 +59,6 @@ frontend/public/uploads/
 
 # ignor folder to keep track of changes
 ignor/
+*.py
+backend/logs/
+backend/test_db.js

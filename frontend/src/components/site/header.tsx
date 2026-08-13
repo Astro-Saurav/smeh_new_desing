@@ -29,7 +29,6 @@ const navConfig = [
   { name: "Photo Gallery",   url: "/category/gallery" },
   { name: "Announcements",   url: "/category/announcement" },
   { name: "About Us",        url: "/about" },
-  { name: "Editorial Board", url: "/about/editorial-board" },
   { name: "Contact",         url: "/contact" },
 ];
 
