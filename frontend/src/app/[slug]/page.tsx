@@ -15,15 +15,17 @@ export default function CategoryPage() {
     'campus-buzz': 'Campus Buzz',
     'beyond-campus': 'Beyond Campus',
     'social-buzz': 'Social Buzz',
-    'mr-tv': 'Manav Rachna TV',
-    'podcast': 'Podcast',
+    'mr-tv': 'MR TV',
+    'mr-podcast': 'MR Podcast',
     'achievements': 'Achievements',
     'announcement': 'Announcement',
-    'gallery': 'Gallery',
+    'photo-gallery': 'Photo Gallery',
     'students-voices': 'Students Voices',
-    'entertainment-lifestyle': 'Entertainment & Lifestyle',
+    'entertainment-lifestyle': 'Entertainment & Lifestyle Feature',
+    'current-affairs': 'Current Affairs',
     'sports': 'Sports',
   }
+
 
   const categoryName = categoryMap[slug] || 'Category'
 

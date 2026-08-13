@@ -63,7 +63,7 @@ export function CategoryPage({ slug }: { slug: string }) {
   if (loading) return <Skeleton />;
   if (error || !data) return <div className="min-h-screen flex items-center justify-center text-zinc-400"><p>Category not found or no news published yet.</p></div>;
 
-  const isGallery = slug === "gallery" || data.category.slug === "gallery";
+  const isGallery = slug === "photo-gallery" || data.category.slug === "photo-gallery";
   const allStories = isGallery ? [...data.hero, ...data.secondary, ...data.sidebar, ...data.older] : [];
 
   return (

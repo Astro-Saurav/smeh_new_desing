@@ -29,8 +29,8 @@ export function SiteFooter() {
       title: "Multimedia",
       links: [
         { name: "MR TV", href: "/category/mr-tv" },
-        { name: "MR Podcast", href: "/category/podcast" },
-        { name: "Photo Gallery", href: "/category/gallery" },
+        { name: "MR Podcast", href: "/category/mr-podcast" },
+        { name: "Photo Gallery", href: "/category/photo-gallery" },
       ]
     },
     {

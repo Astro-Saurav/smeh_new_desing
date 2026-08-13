@@ -18,13 +18,15 @@ export const routes = {
   beyondCampus: () => '/category/beyond-campus',
   socialBuzz: () => '/category/social-buzz',
   manavRachnaTV: () => '/category/mr-tv',
-  podcast: () => '/category/podcast',
+  mrPodcast: () => '/category/mr-podcast',
   achievements: () => '/category/achievements',
   announcement: () => '/category/announcement',
-  gallery: () => '/category/gallery',
+  photoGallery: () => '/category/photo-gallery',
   studentsVoices: () => '/category/students-voices',
   entertainmentLifestyle: () => '/category/entertainment-lifestyle',
+  currentAffairs: () => '/category/current-affairs',
   sports: () => '/category/sports',
+
   /** Static pages */
   aboutUs: () => '/about',
   editorialBoard: () => '/about/editorial-board',
