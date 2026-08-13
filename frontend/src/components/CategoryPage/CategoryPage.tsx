@@ -3,13 +3,11 @@
 import { useEffect, useState, useCallback } from "react";
 import { getCategoryFeedAPI } from "@/lib/newsApi";
 import type { CategoryFeedResponse, MainSiteNewsItem } from "@/lib/newsApi";
-import { HeroGrid } from "./HeroGrid";
-import { SecondaryStories } from "./SecondaryStories";
-import { SidebarStories } from "./SidebarStories";
-import { OlderStories } from "./OlderStories";
 import { LoadMoreButton } from "./LoadMoreButton";
 import { Skeleton } from "./Skeleton";
-import { GalleryGrid } from "./GalleryGrid";
+import { MultiColumnGrid } from "./MultiColumnGrid";
+import { CardListHybrid } from "./CardListHybrid";
+import { PhotoGrid } from "./PhotoGrid";
 
 export function CategoryPage({ slug }: { slug: string }) {
   const [data, setData] = useState<CategoryFeedResponse | null>(null);
@@ -64,7 +62,9 @@ export function CategoryPage({ slug }: { slug: string }) {
   if (error || !data) return <div className="min-h-screen flex items-center justify-center text-zinc-400"><p>Category not found or no news published yet.</p></div>;
 
   const isGallery = slug === "photo-gallery" || data.category.slug === "photo-gallery";
-  const allStories = isGallery ? [...data.hero, ...data.secondary, ...data.sidebar, ...data.older] : [];
+  const allStories = [...data.hero, ...data.secondary, ...data.sidebar, ...data.older];
+  const topStories = [...data.hero, ...data.secondary, ...data.sidebar];
+  const feedStories = [...data.older];
 
   return (
     <div className="bg-white min-h-screen">
@@ -76,29 +76,15 @@ export function CategoryPage({ slug }: { slug: string }) {
         </div>
         
         {isGallery ? (
-          <GalleryGrid items={allStories} />
+          <PhotoGrid items={allStories} />
         ) : (
           <>
-            {data.hero.length > 0 && (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                <div className={`${data.sidebar.length > 0 ? "lg:col-span-7 lg:border-r lg:pr-10" : "lg:col-span-12"} border-zinc-100`}>
-                  <HeroGrid lead={data.hero[0]} />
-                  
-                  {data.secondary.length > 0 && (
-                    <div className="pt-8 border-t border-zinc-100">
-                      <SecondaryStories stories={data.secondary} />
-                    </div>
-                  )}
-                </div>
-                
-                {data.sidebar.length > 0 && (
-                  <SidebarStories stories={data.sidebar} />
-                )}
+            <MultiColumnGrid items={topStories} />
+            {feedStories.length > 0 && (
+              <div className="mt-16 pt-10 border-t border-zinc-200">
+                <h2 className="text-2xl font-black uppercase mb-8">Latest Updates</h2>
+                <CardListHybrid items={feedStories} />
               </div>
-            )}
-            
-            {data.older.length > 0 && (
-              <OlderStories stories={data.older} />
             )}
           </>
         )}
