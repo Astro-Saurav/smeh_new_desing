@@ -22,7 +22,8 @@ const env = {
   refreshJwtSecret: fromEnv(['REFRESH_JWT_SECRET']),
   refreshJwtExpiresIn: process.env.REFRESH_JWT_EXPIRES_IN || '7d',
   refreshCookieName: process.env.REFRESH_COOKIE_NAME || 'mrt_refresh_token',
-  refreshCookieSecure: String(process.env.REFRESH_COOKIE_SECURE || 'false').toLowerCase() === 'true',
+  // Default to TRUE — cookies must be secure (HTTPS-only) unless explicitly disabled
+  refreshCookieSecure: String(process.env.REFRESH_COOKIE_SECURE ?? 'true').toLowerCase() === 'true',
   refreshCookieSameSite: process.env.REFRESH_COOKIE_SAME_SITE || 'strict',
 
   // Database
@@ -43,8 +44,8 @@ const env = {
   loginLockoutMinutes: Number(process.env.LOGIN_LOCKOUT_MINUTES || 15),
   bcryptRounds: Number(process.env.BCRYPT_ROUNDS || 12),
 
-  // Cron
-  cronSecret: fromEnv(['CRON_SECRET'], 'dev_cron_secret'),
+  // Cron — MUST be set explicitly in production; no insecure default
+  cronSecret: fromEnv(['CRON_SECRET']),
 
   // App
   appName: process.env.APP_NAME || 'Manav Rachna Time',
@@ -54,12 +55,14 @@ const env = {
 const requiredInProduction = [
   ['JWT_SECRET', env.jwtSecret],
   ['REFRESH_JWT_SECRET', env.refreshJwtSecret],
-  ['DATABASE_URL', env.databaseUrl]
+  ['DATABASE_URL', env.databaseUrl],
+  ['CRON_SECRET', env.cronSecret]
 ]
 
 const requiredAlways = [
   ['JWT_SECRET', env.jwtSecret],
-  ['REFRESH_JWT_SECRET', env.refreshJwtSecret]
+  ['REFRESH_JWT_SECRET', env.refreshJwtSecret],
+  ['CRON_SECRET', env.cronSecret]
 ]
 
 function validateEnv () {
@@ -70,6 +73,11 @@ function validateEnv () {
 
   if (missing.length > 0) {
     throw new Error(`[MRT] Missing required environment variables: ${missing.join(', ')}`)
+  }
+
+  // Warn if running in production without HTTPS cookies
+  if (env.nodeEnv === 'production' && !env.refreshCookieSecure) {
+    console.warn('[MRT] WARNING: REFRESH_COOKIE_SECURE is false in production. Refresh tokens will be sent over HTTP!')
   }
 }
 
