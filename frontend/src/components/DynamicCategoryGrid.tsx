@@ -87,7 +87,7 @@ function FeaturedCard({ article }: { article: HomepageArticle }) {
           className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
           loading="lazy"
           unoptimized={true}
-          onError={(e) => { (e.target as HTMLImageElement).src = PLACEHOLDER_IMAGE }}
+          onError={(e) => { if (!e.currentTarget.src.includes(PLACEHOLDER_IMAGE)) { e.currentTarget.srcset = ''; e.currentTarget.src = PLACEHOLDER_IMAGE; } }}
         />
         <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-500" />
         <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-red-600 px-2.5 py-1 text-[10px] rounded-md font-bold uppercase tracking-widest shadow-sm">
@@ -117,7 +117,7 @@ function MediumCard({ article }: { article: HomepageArticle }) {
           className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
           loading="lazy"
           unoptimized={true}
-          onError={(e) => { (e.target as HTMLImageElement).src = PLACEHOLDER_IMAGE }}
+          onError={(e) => { if (!e.currentTarget.src.includes(PLACEHOLDER_IMAGE)) { e.currentTarget.srcset = ''; e.currentTarget.src = PLACEHOLDER_IMAGE; } }}
         />
       </div>
       <div className="flex-1 min-w-0 py-1">
@@ -143,7 +143,7 @@ function SmallCard({ article }: { article: HomepageArticle }) {
           className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
           loading="lazy"
           unoptimized={true}
-          onError={(e) => { (e.target as HTMLImageElement).src = PLACEHOLDER_IMAGE }}
+          onError={(e) => { if (!e.currentTarget.src.includes(PLACEHOLDER_IMAGE)) { e.currentTarget.srcset = ''; e.currentTarget.src = PLACEHOLDER_IMAGE; } }}
         />
       </div>
       <div className="flex items-center justify-between gap-2">
@@ -330,6 +330,7 @@ export function DynamicCategoryGrid({ grid, loading = false }: DynamicCategoryGr
                   fill
                   className="object-cover transform group-hover:scale-105 transition-transform duration-500"
                   unoptimized={true}
+                  onError={(e) => { if (!e.currentTarget.src.includes(PLACEHOLDER_IMAGE)) { e.currentTarget.srcset = ''; e.currentTarget.src = PLACEHOLDER_IMAGE; } }}
                 />
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                   <div className="text-white">

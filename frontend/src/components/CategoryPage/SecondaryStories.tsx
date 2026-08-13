@@ -17,7 +17,7 @@ export function SecondaryStories({ stories }: { stories: MainSiteNewsItem[] }) {
         <div key={i} className="group">
           <Link href={story.link}>
             <div className="relative aspect-video overflow-hidden bg-zinc-50 rounded-lg shadow-sm border border-zinc-100 mb-3">
-              <Image src={safeImg(story.image)} alt={story.headline} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized={true} />
+              <Image src={safeImg(story.image)} alt={story.headline} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized={true} onError={(e) => { if (!e.currentTarget.src.includes('/new_logo.png')) { e.currentTarget.srcset = ''; e.currentTarget.src = '/new_logo.png'; } }} />
             </div>
             <span className="text-[9px] font-black uppercase tracking-wider text-primary mb-1 block">{story.category}</span>
             <h4 className="text-[14px] font-black leading-snug group-hover:text-primary transition-colors mb-1.5 break-words hyphens-auto line-clamp-2">{story.headline}</h4>

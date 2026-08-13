@@ -154,7 +154,7 @@ export async function getNewsByCategory(
 ): Promise<MainSiteNewsItem[]> {
   try {
     const url = `${API_BASE_URL}/api/v1/news?page=1&limit=${limit}&status=published&category=${encodeURIComponent(categoryName)}`;
-    const payload = await fetchJson(url, 60);
+    const payload = await fetchJson(url, 0);
     return extractItems(payload).map((item) => normalizeNewsItem(item, categoryName));
   } catch (error: any) {
     if (error?.cause?.code !== 'ECONNREFUSED') {
@@ -168,7 +168,7 @@ export async function getAllPublishedNews(limit = 20): Promise<MainSiteNewsItem[
   try {
     const payload = await fetchJson(
       `${API_BASE_URL}/api/v1/news?page=1&limit=${limit}&status=published`,
-      60
+      0
     );
     return extractItems(payload).map((item) => normalizeNewsItem(item, 'General'));
   } catch (error: any) {
@@ -211,7 +211,7 @@ export async function getCategoryFeedAPI(slug: string, cursor?: string, limit = 
     const cursorParam = cursor ? `&cursor=${cursor}` : '';
     const url = `${API_BASE_URL}/api/v1/category/${encodeURIComponent(slug)}?limit=${limit}${cursorParam}`;
     // Fetch dynamically if cursor is used, otherwise cache for 60s
-    const payload = await fetchJson(url, cursor ? 0 : 60) as any;
+    const payload = await fetchJson(url, 0) as any;
     
     if (!payload || !payload.category) return null;
     

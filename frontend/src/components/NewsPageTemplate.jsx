@@ -38,7 +38,7 @@ function LeadCard({ story }) {
     <div className="group">
       <Link href={story.link}>
         <div className="relative w-full aspect-video overflow-hidden bg-zinc-100 mb-5">
-          <Image src={img} alt={story.headline} fill className="object-cover group-hover:scale-[1.03] transition-transform duration-700" priority />
+          <Image src={img} alt={story.headline} fill className="object-cover group-hover:scale-[1.03] transition-transform duration-700" priority unoptimized={true} onError={(e) => { if (!e.currentTarget.src.includes('/new_logo.png')) { e.currentTarget.srcset = ''; e.currentTarget.src = '/new_logo.png'; } }} />
         </div>
       </Link>
         <span className="text-[10px] font-black uppercase tracking-widest text-primary mb-2 block">{story.category}</span>
@@ -65,7 +65,7 @@ function MedCard({ story }) {
     <div className="group flex gap-4 border-b border-zinc-100 pb-5 last:border-0 last:pb-0">
       <Link href={story.link} className="block shrink-0">
         <div className="relative w-28 h-20 md:w-32 md:h-24 overflow-hidden bg-zinc-100">
-          <Image src={img} alt={story.headline} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+          <Image src={img} alt={story.headline} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized={true} onError={(e) => { if (!e.currentTarget.src.includes('/new_logo.png')) { e.currentTarget.srcset = ''; e.currentTarget.src = '/new_logo.png'; } }} />
         </div>
       </Link>
       <div className="flex flex-col justify-center min-w-0">

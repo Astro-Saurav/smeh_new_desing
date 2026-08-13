@@ -14,7 +14,7 @@ export function HeroGrid({ lead }: { lead?: MainSiteNewsItem }) {
     <div className="group">
       <Link href={lead.link} className="block">
         <div className="relative aspect-[21/9] md:aspect-video overflow-hidden bg-zinc-50 rounded-xl shadow-sm border border-zinc-100 mb-5">
-          <Image src={safeImg(lead.image)} alt={lead.headline} fill className="object-cover group-hover:scale-105 transition-transform duration-700" priority unoptimized={true} />
+          <Image src={safeImg(lead.image)} alt={lead.headline} fill className="object-cover group-hover:scale-105 transition-transform duration-700" priority unoptimized={true} onError={(e) => { if (!e.currentTarget.src.includes('/new_logo.png')) { e.currentTarget.srcset = ''; e.currentTarget.src = '/new_logo.png'; } }} />
         </div>
         <span className="text-[10px] font-black uppercase tracking-widest text-primary mb-1.5 block">{lead.category}</span>
       <h2 className="text-2xl md:text-4xl font-black leading-tight group-hover:text-primary transition-colors mb-3 break-words hyphens-auto">{lead.headline}</h2>

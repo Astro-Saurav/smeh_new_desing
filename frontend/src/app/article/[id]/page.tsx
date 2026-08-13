@@ -181,7 +181,7 @@ export default function ArticlePage() {
         {/* Lead Image */}
         {imgSrc && (
           <div className="relative w-full aspect-[21/9] md:aspect-video overflow-hidden bg-zinc-50 mb-10 rounded-xl shadow-sm border border-zinc-100">
-            <Image src={imgSrc} alt={article.title || article.headline || 'Untitled'} fill className="object-cover" priority unoptimized={true} />
+            <Image src={imgSrc} alt={article.title || article.headline || 'Untitled'} fill className="object-cover" priority unoptimized={true} onError={(e) => { if (!e.currentTarget.src.includes('/new_logo.png')) { e.currentTarget.srcset = ''; e.currentTarget.src = '/new_logo.png'; } }} />
           </div>
         )}
 

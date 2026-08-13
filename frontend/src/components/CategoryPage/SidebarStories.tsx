@@ -28,7 +28,7 @@ export function SidebarStories({ stories, title = "Latest Headlines" }: { storie
             </div>
             <Link href={story.link} className="shrink-0 hidden sm:block">
               <div className="relative w-20 h-14 overflow-hidden bg-zinc-100">
-                <Image src={safeImg(story.image)} alt={story.headline} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image src={safeImg(story.image)} alt={story.headline} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized={true} onError={(e) => { if (!e.currentTarget.src.includes('/new_logo.png')) { e.currentTarget.srcset = ''; e.currentTarget.src = '/new_logo.png'; } }} />
               </div>
             </Link>
           </div>

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { getAllPublishedNews, getNewsByCategory } from '@/lib/newsApi'
 import { DynamicCategoryGrid } from '@/components/DynamicCategoryGrid'
 
-export const revalidate = 60 // Enable ISR (cache regenerates every 60 seconds)
+export const revalidate = 0 // Disable cache to always show latest news
 
 export default async function HomePage() {
   // Fetch hero stories and category feeds in parallel for maximum performance
