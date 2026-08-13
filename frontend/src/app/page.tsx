@@ -330,32 +330,32 @@ export default async function HomePage() {
         {/* ── Hero Section (Latest News) ─────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
 
-          {/* Main Story */}
-          <div className="lg:col-span-8 border-r-0 lg:border-r border-zinc-100 lg:pr-8">
+          {/* Main Story – 8 columns, text overlaid on image */}
+          <div className="lg:col-span-8">
             {mainStory ? (
-              <Link href={mainStory.link || '#'} className="group block min-w-0">
-                <div className="relative aspect-[21/9] mb-6 overflow-hidden bg-zinc-50 rounded-xl shadow-sm border border-zinc-100">
-                  <Image
-                    src={mainStory.image}
-                    alt={mainStory.headline}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                    priority
-                    unoptimized={true}
-                  />
-                  <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-500" />
-                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-red-600 px-3 py-1 text-[10px] rounded-md font-bold uppercase tracking-widest shadow-sm">
-                    Latest
-                  </div>
+              <Link href={mainStory.link || '#'} className="group block relative overflow-hidden rounded-xl shadow-md aspect-[16/9] bg-zinc-900">
+                <Image
+                  src={mainStory.image}
+                  alt={mainStory.headline}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out opacity-90"
+                  priority
+                  unoptimized={true}
+                />
+                {/* Dark gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+                {/* Category badge */}
+                <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 text-[10px] rounded-sm font-bold uppercase tracking-widest shadow">
+                  {mainStory.category}
                 </div>
-                <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight text-zinc-900 group-hover:text-red-600 transition-colors mb-4">
-                  {mainStory.headline}
-                </h2>
-                <p className="text-zinc-500 line-clamp-3 mb-6 text-lg leading-relaxed">
-                  {mainStory.description}
-                </p>
-                <div className="flex items-center gap-6 text-[10px] font-bold uppercase text-red-600 tracking-widest">
-                  <span>{mainStory.category}</span>
+                {/* Text overlay at bottom */}
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h2 className="text-2xl md:text-4xl font-black tracking-tight leading-tight text-white group-hover:text-red-300 transition-colors mb-3 drop-shadow-lg">
+                    {mainStory.headline}
+                  </h2>
+                  <p className="text-zinc-300 line-clamp-2 text-sm leading-relaxed drop-shadow">
+                    {mainStory.description}
+                  </p>
                 </div>
               </Link>
             ) : (
@@ -363,28 +363,33 @@ export default async function HomePage() {
             )}
           </div>
 
-          {/* Sidebar */}
-          <div className="lg:col-span-4">
-
-
-            <h4 className="text-xs font-bold uppercase text-zinc-400 tracking-[0.2em] mb-8">Trending</h4>
-            <div className="space-y-6">
-              {trendingStories.map((story, i) => (
-                <Link key={story.id} href={story.link || '#'} className="flex gap-4 group items-start min-w-0">
-                  <div className="text-3xl font-black text-zinc-200 group-hover:text-red-600 transition-colors shrink-0 tabular-nums">
-                    0{i + 1}
-                  </div>
-                  <div className="pt-1">
-                    <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider mb-1 block">
-                      {story.category}
-                    </span>
-                    <h5 className="text-[15px] font-bold leading-snug text-zinc-900 group-hover:text-red-600 transition-colors line-clamp-2">
-                      {story.headline}
-                    </h5>
-                  </div>
-                </Link>
-              ))}
-            </div>
+          {/* Sidebar – 4 columns, 3 stacked thumbnail cards */}
+          <div className="lg:col-span-4 flex flex-col gap-4">
+            <h4 className="text-xs font-bold uppercase text-zinc-400 tracking-[0.2em]">Trending</h4>
+            {trendingStories.slice(0, 3).map((story, i) => (
+              <Link key={story.id} href={story.link || '#'} className="flex gap-3 group items-start min-w-0 border-b border-zinc-100 pb-4 last:border-0 last:pb-0">
+                {/* Thumbnail */}
+                <div className="relative w-24 h-16 flex-shrink-0 overflow-hidden rounded-lg bg-zinc-100">
+                  <Image
+                    src={story.image || '/new_logo.png'}
+                    alt={story.headline}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    unoptimized={true}
+                    onError={(e) => { if (!e.currentTarget.src.includes('/new_logo.png')) { e.currentTarget.srcset = ''; e.currentTarget.src = '/new_logo.png'; } }}
+                  />
+                </div>
+                {/* Text */}
+                <div className="flex-1 min-w-0">
+                  <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider mb-1 block">
+                    {story.category}
+                  </span>
+                  <h5 className="text-[13px] font-bold leading-snug text-zinc-900 group-hover:text-red-600 transition-colors line-clamp-3">
+                    {story.headline}
+                  </h5>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
 

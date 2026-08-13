@@ -80,12 +80,12 @@ export function CategoryPage({ slug }: { slug: string }) {
         ) : (
           <>
             {data.hero.length > 0 && (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                <div className={`${data.sidebar.length > 0 ? "lg:col-span-7 lg:border-r lg:pr-10" : "lg:col-span-12"} border-zinc-100`}>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className={`${data.sidebar.length > 0 ? "lg:col-span-8" : "lg:col-span-12"}`}>
                   <HeroGrid lead={data.hero[0]} />
                   
                   {data.secondary.length > 0 && (
-                    <div className="pt-8 border-t border-zinc-100">
+                    <div className="pt-8 border-t border-zinc-100 mt-8">
                       <SecondaryStories stories={data.secondary} />
                     </div>
                   )}

@@ -8,18 +8,42 @@ function safeImg(url: string | null | undefined) {
   return `/uploads/${url}`;
 }
 
+/**
+ * HeroGrid – hero article for category pages.
+ * Full-width image with text overlaid at the bottom via a dark gradient.
+ * Matches the 8-column hero slot in the 12-column grid system.
+ */
 export function HeroGrid({ lead }: { lead?: MainSiteNewsItem }) {
   if (!lead) return null;
   return (
-    <div className="group">
-      <Link href={lead.link} className="block">
-        <div className="relative aspect-[21/9] md:aspect-video overflow-hidden bg-zinc-50 rounded-xl shadow-sm border border-zinc-100 mb-5">
-          <Image src={safeImg(lead.image)} alt={lead.headline} fill className="object-cover group-hover:scale-105 transition-transform duration-700" priority unoptimized={true} onError={(e) => { if (!e.currentTarget.src.includes('/new_logo.png')) { e.currentTarget.srcset = ''; e.currentTarget.src = '/new_logo.png'; } }} />
-        </div>
-        <span className="text-[10px] font-black uppercase tracking-widest text-primary mb-1.5 block">{lead.category}</span>
-      <h2 className="text-2xl md:text-4xl font-black leading-tight group-hover:text-primary transition-colors mb-3 break-words hyphens-auto">{lead.headline}</h2>
-      <p className="text-zinc-600 text-[14px] leading-relaxed line-clamp-3 mb-2">{lead.description}</p>
-      </Link>
-    </div>
+    <Link
+      href={lead.link}
+      className="group relative block overflow-hidden rounded-xl shadow-md aspect-[16/9] bg-zinc-900"
+    >
+      <Image
+        src={safeImg(lead.image)}
+        alt={lead.headline}
+        fill
+        className="object-cover group-hover:scale-105 transition-transform duration-700"
+        priority
+        unoptimized={true}
+        onError={(e) => { if (!e.currentTarget.src.includes('/new_logo.png')) { e.currentTarget.srcset = ''; e.currentTarget.src = '/new_logo.png'; } }}
+      />
+      {/* Dark gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+      {/* Category badge */}
+      <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 text-[10px] rounded-sm font-bold uppercase tracking-widest shadow">
+        {lead.category}
+      </div>
+      {/* Text overlaid at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 p-6">
+        <h2 className="text-2xl md:text-4xl font-black leading-tight text-white group-hover:text-red-300 transition-colors mb-3 drop-shadow-lg break-words hyphens-auto">
+          {lead.headline}
+        </h2>
+        <p className="text-zinc-300 text-sm leading-relaxed line-clamp-2 drop-shadow">
+          {lead.description}
+        </p>
+      </div>
+    </Link>
   );
 }

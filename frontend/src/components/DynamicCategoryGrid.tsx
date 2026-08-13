@@ -35,29 +35,6 @@ export interface HomepageGrid {
   articles: HomepageArticle[]
 }
 
-// ─── Layout Templates ─────────────────────────────────────────────
-// Defines the slot pattern for each layout type.
-// featured_limit articles always start as "featured" slots regardless of this pattern.
-// After the pattern is exhausted, remaining articles flow as uniform "small" cards.
-const GRID_LAYOUTS = {
-  FEATURED: {
-    columns: 12,
-    pattern: ['featured', 'small', 'small', 'small', 'small', 'medium', 'medium', 'medium']
-  },
-  MAGAZINE: {
-    columns: 12,
-    pattern: ['featured', 'medium', 'medium', 'small', 'small', 'small', 'small']
-  },
-  STANDARD: {
-    columns: 12,
-    pattern: ['medium', 'medium', 'medium', 'small', 'small', 'small', 'small', 'small', 'small']
-  },
-  VIDEO: {
-    columns: 12,
-    pattern: ['featured', 'medium', 'medium', 'small', 'small', 'small', 'small']
-  }
-} as const
-
 // ─── Skeleton Loader ──────────────────────────────────────────────
 function ArticleSkeleton({ size }: { size: 'featured' | 'medium' | 'small' }) {
   const heightClass = size === 'featured' ? 'h-[340px]' : size === 'medium' ? 'h-52' : 'h-36'
@@ -66,7 +43,7 @@ function ArticleSkeleton({ size }: { size: 'featured' | 'medium' | 'small' }) {
   )
 }
 
-// ─── Article Card Variants ─────────────────────────────────────────
+// ─── Shared image helper ───────────────────────────────────────────
 const PLACEHOLDER_IMAGE = '/new_logo.png'
 
 function getImageSrc(thumbnail: string | null): string {
@@ -76,6 +53,144 @@ function getImageSrc(thumbnail: string | null): string {
   return `/uploads/${thumbnail}`
 }
 
+// ─── Card Variants ─────────────────────────────────────────────────
+
+/**
+ * HeroOverlayCard – full width, image fills card, text overlaid at bottom.
+ * Used in the 8-column slot of the FEATURED layout.
+ */
+function HeroOverlayCard({ article }: { article: HomepageArticle }) {
+  return (
+    <Link
+      href={routes.article(article.slug)}
+      className="group relative block w-full overflow-hidden rounded-xl shadow-md aspect-[16/9] bg-zinc-900"
+    >
+      <Image
+        src={getImageSrc(article.thumbnail)}
+        alt={article.title}
+        fill
+        className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out opacity-90"
+        loading="lazy"
+        unoptimized={true}
+        onError={(e) => { if (!e.currentTarget.src.includes(PLACEHOLDER_IMAGE)) { e.currentTarget.srcset = ''; e.currentTarget.src = PLACEHOLDER_IMAGE; } }}
+      />
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+      {/* Category badge */}
+      <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 text-[10px] rounded-sm font-bold uppercase tracking-widest shadow">
+        {article.category.name}
+      </div>
+      {/* Text at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 p-5">
+        <h3 className="text-xl md:text-2xl font-black tracking-tight leading-tight text-white group-hover:text-red-300 transition-colors mb-2 drop-shadow-lg">
+          {article.title}
+        </h3>
+        {article.excerpt && (
+          <p className="text-zinc-300 text-sm line-clamp-2 leading-relaxed drop-shadow">
+            {article.excerpt}
+          </p>
+        )}
+      </div>
+    </Link>
+  )
+}
+
+/**
+ * SidebarCard – image left (fixed size), text right.
+ * Used in the 4-column sidebar slot of the FEATURED layout (3 stacked cards).
+ */
+function SidebarCard({ article }: { article: HomepageArticle }) {
+  return (
+    <Link
+      href={routes.article(article.slug)}
+      className="group flex gap-3 items-start min-w-0 border-b border-zinc-100 pb-4 last:border-0 last:pb-0"
+    >
+      {/* Thumbnail */}
+      <div className="relative w-24 h-16 flex-shrink-0 overflow-hidden rounded-lg bg-zinc-100">
+        <Image
+          src={getImageSrc(article.thumbnail)}
+          alt={article.title}
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+          loading="lazy"
+          unoptimized={true}
+          onError={(e) => { if (!e.currentTarget.src.includes(PLACEHOLDER_IMAGE)) { e.currentTarget.srcset = ''; e.currentTarget.src = PLACEHOLDER_IMAGE; } }}
+        />
+      </div>
+      {/* Text */}
+      <div className="flex-1 min-w-0">
+        <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider mb-1 block">
+          {article.category.name}
+        </span>
+        <h4 className="text-[13px] font-bold leading-snug text-zinc-900 group-hover:text-red-600 transition-colors line-clamp-3">
+          {article.title}
+        </h4>
+      </div>
+    </Link>
+  )
+}
+
+/**
+ * StoryCard – image on top, text below.
+ * Used in 3-column (4-across) rows: STANDARD, VIDEO, bottom row of FEATURED, GRID_2X2.
+ */
+function StoryCard({ article }: { article: HomepageArticle }) {
+  return (
+    <Link href={routes.article(article.slug)} className="group flex flex-col h-full min-w-0">
+      <div className="relative aspect-video overflow-hidden bg-zinc-50 rounded-lg shadow-sm border border-zinc-100 mb-3">
+        <Image
+          src={getImageSrc(article.thumbnail)}
+          alt={article.title}
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+          loading="lazy"
+          unoptimized={true}
+          onError={(e) => { if (!e.currentTarget.src.includes(PLACEHOLDER_IMAGE)) { e.currentTarget.srcset = ''; e.currentTarget.src = PLACEHOLDER_IMAGE; } }}
+        />
+      </div>
+      <span className="text-[10px] font-bold uppercase text-red-600 tracking-wider mb-1 block">
+        {article.category.name}
+      </span>
+      <h4 className="text-[14px] font-bold text-zinc-900 group-hover:text-red-600 transition-colors leading-snug line-clamp-3">
+        {article.title}
+      </h4>
+    </Link>
+  )
+}
+
+/**
+ * MediumCard – image left, text right (used in MAGAZINE layout).
+ */
+function MediumCard({ article }: { article: HomepageArticle }) {
+  return (
+    <Link href={routes.article(article.slug)} className="group flex gap-4 items-start min-w-0">
+      <div className="relative w-24 h-24 flex-shrink-0 overflow-hidden bg-zinc-50 rounded-lg shadow-sm border border-zinc-100">
+        <Image
+          src={getImageSrc(article.thumbnail)}
+          alt={article.title}
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+          loading="lazy"
+          unoptimized={true}
+          onError={(e) => { if (!e.currentTarget.src.includes(PLACEHOLDER_IMAGE)) { e.currentTarget.srcset = ''; e.currentTarget.src = PLACEHOLDER_IMAGE; } }}
+        />
+      </div>
+      <div className="flex-1 min-w-0 py-1">
+        <span className="text-[10px] font-bold uppercase text-red-600 tracking-wider block mb-1">
+          {article.category.name}
+        </span>
+        <h4 className="text-[15px] font-bold text-zinc-900 leading-snug group-hover:text-red-600 transition-colors line-clamp-3">
+          {article.title}
+        </h4>
+      </div>
+    </Link>
+  )
+}
+
+/**
+ * FeaturedCard – alias used in MAGAZINE center column.
+ * Large image with text below.
+ */
 function FeaturedCard({ article }: { article: HomepageArticle }) {
   return (
     <Link href={routes.article(article.slug)} className="group flex flex-col h-full min-w-0">
@@ -106,95 +221,6 @@ function FeaturedCard({ article }: { article: HomepageArticle }) {
   )
 }
 
-function MediumCard({ article }: { article: HomepageArticle }) {
-  return (
-    <Link href={routes.article(article.slug)} className="group flex gap-4 items-start min-w-0">
-      <div className="relative w-24 h-24 flex-shrink-0 overflow-hidden bg-zinc-50 rounded-lg shadow-sm border border-zinc-100">
-        <Image
-          src={getImageSrc(article.thumbnail)}
-          alt={article.title}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-          loading="lazy"
-          unoptimized={true}
-          onError={(e) => { if (!e.currentTarget.src.includes(PLACEHOLDER_IMAGE)) { e.currentTarget.srcset = ''; e.currentTarget.src = PLACEHOLDER_IMAGE; } }}
-        />
-      </div>
-      <div className="flex-1 min-w-0 py-1">
-        <span className="text-[10px] font-bold uppercase text-red-600 tracking-wider block mb-1">
-          {article.category.name}
-        </span>
-        <h4 className="text-[15px] font-bold text-zinc-900 leading-snug group-hover:text-red-600 transition-colors line-clamp-3">
-          {article.title}
-        </h4>
-      </div>
-    </Link>
-  )
-}
-
-function SmallCard({ article }: { article: HomepageArticle }) {
-  return (
-    <Link href={routes.article(article.slug)} className="group flex flex-col h-full min-w-0">
-      <div className="relative aspect-video overflow-hidden bg-zinc-50 rounded-lg shadow-sm border border-zinc-100 mb-3">
-        <Image
-          src={getImageSrc(article.thumbnail)}
-          alt={article.title}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-          loading="lazy"
-          unoptimized={true}
-          onError={(e) => { if (!e.currentTarget.src.includes(PLACEHOLDER_IMAGE)) { e.currentTarget.srcset = ''; e.currentTarget.src = PLACEHOLDER_IMAGE; } }}
-        />
-      </div>
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-[10px] font-bold uppercase text-red-600 tracking-wider">
-          {article.category.name}
-        </span>
-        {article.category.name === 'Social Buzz' && article.author && (
-          <span className="text-[10px] font-medium text-zinc-500 truncate max-w-[50%] text-right">
-            By {article.author}
-          </span>
-        )}
-      </div>
-      <h4 className="text-[15px] font-bold text-zinc-900 group-hover:text-red-600 transition-colors leading-snug mt-1.5 line-clamp-2">
-        {article.title}
-      </h4>
-    </Link>
-  )
-}
-
-// ─── Slot resolver ────────────────────────────────────────────────
-function getSlotType(
-  index: number,
-  featuredLimit: number,
-  pattern: readonly string[]
-): 'featured' | 'medium' | 'small' {
-  // First N articles are always "featured"
-  if (index < featuredLimit) return 'featured'
-
-  // Map remaining articles against the layout pattern (after featured slots)
-  const patternIndex = index - featuredLimit
-  if (patternIndex < pattern.length) {
-    const slot = pattern[patternIndex]
-    return (slot === 'featured' || slot === 'medium' || slot === 'small') ? slot : 'small'
-  }
-
-  // Pattern exhausted → uniform small cards via CSS auto-placement
-  return 'small'
-}
-
-// ─── Grid CSS class resolver ──────────────────────────────────────
-function getSlotClasses(slot: 'featured' | 'medium' | 'small'): string {
-  switch (slot) {
-    case 'featured':
-      return 'col-span-12 md:col-span-8'
-    case 'medium':
-      return 'col-span-12 md:col-span-4'
-    case 'small':
-      return 'col-span-12 sm:col-span-6 md:col-span-4'
-  }
-}
-
 // ─── Main DynamicCategoryGrid Component ───────────────────────────
 interface DynamicCategoryGridProps {
   grid: HomepageGrid
@@ -220,8 +246,7 @@ export function DynamicCategoryGrid({ grid, loading = false }: DynamicCategoryGr
 
   if (!grid.articles || grid.articles.length === 0) return null
 
-  // Helper to safely get articles
-  const articles = grid.articles;
+  const articles = grid.articles
 
   return (
     <section className="border-t border-zinc-200 pt-10 mt-10 mb-12">
@@ -240,31 +265,32 @@ export function DynamicCategoryGrid({ grid, loading = false }: DynamicCategoryGr
         )}
       </div>
 
-      {/* ─── Robust Layouts ────────────────────────────── */}
-      
+      {/* ─── FEATURED Layout: 8/4 hero row + 4-across bottom row ─── */}
       {grid.layout === 'FEATURED' && (
         <div className="flex flex-col gap-6">
-          {/* Top row: 1 massive featured, 2 small stacked on right */}
+          {/* Top row: hero (8 cols) + 3 sidebar cards (4 cols) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div className="lg:col-span-8">
-              {articles[0] && <FeaturedCard article={articles[0]} />}
+              {articles[0] && <HeroOverlayCard article={articles[0]} />}
             </div>
-            <div className="lg:col-span-4 flex flex-col gap-6">
-              {articles[1] && <SmallCard article={articles[1]} />}
-              {articles[2] && <SmallCard article={articles[2]} />}
+            <div className="lg:col-span-4 flex flex-col gap-4">
+              {articles.slice(1, 4).map(article => (
+                <SidebarCard key={article.id} article={article} />
+              ))}
             </div>
           </div>
-          {/* Bottom row: up to 4 small cards */}
-          {articles.length > 3 && (
+          {/* Bottom row: 4-across (3 cols each = 12 total) */}
+          {articles.length > 4 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-6 border-t border-zinc-100">
-              {articles.slice(3, 7).map(article => (
-                <SmallCard key={article.id} article={article} />
+              {articles.slice(4, 8).map(article => (
+                <StoryCard key={article.id} article={article} />
               ))}
             </div>
           )}
         </div>
       )}
 
+      {/* ─── MAGAZINE Layout: 3 medium | 6 featured | 3 medium ─── */}
       {grid.layout === 'MAGAZINE' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Column: List */}
@@ -286,22 +312,25 @@ export function DynamicCategoryGrid({ grid, loading = false }: DynamicCategoryGr
         </div>
       )}
 
+      {/* ─── STANDARD / VIDEO Layout: 4-across (3 cols each) ─── */}
       {(grid.layout === 'STANDARD' || grid.layout === 'VIDEO') && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {articles.slice(0, 8).map((article) => (
-            <SmallCard key={article.id} article={article} />
+            <StoryCard key={article.id} article={article} />
           ))}
         </div>
       )}
 
+      {/* ─── GRID_2X2 Layout: 2 columns, 2 rows ─── */}
       {grid.layout === 'GRID_2X2' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {articles.slice(0, 4).map((article) => (
-            <SmallCard key={article.id} article={article} />
+            <StoryCard key={article.id} article={article} />
           ))}
         </div>
       )}
 
+      {/* ─── BENTO Layout (Photo Gallery) – DO NOT MODIFY ─── */}
       {grid.layout === 'BENTO' && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[150px] md:auto-rows-[250px] grid-flow-row-dense">
           {articles.map((article, index) => {
@@ -319,9 +348,9 @@ export function DynamicCategoryGrid({ grid, loading = false }: DynamicCategoryGr
             }
 
             return (
-              <Link 
-                key={article.id} 
-                href={routes.article(article.slug)} 
+              <Link
+                key={article.id}
+                href={routes.article(article.slug)}
                 className={`${spanClass} group relative overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-all`}
               >
                 <Image
