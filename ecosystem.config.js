@@ -6,7 +6,7 @@ module.exports = {
     {
       name: 'mrt-api',
       script: './backend/src/server.js',
-      cwd: '/var/www/mrt',
+      cwd: './',
       instances: 'max',          // Cluster mode: uses all CPU cores
       exec_mode: 'cluster',
       autorestart: true,
@@ -21,8 +21,8 @@ module.exports = {
         PORT: 8080
       },
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
-      error_file: '/var/www/mrt/logs/pm2-error.log',
-      out_file: '/var/www/mrt/logs/pm2-out.log',
+      error_file: './logs/pm2-error.log',
+      out_file: './logs/pm2-out.log',
       merge_logs: true,
       // Graceful shutdown
       kill_timeout: 5000,
@@ -32,7 +32,7 @@ module.exports = {
     {
       name: 'mrt-workers',
       script: './backend/src/workers/runner.js',
-      cwd: '/var/www/mrt',
+      cwd: './',
       instances: 1,              // Workers run as a single instance
       exec_mode: 'fork',
       autorestart: true,
@@ -45,15 +45,15 @@ module.exports = {
         NODE_ENV: 'production'
       },
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
-      error_file: '/var/www/mrt/logs/pm2-workers-error.log',
-      out_file: '/var/www/mrt/logs/pm2-workers-out.log',
+      error_file: './logs/pm2-workers-error.log',
+      out_file: './logs/pm2-workers-out.log',
       merge_logs: true
     },
     {
       name: 'mrt-frontend',
       script: 'npm',
       args: 'start',
-      cwd: '/var/www/mrt/frontend',
+      cwd: './frontend',
       instances: 1,
       exec_mode: 'fork',
       autorestart: true,
@@ -64,8 +64,8 @@ module.exports = {
         PORT: 3000
       },
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
-      error_file: '/var/www/mrt/logs/pm2-frontend-error.log',
-      out_file: '/var/www/mrt/logs/pm2-frontend-out.log',
+      error_file: './logs/pm2-frontend-error.log',
+      out_file: './logs/pm2-frontend-out.log',
       merge_logs: true
     }
   ]
