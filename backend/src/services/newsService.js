@@ -9,6 +9,7 @@ const NEWS_SELECT = {
   slug: true,
   excerpt: true,
   content: true,
+  status: true,
   is_featured: true,
   is_pinned: true,
   is_breaking: true,

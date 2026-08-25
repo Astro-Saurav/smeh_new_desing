@@ -67,6 +67,7 @@ function getImageUrl(url: string | null | undefined) {
   if (!url || url === "undefined" || url === "") return null;
   if (url.startsWith('http')) return url;
   if (url.startsWith('/')) return url;
+  if (url.startsWith('uploads/')) return `/${url}`;
   return `/uploads/${url}`;
 }
 

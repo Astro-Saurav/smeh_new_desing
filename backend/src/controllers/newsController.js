@@ -40,7 +40,9 @@ const create = asyncHandler(async (req, res) => {
 })
 
 const list = asyncHandler(async (req, res) => {
-  const { category, search, status, page = 1, limit = 10, featured, breaking, visibility } = req.validated?.query || req.query
+  const query = req.validated?.query || req.query
+  const { category, search, status, page = 1, featured, breaking, visibility } = query
+  const limit = query.pageSize || query.limit || 10
 
   const result = await listNews({
     category,
