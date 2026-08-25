@@ -76,7 +76,7 @@ smeh_new_desing/
 
 ## 💾 Automated VPS Backups & Disaster Recovery
 
-The production VPS (`root@187.127.156.106`) runs an automated **daily backup system** with a **rolling 3-day retention policy**:
+The production VPS runs an automated **daily backup system** with a **rolling 3-day retention policy**:
 
 - **Backup Schedule:** Daily at **02:00 AM** via Cron (`/root/vps_backups/auto_daily_backup.sh`)
 - **Backed Up Components:**
