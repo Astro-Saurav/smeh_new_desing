@@ -1,6 +1,23 @@
 'use client'
 
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState, useRef } from 'react'
+import {
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Maximize2,
+  Minimize2,
+  ZoomIn,
+  ZoomOut,
+  RotateCw,
+  Play,
+  Pause,
+  Share2,
+  Check,
+  Layers,
+  Sparkles
+} from 'lucide-react'
 
 export interface LightboxImage {
   src: string
@@ -23,7 +40,22 @@ export function LightboxModal({
   onClose,
   onNavigate
 }: LightboxModalProps) {
+  const [zoom, setZoom] = useState(1)
+  const [rotation, setRotation] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
+  const [showThumbnails, setShowThumbnails] = useState(true)
+
+  const containerRef = useRef<HTMLDivElement>(null)
   const currentImg = images[currentIndex]
+
+  // Reset zoom & rotation when changing photos
+  useEffect(() => {
+    setZoom(1)
+    setRotation(0)
+  }, [currentIndex])
 
   const handlePrev = useCallback(() => {
     if (images.length === 0) return
@@ -35,6 +67,16 @@ export function LightboxModal({
     onNavigate((currentIndex + 1) % images.length)
   }, [currentIndex, images.length, onNavigate])
 
+  // Slideshow timer
+  useEffect(() => {
+    if (!isOpen || !isPlaying || images.length <= 1) return
+    const timer = setInterval(() => {
+      handleNext()
+    }, 3500)
+    return () => clearInterval(timer)
+  }, [isOpen, isPlaying, images.length, handleNext])
+
+  // Keyboard navigation
   useEffect(() => {
     if (!isOpen) return
 
@@ -42,6 +84,13 @@ export function LightboxModal({
       if (e.key === 'Escape') onClose()
       if (e.key === 'ArrowLeft') handlePrev()
       if (e.key === 'ArrowRight') handleNext()
+      if (e.key === ' ') {
+        e.preventDefault()
+        setIsPlaying(prev => !prev)
+      }
+      if (e.key === 'f' || e.key === 'F') {
+        toggleBrowserFullscreen()
+      }
     }
 
     document.body.style.overflow = 'hidden'
@@ -53,10 +102,43 @@ export function LightboxModal({
     }
   }, [isOpen, onClose, handlePrev, handleNext])
 
-  if (!isOpen || !currentImg) return null
+  const toggleBrowserFullscreen = () => {
+    if (!document.fullscreenElement) {
+      containerRef.current?.requestFullscreen().catch(() => {})
+      setIsFullscreen(true)
+    } else {
+      document.exitFullscreen().catch(() => {})
+      setIsFullscreen(false)
+    }
+  }
+
+  const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.5, 3))
+  const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.5, 0.5))
+  const handleResetTransform = () => {
+    setZoom(1)
+    setRotation(0)
+  }
+
+  const handleRotate = () => setRotation(prev => (prev + 90) % 360)
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    try {
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(window.location.href)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2500)
+      }
+    } catch {
+      // Fallback
+    }
+  }
 
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation()
+    if (!currentImg) return
+
+    setIsDownloading(true)
     try {
       const response = await fetch(currentImg.src)
       const blob = await response.blob()
@@ -69,92 +151,234 @@ export function LightboxModal({
       link.click()
       document.body.removeChild(link)
       window.URL.revokeObjectURL(blobUrl)
-    } catch (err) {
-      console.error('Failed to download image:', err)
-      // Fallback direct open/download link
+    } catch {
       window.open(currentImg.src, '_blank')
+    } finally {
+      setTimeout(() => setIsDownloading(false), 1000)
     }
   }
 
+  if (!isOpen || !currentImg) return null
+
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col justify-between p-4 md:p-8 animate-fadeIn"
+      ref={containerRef}
+      className="fixed inset-0 z-50 bg-zinc-950/95 backdrop-blur-2xl flex flex-col justify-between select-none animate-fadeIn font-sans text-zinc-100 overflow-hidden"
       onClick={onClose}
     >
-      {/* ─── Top Control Bar ─── */}
-      <div className="flex items-center justify-between z-10 w-full max-w-7xl mx-auto py-2 px-4" onClick={e => e.stopPropagation()}>
-        {/* Counter */}
-        <div className="text-zinc-300 font-mono text-xs md:text-sm bg-zinc-900/80 border border-zinc-800 px-3 py-1.5 rounded-full shadow">
-          📷 <span className="font-bold text-white">{currentIndex + 1}</span> / {images.length}
+      {/* ─── TOP CONTROL BAR ─── */}
+      <div
+        className="relative z-30 w-full px-4 md:px-8 py-3 flex items-center justify-between bg-gradient-to-b from-zinc-950 via-zinc-950/80 to-transparent border-b border-zinc-800/40"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Left: Counter & Title */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 px-3 py-1 bg-zinc-900/90 border border-zinc-700/60 rounded-full text-xs font-mono text-zinc-300 shadow-sm">
+            <Layers className="w-3.5 h-3.5 text-red-500" />
+            <span>
+              <strong className="text-white">{currentIndex + 1}</strong> / {images.length}
+            </span>
+          </div>
+
+          {currentImg.title && (
+            <span className="hidden sm:inline-block text-xs font-medium text-zinc-400 max-w-xs md:max-w-md truncate">
+              {currentImg.title}
+            </span>
+          )}
         </div>
 
-        {/* Action Controls */}
-        <div className="flex items-center gap-3">
-          {/* Download Button */}
+        {/* Center/Right: Sleek Tool Buttons */}
+        <div className="flex items-center gap-1.5 md:gap-2">
+          {/* Slideshow Auto Play/Pause */}
+          {images.length > 1 && (
+            <button
+              onClick={() => setIsPlaying(prev => !prev)}
+              className={`p-2 rounded-lg transition-all flex items-center gap-1 text-xs font-medium ${
+                isPlaying
+                  ? 'bg-red-600/90 text-white ring-2 ring-red-500/50'
+                  : 'bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 border border-zinc-800'
+              }`}
+              title={isPlaying ? 'Pause Slideshow (Space)' : 'Play Slideshow (Space)'}
+            >
+              {isPlaying ? <Pause className="w-4 h-4 text-white" /> : <Play className="w-4 h-4 text-zinc-300" />}
+              <span className="hidden md:inline">{isPlaying ? 'Pause' : 'Slideshow'}</span>
+            </button>
+          )}
+
+          {/* Zoom In */}
           <button
-            onClick={handleDownload}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs md:text-sm font-bold rounded-lg shadow transition active:scale-95"
-            title="Download full resolution photo"
+            onClick={handleZoomIn}
+            disabled={zoom >= 3}
+            className="p-2 bg-zinc-900/80 hover:bg-zinc-800 disabled:opacity-40 text-zinc-300 border border-zinc-800 rounded-lg transition"
+            title="Zoom In"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            <span>Download</span>
+            <ZoomIn className="w-4 h-4" />
           </button>
 
-          {/* Close Button */}
+          {/* Zoom Out */}
+          <button
+            onClick={handleZoomOut}
+            disabled={zoom <= 0.5}
+            className="p-2 bg-zinc-900/80 hover:bg-zinc-800 disabled:opacity-40 text-zinc-300 border border-zinc-800 rounded-lg transition"
+            title="Zoom Out"
+          >
+            <ZoomOut className="w-4 h-4" />
+          </button>
+
+          {/* Rotate */}
+          <button
+            onClick={handleRotate}
+            className="p-2 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 rounded-lg transition"
+            title="Rotate 90°"
+          >
+            <RotateCw className="w-4 h-4" />
+          </button>
+
+          {/* Reset Zoom/Rotate (only if transformed) */}
+          {(zoom !== 1 || rotation !== 0) && (
+            <button
+              onClick={handleResetTransform}
+              className="px-2 py-1 bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-800/60 text-[10px] font-mono rounded-lg transition"
+              title="Reset View"
+            >
+              Reset
+            </button>
+          )}
+
+          <div className="w-px h-5 bg-zinc-800 mx-1" />
+
+          {/* Copy Share Link */}
+          <button
+            onClick={handleShare}
+            className="p-2 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 rounded-lg transition relative"
+            title="Share Album"
+          >
+            {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4" />}
+          </button>
+
+          {/* Modern Icon Download Button */}
+          <button
+            onClick={handleDownload}
+            disabled={isDownloading}
+            className="p-2 bg-zinc-900/90 hover:bg-red-600/90 text-zinc-200 hover:text-white border border-zinc-800 hover:border-red-500/50 rounded-lg transition flex items-center gap-1.5 shadow-sm active:scale-95"
+            title="Download Full Quality Image"
+          >
+            <Download className={`w-4 h-4 ${isDownloading ? 'animate-bounce text-red-400' : ''}`} />
+            <span className="hidden sm:inline text-xs font-semibold">Download</span>
+          </button>
+
+          {/* Fullscreen Toggle */}
+          <button
+            onClick={toggleBrowserFullscreen}
+            className="p-2 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 rounded-lg transition"
+            title="Toggle Native Fullscreen (F)"
+          >
+            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+          </button>
+
+          {/* Close Modal */}
           <button
             onClick={onClose}
-            className="w-9 h-9 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 text-white rounded-full transition shadow text-lg font-bold"
-            title="Close (Esc)"
+            className="p-2 bg-red-600/90 hover:bg-red-500 text-white rounded-lg transition shadow-md ml-1"
+            title="Close Lightbox (Esc)"
           >
-            ✕
+            <X className="w-4.5 h-4.5" />
           </button>
         </div>
       </div>
 
-      {/* ─── Main Image Viewer with Navigation ─── */}
-      <div className="relative flex-1 flex items-center justify-center my-4 max-w-7xl mx-auto w-full overflow-hidden">
-        {/* Previous Button */}
+      {/* ─── MAIN STAGE: IMAGE DISPLAY & NAV ARROWS ─── */}
+      <div className="relative flex-1 flex items-center justify-center w-full max-w-7xl mx-auto px-4 md:px-12 my-auto overflow-hidden">
+        {/* Nav Left Arrow */}
         {images.length > 1 && (
           <button
-            onClick={(e) => { e.stopPropagation(); handlePrev(); }}
-            className="absolute left-2 md:left-6 z-20 w-11 h-11 md:w-14 md:h-14 bg-black/60 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition shadow-lg backdrop-blur-sm border border-white/10 group"
+            onClick={(e) => {
+              e.stopPropagation()
+              handlePrev()
+            }}
+            className="absolute left-2 md:left-6 z-30 p-3.5 rounded-full bg-zinc-900/80 hover:bg-red-600 text-white border border-zinc-800 hover:border-red-500 shadow-2xl backdrop-blur-md transition-all duration-200 transform hover:scale-110 active:scale-95 group"
             title="Previous (Left Arrow)"
           >
-            <svg className="w-6 h-6 transform group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
-            </svg>
+            <ChevronLeft className="w-6 h-6 transform group-hover:-translate-x-0.5 transition-transform" />
           </button>
         )}
 
-        {/* Display Image */}
-        <div className="relative max-h-full max-w-full flex items-center justify-center p-2" onClick={e => e.stopPropagation()}>
+        {/* Display Image with Dynamic Zoom & Rotation */}
+        <div
+          className="relative max-h-full max-w-full flex items-center justify-center transition-transform duration-300 ease-out"
+          onClick={e => e.stopPropagation()}
+        >
           <img
             src={currentImg.src}
             alt={currentImg.title || `Photo ${currentIndex + 1}`}
-            className="max-h-[78vh] max-w-[90vw] object-contain rounded-lg shadow-2xl transition-transform duration-300"
+            style={{
+              transform: `scale(${zoom}) rotate(${rotation}deg)`,
+              maxHeight: showThumbnails ? '68vh' : '82vh',
+              maxWidth: '88vw'
+            }}
+            className="object-contain rounded-xl shadow-2xl transition-all duration-300 ease-out cursor-grab active:cursor-grabbing border border-zinc-800/50"
           />
         </div>
 
-        {/* Next Button */}
+        {/* Nav Right Arrow */}
         {images.length > 1 && (
           <button
-            onClick={(e) => { e.stopPropagation(); handleNext(); }}
-            className="absolute right-2 md:right-6 z-20 w-11 h-11 md:w-14 md:h-14 bg-black/60 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition shadow-lg backdrop-blur-sm border border-white/10 group"
+            onClick={(e) => {
+              e.stopPropagation()
+              handleNext()
+            }}
+            className="absolute right-2 md:right-6 z-30 p-3.5 rounded-full bg-zinc-900/80 hover:bg-red-600 text-white border border-zinc-800 hover:border-red-500 shadow-2xl backdrop-blur-md transition-all duration-200 transform hover:scale-110 active:scale-95 group"
             title="Next (Right Arrow)"
           >
-            <svg className="w-6 h-6 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
-            </svg>
+            <ChevronRight className="w-6 h-6 transform group-hover:translate-x-0.5 transition-transform" />
           </button>
         )}
       </div>
 
-      {/* ─── Bottom Caption Overlay ─── */}
-      {currentImg.title && (
-        <div className="text-center text-zinc-300 text-xs md:text-sm max-w-3xl mx-auto py-2 px-4 bg-zinc-900/60 rounded-lg backdrop-blur-sm" onClick={e => e.stopPropagation()}>
-          {currentImg.title}
+      {/* ─── BOTTOM CAPTION & FILMSTRIP THUMBNAILS ─── */}
+      <div
+        className="relative z-30 w-full bg-gradient-to-t from-zinc-950 via-zinc-950/90 to-transparent pt-3 pb-4 px-4 border-t border-zinc-800/40 space-y-3"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Caption */}
+        {currentImg.title && (
+          <div className="text-center">
+            <span className="text-xs md:text-sm font-medium text-zinc-300 bg-zinc-900/80 border border-zinc-800/80 px-4 py-1.5 rounded-full shadow inline-block">
+              {currentImg.title}
+            </span>
+          </div>
+        )}
+
+        {/* Filmstrip Carousel of Album Photos */}
+        {images.length > 1 && showThumbnails && (
+          <div className="flex items-center justify-center gap-2 overflow-x-auto py-1 px-4 max-w-4xl mx-auto no-scrollbar">
+            {images.map((img, idx) => {
+              const isSelected = idx === currentIndex
+              return (
+                <button
+                  key={idx}
+                  onClick={() => onNavigate(idx)}
+                  className={`relative flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                    isSelected
+                      ? 'border-red-500 ring-2 ring-red-500/50 scale-105 opacity-100 shadow-lg'
+                      : 'border-zinc-800 opacity-50 hover:opacity-100 hover:border-zinc-600'
+                  }`}
+                >
+                  <img src={img.src} alt="" className="w-full h-full object-cover" />
+                  {isSelected && (
+                    <div className="absolute inset-0 bg-red-600/20 border border-red-400 rounded-lg pointer-events-none" />
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Copied Toast */}
+      {copied && (
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white font-semibold text-xs px-4 py-2 rounded-full shadow-xl flex items-center gap-2 animate-bounce">
+          <Check className="w-4 h-4" /> Link Copied to Clipboard!
         </div>
       )}
     </div>

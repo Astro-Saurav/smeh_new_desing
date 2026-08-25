@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Clock, Youtube, PlayCircle, Tag, User, Download, Images } from "lucide-react";
+import { ArrowLeft, Clock, Youtube, PlayCircle, Tag, User, Download, Images, Maximize2 } from "lucide-react";
 import { LightboxModal, LightboxImage } from "@/components/Gallery/LightboxModal";
 
 const getBaseUrl = () => {
@@ -269,9 +269,9 @@ export default function ArticlePage() {
                         }}
                         className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                       />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <span className="bg-red-600 text-white font-bold text-xs px-4 py-2 rounded-full shadow-lg flex items-center gap-2 transform translate-y-2 group-hover:translate-y-0 transition-transform">
-                          🔍 View Fullscreen
+                      <div className="absolute inset-0 bg-zinc-950/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                        <span className="bg-zinc-900/90 text-white font-semibold text-xs px-4 py-2 rounded-full border border-white/20 shadow-2xl flex items-center gap-2 transform translate-y-2 group-hover:translate-y-0 transition-all group-hover:border-red-500/80 group-hover:bg-red-600">
+                          <Maximize2 className="w-3.5 h-3.5 text-white" /> Expand Fullscreen
                         </span>
                       </div>
                       <div className="absolute bottom-2 left-2 bg-black/70 text-white text-[10px] font-mono px-2 py-0.5 rounded">
