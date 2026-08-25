@@ -161,7 +161,7 @@ function BreakingNewsTicker() {
         });
 
         const breakingItems = nonGallery.filter((n: any) => n.is_breaking === true || n.isBreaking === true);
-        setHeadlines(breakingItems.length > 0 ? breakingItems : nonGallery.slice(0, 10));
+        setHeadlines(breakingItems);
       })
       .catch(console.error);
 
@@ -171,7 +171,7 @@ function BreakingNewsTicker() {
     };
   }, []);
 
-  if (!mounted || !enabled) return null;
+  if (!mounted || !enabled || headlines.length === 0) return null;
 
   return (
     <div className="w-full bg-zinc-950 border-y border-red-900/40 text-white h-9 flex items-center overflow-hidden relative shadow-inner z-20">

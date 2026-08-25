@@ -34,6 +34,7 @@ export default function EditNewsPage() {
     category_id: '',
     youtube_url: '',
     status: 'published',
+    is_breaking: false,
     thumbnail_media_id: undefined as string | undefined,
     titleFont: 'Inter',
     excerptFont: 'Inter',
@@ -77,6 +78,7 @@ export default function EditNewsPage() {
             category_id: article.category?.id || article.category_id || '',
             youtube_url: article.youtube_url || '',
             status: article.status || 'published',
+            is_breaking: !!(article.is_breaking || article.isBreaking),
             thumbnail_media_id: article.thumbnail_media_id || undefined,
             titleFont: article.title_font || 'Inter',
             excerptFont: article.excerpt_font || 'Inter',
@@ -176,6 +178,7 @@ export default function EditNewsPage() {
           categoryId: formData.category_id,
           youtubeUrl: formData.youtube_url || null,
           status: formData.status,
+          isBreaking: formData.is_breaking,
           ...(thumbnailMediaId !== undefined && { thumbnailMediaId }),
           ...(documentMediaId !== undefined && { documentMediaId }),
           titleFont: formData.titleFont,
@@ -378,7 +381,31 @@ export default function EditNewsPage() {
                   <option value="published" className="bg-zinc-900 text-zinc-200 py-1">Published (Live)</option>
                   <option value="draft" className="bg-zinc-900 text-zinc-200 py-1">Draft</option>
                 </select>
-                <ChevronDown className="w-3.5 h-3.5 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Breaking News Toggle */}
+            <div className="pt-2 border-t border-zinc-800/60">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-xs font-semibold text-white flex items-center gap-1.5 cursor-pointer">
+                    ⚡ Breaking News
+                  </label>
+                  <p className="text-[10px] text-zinc-500">Show on main website ticker</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, is_breaking: !prev.is_breaking }))}
+                  className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    formData.is_breaking ? 'bg-red-600' : 'bg-zinc-800'
+                  }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                      formData.is_breaking ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
               </div>
             </div>
 

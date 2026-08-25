@@ -12,6 +12,8 @@ interface NewsItem {
   excerpt?: string
   category: { id: string; name: string }
   status: string
+  is_breaking?: boolean
+  isBreaking?: boolean
   views_count: number
   created_at: string
 }
@@ -54,6 +56,28 @@ export default function NewsManagementPage() {
     setMounted(true)
     fetchData()
   }, [fetchData])
+
+  const handleToggleBreaking = async (id: string, currentVal: boolean) => {
+    try {
+      const token = cacheManager.getAccessToken()
+      if (!token) return
+      const res = await fetch(`/api/v1/news/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ isBreaking: !currentVal })
+      })
+      if (res.ok) {
+        setNewsList(prev => prev.map(n => n.id === id ? { ...n, is_breaking: !currentVal, isBreaking: !currentVal } : n))
+        setSuccessMsg(`Breaking news ${!currentVal ? 'enabled ⚡' : 'disabled'}`)
+        setTimeout(() => setSuccessMsg(''), 2500)
+      }
+    } catch (e) {
+      console.error('Failed to toggle breaking news:', e)
+    }
+  }
 
   const handleDelete = async (id: string) => {
     setShowConfirm(null)
@@ -219,41 +243,59 @@ export default function NewsManagementPage() {
                   <th className="py-3 px-4">Article Title</th>
                   <th className="py-3 px-4">Category</th>
                   <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4">Breaking Ticker</th>
                   <th className="py-3 px-4">Views</th>
                   <th className="py-3 px-4">Date</th>
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/60">
-                {processedNews.map((item) => (
-                  <tr key={item.id} className="hover:bg-zinc-800/40 transition">
-                    <td className="py-3 px-4 font-medium text-white max-w-xs truncate">
-                      {item.title}
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className="inline-block px-2 py-0.5 bg-zinc-800 border border-zinc-700/60 text-zinc-300 rounded text-[10px] font-mono">
-                        {item.category?.name || 'Uncategorized'}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold ${
-                          item.status === 'published'
-                            ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/40'
-                            : 'bg-amber-950/60 text-amber-400 border border-amber-800/40'
-                        }`}
-                      >
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 font-mono text-zinc-400">{item.views_count || 0}</td>
-                    <td className="py-3 px-4 text-zinc-400 text-[11px]">
-                      {new Date(item.created_at).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
-                      })}
-                    </td>
+                {processedNews.map((item) => {
+                  const isBreaking = !!(item.is_breaking || item.isBreaking)
+
+                  return (
+                    <tr key={item.id} className="hover:bg-zinc-800/40 transition">
+                      <td className="py-3 px-4 font-medium text-white max-w-xs truncate">
+                        {item.title}
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className="inline-block px-2 py-0.5 bg-zinc-800 border border-zinc-700/60 text-zinc-300 rounded text-[10px] font-mono">
+                          {item.category?.name || 'Uncategorized'}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <span
+                          className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold ${
+                            item.status === 'published'
+                              ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/40'
+                              : 'bg-amber-950/60 text-amber-400 border border-amber-800/40'
+                          }`}
+                        >
+                          {item.status}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <button
+                          type="button"
+                          onClick={() => handleToggleBreaking(item.id, isBreaking)}
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold border transition cursor-pointer shadow-xs ${
+                            isBreaking
+                              ? 'bg-red-950/80 text-red-400 border-red-800/80 hover:bg-red-900/90 ring-1 ring-red-800/50'
+                              : 'bg-zinc-900 text-zinc-500 border-zinc-800 hover:bg-zinc-800 hover:text-zinc-300'
+                          }`}
+                          title="Click to toggle breaking news ticker on main site"
+                        >
+                          <span>{isBreaking ? '⚡ Breaking' : 'Off'}</span>
+                        </button>
+                      </td>
+                      <td className="py-3 px-4 font-mono text-zinc-400">{item.views_count || 0}</td>
+                      <td className="py-3 px-4 text-zinc-400 text-[11px]">
+                        {new Date(item.created_at).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        })}
+                      </td>
                     <td className="py-3 px-4 text-right">
                       {showConfirm === item.id ? (
                         <div className="flex items-center justify-end gap-1.5">
@@ -292,7 +334,7 @@ export default function NewsManagementPage() {
                       )}
                     </td>
                   </tr>
-                ))}
+                )})}
               </tbody>
             </table>
           </div>
