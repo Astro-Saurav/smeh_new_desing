@@ -135,6 +135,9 @@ export default function GalleryManagementPage() {
                       src={coverUrl}
                       alt={album.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        e.currentTarget.src = '/placeholder-news.jpg'
+                      }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-80" />
 
