@@ -260,6 +260,12 @@ export default function ArticlePage() {
                       <img
                         src={photo.src}
                         alt={photo.title || `Photo ${index + 1}`}
+                        onError={(e) => {
+                          if (!e.currentTarget.src.includes('/placeholder-news.jpg')) {
+                            e.currentTarget.srcset = '';
+                            e.currentTarget.src = '/placeholder-news.jpg';
+                          }
+                        }}
                         className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">

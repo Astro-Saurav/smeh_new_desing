@@ -161,6 +161,12 @@ export function GalleryGrid({ items }: { items: MainSiteNewsItem[] }) {
                     <img
                       src={safeImg(item.image)}
                       alt={item.headline}
+                      onError={(e) => {
+                        if (!e.currentTarget.src.includes('/placeholder-news.jpg')) {
+                          e.currentTarget.srcset = '';
+                          e.currentTarget.src = '/placeholder-news.jpg';
+                        }
+                      }}
                       className="w-full h-full object-cover transform scale-105 transition-transform duration-700 ease-out"
                     />
 
@@ -306,6 +312,12 @@ export function GalleryGrid({ items }: { items: MainSiteNewsItem[] }) {
                     <img
                       src={safeImg(item.image)}
                       alt={item.headline}
+                      onError={(e) => {
+                        if (!e.currentTarget.src.includes('/placeholder-news.jpg')) {
+                          e.currentTarget.srcset = '';
+                          e.currentTarget.src = '/placeholder-news.jpg';
+                        }
+                      }}
                       className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
                     />
 
