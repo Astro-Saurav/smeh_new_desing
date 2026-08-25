@@ -14,11 +14,11 @@ module.exports = {
       max_memory_restart: process.env.PM2_MAX_MEMORY || '2G',
       env: {
         NODE_ENV: 'development',
-        PORT: 8080
+        PORT: 8081
       },
       env_production: {
         NODE_ENV: 'production',
-        PORT: 8080
+        PORT: 8081
       },
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       error_file: './logs/pm2-error.log',
@@ -61,7 +61,8 @@ module.exports = {
       max_memory_restart: process.env.PM2_MAX_MEMORY || '1G',
       env_production: {
         NODE_ENV: 'production',
-        PORT: 3000
+        PORT: 3000,
+        BACKEND_URL: 'http://127.0.0.1:8081'
       },
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       error_file: './logs/pm2-frontend-error.log',
