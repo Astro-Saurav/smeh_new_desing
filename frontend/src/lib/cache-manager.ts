@@ -28,7 +28,7 @@ class CacheManager {
       return false
     }
 
-    if (typeof window === 'undefined' || !sessionStorage) {
+    if (typeof window === 'undefined') {
       return false
     }
 
@@ -38,11 +38,13 @@ class CacheManager {
         tokenExpiry: Date.now() + this.TOKEN_EXPIRY_TIME,
       }
 
-      // Store only essential data in sessionStorage (not localStorage!)
-      sessionStorage.setItem(
-        this.PREFIX + 'token',
-        JSON.stringify(cacheData)
-      )
+      if (sessionStorage) {
+        sessionStorage.setItem(this.PREFIX + 'token', JSON.stringify(cacheData))
+      }
+      if (localStorage) {
+        localStorage.setItem('accessToken', token)
+        localStorage.setItem('token', token)
+      }
 
       return true
     } catch (err) {
@@ -55,26 +57,29 @@ class CacheManager {
    * Get access token with expiry check
    */
   getAccessToken(): string | null {
-    if (typeof window === 'undefined' || !sessionStorage) {
+    if (typeof window === 'undefined') {
       return null
     }
 
     try {
-      const cached = sessionStorage.getItem(this.PREFIX + 'token')
-      if (!cached) return null
-
-      const data: SecureCache = JSON.parse(cached)
-
-      // Check if token has expired
-      if (Date.now() > data.tokenExpiry) {
-        this.clearAuthData()
-        return null
+      if (sessionStorage) {
+        const cached = sessionStorage.getItem(this.PREFIX + 'token')
+        if (cached) {
+          const data: SecureCache = JSON.parse(cached)
+          if (Date.now() <= data.tokenExpiry) {
+            return data.accessToken
+          }
+        }
       }
 
-      return data.accessToken
+      if (localStorage) {
+        const acc = localStorage.getItem('accessToken') || localStorage.getItem('token')
+        if (acc) return acc
+      }
+
+      return null
     } catch (err) {
       console.error('Failed to retrieve cached token:', err)
-      this.clearAuthData()
       return null
     }
   }

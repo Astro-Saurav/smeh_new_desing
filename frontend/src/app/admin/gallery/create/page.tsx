@@ -103,6 +103,9 @@ export default function CreateGalleryAlbumPage() {
           if (uploadData.data?.id) {
             thumbnailMediaId = uploadData.data.id
           }
+        } else {
+          const errData = await uploadRes.json().catch(() => ({}))
+          throw new Error(errData.message || `Cover image upload failed (${uploadRes.status})`)
         }
       }
 
@@ -122,6 +125,9 @@ export default function CreateGalleryAlbumPage() {
               if (uploadData.data?.id) {
                 imagesMediaIds.push(uploadData.data.id)
               }
+            } else {
+              const errData = await uploadRes.json().catch(() => ({}))
+              throw new Error(errData.message || `Album photo upload failed (${uploadRes.status})`)
             }
           }
         }
