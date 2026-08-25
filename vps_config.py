@@ -28,7 +28,7 @@ load_dotenv()
 def get_vps_credentials():
     """
     Returns (host, user, password, port) sourced strictly from environment or .env.
-    Host can be specified as VPS_HOST (IP or hostname) or VPS_SSH_HOST (e.g. root@187.127.156.106).
+    Host can be specified as VPS_HOST (IP or hostname) or VPS_SSH_HOST (e.g. root@your_vps_ip).
     """
     raw_host = os.environ.get("VPS_HOST", "")
     user = os.environ.get("VPS_USER", "root")

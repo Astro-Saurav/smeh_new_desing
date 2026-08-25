@@ -11,13 +11,11 @@
 
 ## 🌟 What is Manavrachna Times?
 
-Manavrachna Times (MRT) is a full-stack, bespoke news platform built specifically for the Manav Rachna University community. It covers campus news, student voices, events, sports, entertainment, and official announcements — all in one beautifully designed, fast-loading digital publication.
+Manavrachna Times (MRT) is a full-stack digital news publication built for the Manav Rachna University community. It features campus news, student voices, events, podcasts, video broadcasts, and official university announcements.
 
 ---
 
 ## 📂 Site Structure & Navigation
-
-The platform is organized around the following sections:
 
 | Section | Description |
 |---|---|
@@ -29,8 +27,8 @@ The platform is organized around the following sections:
 | **Students Voices** | Opinion pieces and student-authored content |
 | **Photo Gallery** | Campus photography and visual stories |
 | **Announcements** | Official university announcements |
-| **About Us** | About the MRT team and editorial board |
-| **Contact** | Contact and submissions |
+| **About Us** | Editorial team & about the publication |
+| **Contact** | Inquiries and story submissions |
 
 ---
 
@@ -38,117 +36,110 @@ The platform is organized around the following sections:
 
 ```
 smeh_new_desing/
-├── frontend/          # Next.js 15 App — public site + admin panel
-└── backend/           # Express.js API — content, auth, media management
+├── frontend/          # Next.js 15 App — public news portal + admin panel
+├── backend/           # Express.js API — authentication, articles, audit logging, media
+├── nginx/             # Nginx reverse proxy configurations
+├── vps_config.py      # Centralized environment loader (reads .env dynamically)
+├── ecosystem.config.js# PM2 process manager configuration
+└── README.md
 ```
 
 ### Frontend (`/frontend`)
 - **Framework:** Next.js 15 (App Router)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS + Framer Motion
-- **Admin Panel:** Integrated at `/admin` — Create/edit articles, manage users, editorial board
-- **Rendering:** SSR + Static generation for SEO-optimised news pages
+- **Admin Panel:** Integrated at `/admin` (Article creation, user management, editorial controls)
+- **Rendering:** SSR + Static generation for maximum SEO performance
 
 ### Backend (`/backend`)
 - **Framework:** Node.js + Express.js
 - **ORM:** Prisma
-- **Database:** SQLite (production-ready; can swap to PostgreSQL instantly via Prisma)
-- **Media Storage:** Azure Blob Storage for uploaded images and documents
-- **Auth:** JWT dual-token (Access Token + HttpOnly Refresh Token) + RBAC (`admin` / `editor`)
+- **Database:** SQLite (production database `dev.db`; expandable to PostgreSQL via Prisma)
+- **Authentication:** Dual-token JWT (Access Token + HttpOnly Refresh Cookie) + RBAC (`admin` / `editor`)
+- **Rate Limiting & Lockout:** Built-in failed login tracking & IP-based lockout protection
 
 ---
 
-## 🛡️ Security
+## 🛡️ Security & Zero Hardcoded Credentials
 
-| Layer | Implementation |
+| Security Feature | Implementation Detail |
 |---|---|
-| Authentication | JWT + HttpOnly Refresh Tokens + RBAC |
-| Input Sanitization | `sanitize-html` — XSS prevention on all API inputs |
-| Upload Security | Multer with strict MIME-type & extension validation (blocks `.exe`, `.php`, `.sh`) |
-| Headers | `Helmet.js` — CSP, clickjacking & MIME-sniffing protection |
-| Firewall | UFW — only ports 80, 443, SSH exposed |
-| Brute-force | Fail2Ban recommended for SSH; rate-limiting on API |
-| Secrets | `.env` and `.db` blocked from Git via `.gitignore` |
+| **Environment Isolation** | All credentials (JWT secrets, VPS host/passwords, DB keys) stored strictly in `.env` |
+| **Dynamic Password Seeding** | Seed scripts use `process.env.ADMIN_PASSWORD` or auto-generate 16-byte random hex passwords |
+| **Password Storage** | Passwords stored strictly as salted **Bcrypt hashes** (12 rounds) |
+| **Authentication** | Dual JWTs (Short-lived Access Token + HttpOnly Refresh Cookie) |
+| **Input Sanitization** | `sanitize-html` for XSS prevention on all API endpoints |
+| **Upload Security** | Strict Multer MIME-type and extension validation |
+| **Network Firewall** | UFW with standard HTTP/HTTPS/SSH isolation |
 
 ---
 
-## 🚀 Quick Start
+## 💾 Automated VPS Backups & Disaster Recovery
 
-### Prerequisites
-- Node.js v18+
-- npm
+The production VPS runs an automated **daily backup system** with a **rolling 3-day retention policy**:
+
+- **Backup Schedule:** Daily at **02:00 AM** via Cron (`/root/vps_backups/auto_daily_backup.sh`)
+- **Backed Up Components:**
+  - Database (`dev.db` snapshot via SQLite `.backup`)
+  - Environment configurations (`.env` files)
+  - Full codebase & media assets (`smeh_app_code_*.tar.gz`)
+  - Git commit metadata (`GIT_COMMIT.txt`)
+- **Automated Retention:** Scans `/root/vps_backups` and automatically purges backup archives older than 3 days.
+- **One-Click Restoration:**
+  ```bash
+  /root/vps_backups/latest/restore.sh
+  ```
+
+---
+
+## 🚀 Local Quick Start
 
 ### 1. Backend Setup
 ```bash
 cd backend
 npm install
-cp .env.example .env        # Fill in your secrets
+cp .env.example .env        # Configure JWT secrets & DB settings
 npx prisma db push
 npx prisma generate
-npx prisma db seed          # Seeds categories and default data
-npm run dev                 # Starts on port 8080
+npx prisma db seed          # Seeds categories & default data
+npm run dev                 # Starts Express API on port 8081
 ```
 
 ### 2. Frontend Setup
 ```bash
 cd frontend
 npm install
-cp .env.example .env.local  # Set INTERNAL_API_URL if needed
-npm run dev                 # Starts on port 3000
+cp .env.example .env.local  # Set INTERNAL_API_URL=http://127.0.0.1:8081
+npm run dev                 # Starts Next.js on port 3000
 ```
-
-### 3. Admin Access
-Go to `http://localhost:3000/admin` and log in with the credentials seeded by the backend.
 
 ---
 
-## ☁️ Production Deployment (VPS / KVM8)
+## ☁️ Production Deployment (VPS)
 
-The platform runs on a Linux VPS managed by **PM2** with automated GitHub-based deployments.
+PM2 manages production services on the VPS:
 
-### Services
 | PM2 Process | Port | Description |
 |---|---|---|
-| `mrt-backend` | 8080/8081 | Express.js API |
-| `mrt-frontend` | 3000 | Next.js frontend |
+| `mrt-backend` | 8081 | Express.js API Service |
+| `mrt-frontend` | 3000 | Next.js Application |
 
-### Auto-Deploy
+To sync and restart services manually on the VPS:
 ```bash
-# On the VPS, the auto_deploy.sh script:
-# 1. Pulls latest from GitHub main
-# 2. Rebuilds the frontend (npm run build)
-# 3. Restarts PM2 processes
-bash auto_deploy.sh
+git pull origin main
+cd backend && npm install && npx prisma generate
+cd ../frontend && npm install && npm run build
+pm2 restart all
 ```
-
-A GitHub Actions workflow (`.github/workflows/deploy-kvm8.yml`) triggers this automatically on every push to `main`.
-
----
-
-## 📦 Article Categories (Admin Panel)
-
-The **Create Article** form provides the following categories matching the site navigation:
-
-- Beyond Campus
-- Current Affairs *(sub-category)*
-- Entertainment & Lifestyle Feature *(sub-category)*
-- Sports *(sub-category)*
-- Campus Buzz
-- Social Buzz
-- MR TV
-- MR Podcast
-- Students Voices
-- Photo Gallery
-- Announcement
 
 ---
 
 ## 🔗 Repositories
 
-| Repo | URL |
-|---|---|
-| Primary (Astro-Saurav) | https://github.com/Astro-Saurav/smeh_new_desing |
-| Mirror (Saurav-Astro) | https://github.com/Saurav-Astro/smeh_new_desing |
+| Repository | Remote | URL |
+|---|---|---|
+| Primary Fork | `origin` | https://github.com/Astro-Saurav/smeh_new_desing |
+| Upstream | `upstream` | https://github.com/Saurav-Astro/smeh_new_desing |
 
 ---
 
