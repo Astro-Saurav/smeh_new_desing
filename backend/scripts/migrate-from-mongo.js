@@ -10,6 +10,8 @@ const { PrismaClient } = require('@prisma/client')
 const { PrismaPg } = require('@prisma/adapter-pg')
 const { Pool } = require('pg')
 const bcrypt = require('bcrypt')
+const crypto = require('crypto')
+
 
 require('dotenv').config({ path: path.join(__dirname, '../.env.production') })
 
@@ -65,7 +67,9 @@ async function runMigration () {
     const email = (u.email || '').toLowerCase().trim()
     if (!email) continue
 
-    const passwordHash = u.password || await bcrypt.hash('DefaultAdmin@123!', 12)
+    const fallbackPass = process.env.DEFAULT_MIGRATED_PASSWORD || crypto.randomBytes(16).toString('hex')
+    const passwordHash = u.password || await bcrypt.hash(fallbackPass, 12)
+
     const isSysAdmin = u.role === 'admin' || u.isAdmin === true
 
     await prisma.user.upsert({

@@ -43,6 +43,7 @@ next-env.d.ts
 
 .genkit/*
 .env*
+!.env.example
 
 # firebase
 firebase-debug.log
@@ -59,8 +60,11 @@ frontend/public/uploads/
 
 # ignor folder to keep track of changes
 ignor/
-*.py
+__pycache__/
+*.pyc
 backend/logs/
+
+
 backend/test_db.js
 pm2_jlist.json
 

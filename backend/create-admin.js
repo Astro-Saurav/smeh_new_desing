@@ -45,8 +45,9 @@ async function createAdminUser() {
     }
 
     // 3. Create admin user
-    const adminEmail = 'admin@mrt.edu.in'
-    const adminPassword = 'Admin@123'
+    const crypto = require('crypto')
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@mrt.edu.in'
+    const adminPassword = process.env.ADMIN_PASSWORD || crypto.randomBytes(16).toString('hex')
 
     let admin = await prisma.user.findUnique({
       where: { email: adminEmail }
@@ -71,8 +72,8 @@ async function createAdminUser() {
     }
 
     // 4. Create test editor user
-    const editorEmail = 'editor@mrt.edu.in'
-    const editorPassword = 'Editor@123'
+    const editorEmail = process.env.EDITOR_EMAIL || 'editor@mrt.edu.in'
+    const editorPassword = process.env.EDITOR_PASSWORD || crypto.randomBytes(16).toString('hex')
 
     let editor = await prisma.user.findUnique({
       where: { email: editorEmail }

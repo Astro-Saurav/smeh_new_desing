@@ -24,9 +24,15 @@ async function seedAdmin() {
     console.log('Connected successfully.');
 
     // 1. Setup Admin User
-    const email = 'admin@smeh.manavrachna.net';
-    const password = 'admin@smeh@manavrachna';
+    const crypto = require('crypto');
+    const email = process.env.ADMIN_EMAIL || 'admin@smeh.manavrachna.net';
+    const password = process.env.ADMIN_PASSWORD || crypto.randomBytes(16).toString('hex');
     const adminId = '11111111-1111-1111-1111-111111111111';
+
+    if (!process.env.ADMIN_PASSWORD) {
+      console.log(`Generated random seed admin password: ${password}`);
+    }
+
 
     console.log('Syncing Admin User...');
     const User = mongoose.model('User', new mongoose.Schema({

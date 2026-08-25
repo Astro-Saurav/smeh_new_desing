@@ -25,8 +25,9 @@ async function main () {
   console.log(`✓ Roles seeded: ${roles.map(r => r.name).join(', ')}`)
 
   // ─── Default Admin User ─────────────────────────────────
+  const crypto = require('crypto')
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@mrt.edu.in'
-  const adminPassword = process.env.ADMIN_PASSWORD || 'Admin@123'
+  const adminPassword = process.env.ADMIN_PASSWORD || crypto.randomBytes(16).toString('hex')
 
   const existingAdmin = await prisma.user.findUnique({ where: { email: adminEmail } })
   if (!existingAdmin) {
@@ -39,13 +40,15 @@ async function main () {
       }
     })
     console.log(`✓ Admin user created: ${adminEmail}`)
+    if (!process.env.ADMIN_PASSWORD) console.log(`✓ Generated Admin Password: ${adminPassword}`)
   } else {
     console.log(`✓ Admin user already exists: ${adminEmail}`)
   }
 
   // ─── Default Editor User ────────────────────────────────
   const editorEmail = process.env.EDITOR_EMAIL || 'editor@mrt.edu.in'
-  const editorPassword = process.env.EDITOR_PASSWORD || 'Editor@123'
+  const editorPassword = process.env.EDITOR_PASSWORD || crypto.randomBytes(16).toString('hex')
+
 
   const existingEditor = await prisma.user.findUnique({ where: { email: editorEmail } })
   if (!existingEditor) {

@@ -77,17 +77,22 @@ app.use((req, res, next) => {
 
 app.use(cookieParser());
 
+const crypto = require('crypto');
+const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
+const REFRESH_JWT_SECRET = process.env.REFRESH_JWT_SECRET || crypto.randomBytes(32).toString('hex');
+
+
 // Helper: Generate tokens
 function generateTokens(user) {
   const accessToken = jwt.sign(
     { id: user.id, email: user.email, role: user.role },
-    'local_dev_secret_keep_this_strong_in_production',
+    JWT_SECRET,
     { expiresIn: '12h' }
   );
 
   const refreshToken = jwt.sign(
     { id: user.id, email: user.email },
-    'local_refresh_secret_keep_this_strong_in_production',
+    REFRESH_JWT_SECRET,
     { expiresIn: '7d' }
   );
 
@@ -103,11 +108,12 @@ function authenticateToken(req, res, next) {
     return res.status(401).json({ error: 'No token provided' });
   }
 
-  jwt.verify(token, 'local_dev_secret_keep_this_strong_in_production', (err, user) => {
+  jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) return res.status(401).json({ error: 'Token expired or invalid' });
     req.user = user;
     next();
   });
+
 }
 
 // Helper: Admin check

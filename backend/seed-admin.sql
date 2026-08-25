@@ -4,7 +4,7 @@ INSERT INTO roles (name) VALUES ('editor') ON CONFLICT (name) DO NOTHING;
 
 -- Create Admin user
 -- Email: admin@mrt.edu.in
--- Password: Admin@123 (hashed with bcrypt)
+-- Password: Seed placeholder password (hashed with bcrypt)
 INSERT INTO users (email, password_hash, role_id, is_2fa_enabled, updated_at)
 SELECT 'admin@mrt.edu.in', 
        '$2b$12$N9qo8uLOickgx2ZMRZoMyeIjZAgcg7b3XeKeUxWdeS86AGR0Nt4Em', 
@@ -16,7 +16,8 @@ ON CONFLICT (email) DO NOTHING;
 
 -- Create Editor user
 -- Email: editor@mrt.edu.in
--- Password: Editor@123 (hashed with bcrypt)
+-- Password: Seed placeholder password (hashed with bcrypt)
+
 INSERT INTO users (email, password_hash, role_id, is_2fa_enabled, updated_at)
 SELECT 'editor@mrt.edu.in', 
        '$2b$12$7hJKYXLzR3VzYYEt4K/u/OQYY1g7z5pXt0Q1V6B8M9c9K7X7B3b8u', 

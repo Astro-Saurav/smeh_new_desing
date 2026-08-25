@@ -18,7 +18,8 @@ IF NOT EXISTS (SELECT 1 FROM categories WHERE name = 'Beyond Campus')
   INSERT INTO categories (name) VALUES ('Beyond Campus');
 
 -- Create admin user (replace hash with a generated bcrypt hash)
--- Example placeholder hash is for password: ChangeMeNow123!
+-- Example placeholder hash for initial setup
 IF NOT EXISTS (SELECT 1 FROM users WHERE email = 'admin@manavrachna.edu')
+
   INSERT INTO users (id, email, password_hash, role)
   VALUES (NEWID(), 'admin@manavrachna.edu', '$2b$12$2SnfslksYrjztTv4IqfW2O6r5Dc2zHG7mYybK1fD8Bf4Y8VnGmA/K', 'admin');

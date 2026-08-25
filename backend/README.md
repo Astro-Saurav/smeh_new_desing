@@ -100,9 +100,10 @@ Backend runs at `http://localhost:8080` and base API path is `/api`.
 ```json
 {
   "email": "admin@manavrachna.edu",
-  "password": "ChangeMeNow123!"
+  "password": "<your_admin_password>"
 }
 ```
+
 
 ### Create News
 

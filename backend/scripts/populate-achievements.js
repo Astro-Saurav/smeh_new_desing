@@ -11,9 +11,10 @@ async function main() {
   let token;
   try {
     const loginRes = await axios.post(`${API_URL}/auth/login`, {
-      email: 'admin@mrt.edu.in',
-      password: 'Admin@123'
+      email: process.env.ADMIN_EMAIL || 'admin@mrt.edu.in',
+      password: process.env.ADMIN_PASSWORD || ''
     });
+
     token = loginRes.data.data?.accessToken || loginRes.data.accessToken || loginRes.data.data?.token || loginRes.data.token;
   } catch (err) {
     console.error('Login failed:', err.response?.data || err.message);

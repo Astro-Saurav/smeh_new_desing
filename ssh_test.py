@@ -1,10 +1,12 @@
+from vps_config import get_vps_credentials
 import paramiko
 import sys
 
 def main():
-    hostname = "187.127.156.106"
+    vps_host, vps_user, vps_pass, _ = get_vps_credentials()
+    hostname = vps_host
     username = "root"
-    password = "ManavRachna@Admin1234"
+    password = vps_pass
     command = "pm2 logs mrt-backend --nostream --lines 100"
 
     client = paramiko.SSHClient()

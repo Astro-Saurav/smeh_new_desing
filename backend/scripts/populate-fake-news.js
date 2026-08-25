@@ -11,9 +11,10 @@ async function main() {
   let token;
   try {
     const loginRes = await axios.post(`${API_URL}/v1/auth/login`, {
-      email: 'admin@mrt.edu.in',
-      password: 'Admin@123'
+      email: process.env.ADMIN_EMAIL || 'admin@mrt.edu.in',
+      password: process.env.ADMIN_PASSWORD || ''
     });
+
     token = loginRes.data.data?.accessToken || loginRes.data.accessToken || loginRes.data.data?.token || loginRes.data.token;
     console.log('Logged in successfully, token:', token.substring(0, 15) + '...');
   } catch (err) {

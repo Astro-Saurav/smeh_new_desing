@@ -3,7 +3,7 @@ const { env } = require('./src/config/env');
 const jwt = require('jsonwebtoken');
 
 const req = {
-  validated: { body: { email: 'admin@admin.com', password: 'password123' } },
+  validated: { body: { email: process.env.TEST_ADMIN_EMAIL || 'admin@admin.com', password: process.env.TEST_ADMIN_PASSWORD || 'password123' } },
   ip: '127.0.0.1',
   headers: { 'user-agent': 'test' }
 };
