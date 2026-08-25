@@ -398,8 +398,8 @@ async function getCategoryFeed (slug, cursor, limit = 12) {
       where: {
         OR: [
           { slug: { in: alternateSlugs } },
-          { name: { equals: slug.replace(/-/g, ' '), mode: 'insensitive' } },
-          { name: { equals: 'Photo Gallery', mode: 'insensitive' } }
+          { name: slug.replace(/-/g, ' ') },
+          { name: 'Photo Gallery' }
         ]
       }
     })

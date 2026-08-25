@@ -71,14 +71,14 @@ const nextConfig: NextConfig = {
         source: '/api/:path*',
         destination: process.env.INTERNAL_API_URL 
           ? `${process.env.INTERNAL_API_URL}/api/:path*`
-          : (process.env.BACKEND_URL ? `${process.env.BACKEND_URL}/api/:path*` : 'http://127.0.0.1:8080/api/:path*'),
+          : (process.env.BACKEND_URL ? `${process.env.BACKEND_URL}/api/:path*` : 'http://127.0.0.1:8081/api/:path*'),
       },
       // Proxy uploads to backend during local development or production VPS
       {
         source: '/uploads/:path*',
         destination: process.env.INTERNAL_API_URL 
           ? `${process.env.INTERNAL_API_URL}/uploads/:path*`
-          : (process.env.BACKEND_URL ? `${process.env.BACKEND_URL}/uploads/:path*` : 'http://127.0.0.1:8080/uploads/:path*'),
+          : (process.env.BACKEND_URL ? `${process.env.BACKEND_URL}/uploads/:path*` : 'http://127.0.0.1:8081/uploads/:path*'),
       },
     ]
   },

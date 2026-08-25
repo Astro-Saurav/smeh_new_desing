@@ -62,7 +62,12 @@ export default function LoginPage() {
         body: JSON.stringify(formData),
       })
 
-      const data: LoginResponse = await response.json()
+      let data: any = {}
+      try {
+        data = await response.json()
+      } catch (e) {
+        throw new Error('Server connection error. Please try again.')
+      }
 
       if (!response.ok) {
         setError(data.message || data.error || 'Login failed. Please check credentials.')
