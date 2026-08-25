@@ -196,7 +196,7 @@ export default function NewsDetailPage() {
 
         {/* Article Body */}
         <article 
-          className="font-body text-base leading-[1.9] text-zinc-800 space-y-5 whitespace-pre-wrap"
+          className="font-body text-base leading-[1.9] text-zinc-800 space-y-5 whitespace-pre-wrap text-justify [&_p]:text-justify [&_div]:text-justify"
           style={{ fontFamily: news.content_font || 'inherit' }}
         >
           {news.content}

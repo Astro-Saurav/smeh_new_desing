@@ -373,7 +373,7 @@ export default function ArticlePage() {
         {/* Article Body — render full HTML from rich editor */}
         {article.content && (
           <div
-            className="prose prose-zinc max-w-none text-[16px] leading-loose"
+            className="prose prose-zinc max-w-none text-[16px] leading-loose text-justify [&_p]:text-justify [&_div]:text-justify [&_li]:text-justify"
             style={article.content_font ? { fontFamily: article.content_font } : undefined}
             dangerouslySetInnerHTML={{ __html: article.content }}
           />

@@ -143,3 +143,18 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Article Content Text Justification */
+.prose,
+.prose p,
+.prose div,
+.prose li,
+article,
+article p,
+article div,
+.article-content,
+.article-content p {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
