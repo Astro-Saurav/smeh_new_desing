@@ -44,7 +44,7 @@ export default function EditGalleryAlbumPage() {
         setGalleryCategoryId(galCat.id)
       }
 
-      const token = localStorage.getItem('token') || ''
+      const token = cacheManager.getAccessToken() || ''
       const newsRes = await fetch(`/api/v1/news/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       })

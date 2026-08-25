@@ -33,8 +33,8 @@ export default function CreateGalleryAlbumPage() {
       const res = await fetch('/api/v1/categories')
       const data = await res.json()
       const list = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : [])
-      const galCat = list.find((c: any) => c.slug === 'photo-gallery' || c.slug === 'gallery' || c.name?.toLowerCase().includes('gallery'))
-      if (galCat) {
+      let galCat = list.find((c: any) => c.slug === 'photo-gallery' || c.slug === 'gallery' || c.name?.toLowerCase().includes('gallery'))
+      if (galCat?.id) {
         setGalleryCategoryId(galCat.id)
       }
     } catch (err) {

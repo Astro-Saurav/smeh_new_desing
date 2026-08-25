@@ -95,30 +95,33 @@ export default function ArticlePage() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`${API_BASE_URL}/api/v1/news/slug/${id}`, { cache: "no-store" })
-      .then(async r => {
+    setLoading(true);
+    setError(null);
+
+    async function loadArticle() {
+      try {
+        // Try slug first
+        let r = await fetch(`${API_BASE_URL}/api/v1/news/slug/${id}`, { cache: "no-store" });
         if (!r.ok) {
-          if (r.status === 404) {
-             setArticle(null);
-             return null;
-          }
-          throw new Error("Failed to load");
+          // If slug returns 404, fallback to ID lookup
+          r = await fetch(`${API_BASE_URL}/api/v1/news/${id}`, { cache: "no-store" });
         }
-        return r.json();
-      })
-      .then(data => {
-        if (data === null) {
-           setLoading(false);
-           return;
+        if (!r.ok) {
+          setArticle(null);
+          setLoading(false);
+          return;
         }
+        const data = await r.json();
         const actualArticle = data.data && data.success !== undefined ? data.data : data;
         setArticle(actualArticle);
+      } catch (e) {
+        setError("Could not load this photo album or article.");
+      } finally {
         setLoading(false);
-      })
-      .catch(e => {
-        setError("Could not load this article.");
-        setLoading(false);
-      });
+      }
+    }
+
+    loadArticle();
   }, [id]);
 
   if (loading) return (
@@ -132,14 +135,20 @@ export default function ArticlePage() {
   );
 
   if (error || !article) return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-zinc-500">
-      <p className="text-lg font-bold">{error || "Article not found."}</p>
-      <button onClick={() => router.back()} className="text-primary underline text-sm">← Go Back</button>
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-zinc-500 bg-white px-4">
+      <div className="text-center space-y-2 max-w-md">
+        <Images className="w-12 h-12 mx-auto text-zinc-300 stroke-[1.5]" />
+        <p className="text-xl font-extrabold uppercase text-zinc-800 tracking-tight">{error || "Photo Album or Article Not Found"}</p>
+        <p className="text-xs text-zinc-500">The requested album or content is currently unavailable or may have been removed.</p>
+      </div>
+      <button onClick={() => router.back()} className="mt-2 px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-xs transition">
+        ← Return to Gallery / Previous Page
+      </button>
     </div>
   );
 
   const categoryName = resolveCategoryName(article.category);
-  const isGalleryCategory = categoryName.toLowerCase().includes("gallery");
+  const isGalleryCategory = categoryName.toLowerCase().includes("gallery") || categoryName.toLowerCase().includes("photo");
   const imgSrc = getImageUrl(article.thumbnail?.file_path || article.image_url || article.image || article.imageUrl);
   const ytId = getYouTubeId(article.youtube_url || article.youtubeUrl);
   const publishedDate = formatDate(article.published_at || article.created_at);
@@ -149,19 +158,20 @@ export default function ArticlePage() {
   // Build Lightbox album photos
   const albumPhotos: LightboxImage[] = [];
   if (Array.isArray(article.images) && article.images.length > 0) {
-    article.images.forEach((imgItem, idx) => {
-      const url = getImageUrl(imgItem.media?.file_path);
+    article.images.forEach((imgItem: any, idx: number) => {
+      const rawPath = imgItem.media?.file_path || imgItem.media?.path_large || imgItem.media?.path_webp || imgItem.file_path || imgItem.path;
+      const url = getImageUrl(rawPath);
       if (url) {
         albumPhotos.push({
           src: url,
           title: `${article.title} - Photo ${idx + 1}`,
-          originalName: imgItem.media?.original_name
+          originalName: imgItem.media?.original_name || `photo-${idx + 1}.jpg`
         });
       }
     });
   }
-  // Fallback to main cover image if images array is empty
-  if (albumPhotos.length === 0 && imgSrc) {
+  // Fallback to main cover image if images array is empty and valid cover exists
+  if (albumPhotos.length === 0 && imgSrc && !imgSrc.includes('/new_logo.png') && !imgSrc.includes('/placeholder-news.jpg')) {
     albumPhotos.push({
       src: imgSrc,
       title: article.title,
@@ -234,35 +244,43 @@ export default function ArticlePage() {
             </div>
 
             {/* Bento / Responsive Grid of Album Photos */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 auto-rows-[200px] md:auto-rows-[280px]">
-              {albumPhotos.map((photo, index) => {
-                // Alternating grid span pattern for dynamic modern look
-                const isFeatured = index === 0 || index === 5;
-                const spanClass = isFeatured ? "col-span-2 row-span-2" : "col-span-1 row-span-1";
+            {albumPhotos.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 auto-rows-[200px] md:auto-rows-[280px]">
+                {albumPhotos.map((photo, index) => {
+                  // Alternating grid span pattern for dynamic modern look
+                  const isFeatured = index === 0 || index === 5;
+                  const spanClass = isFeatured ? "col-span-2 row-span-2" : "col-span-1 row-span-1";
 
-                return (
-                  <div
-                    key={index}
-                    onClick={() => openLightbox(index)}
-                    className={`${spanClass} group relative overflow-hidden rounded-xl bg-zinc-900 border border-zinc-200 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer`}
-                  >
-                    <img
-                      src={photo.src}
-                      alt={photo.title || `Photo ${index + 1}`}
-                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                      <span className="bg-red-600 text-white font-bold text-xs px-4 py-2 rounded-full shadow-lg flex items-center gap-2 transform translate-y-2 group-hover:translate-y-0 transition-transform">
-                        🔍 View Fullscreen
-                      </span>
+                  return (
+                    <div
+                      key={index}
+                      onClick={() => openLightbox(index)}
+                      className={`${spanClass} group relative overflow-hidden rounded-xl bg-zinc-900 border border-zinc-200 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer`}
+                    >
+                      <img
+                        src={photo.src}
+                        alt={photo.title || `Photo ${index + 1}`}
+                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <span className="bg-red-600 text-white font-bold text-xs px-4 py-2 rounded-full shadow-lg flex items-center gap-2 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                          🔍 View Fullscreen
+                        </span>
+                      </div>
+                      <div className="absolute bottom-2 left-2 bg-black/70 text-white text-[10px] font-mono px-2 py-0.5 rounded">
+                        #{index + 1}
+                      </div>
                     </div>
-                    <div className="absolute bottom-2 left-2 bg-black/70 text-white text-[10px] font-mono px-2 py-0.5 rounded">
-                      #{index + 1}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="py-20 text-center text-zinc-400 bg-zinc-50 border border-dashed border-zinc-200 rounded-2xl space-y-2">
+                <Images className="w-12 h-12 mx-auto text-zinc-300 stroke-[1.5]" />
+                <p className="text-base font-extrabold uppercase text-zinc-700 tracking-wide">No Images Available in this Album</p>
+                <p className="text-xs text-zinc-500">No photos have been uploaded to this album collection yet.</p>
+              </div>
+            )}
           </div>
         ) : (
           /* Lead Image for Standard Articles */

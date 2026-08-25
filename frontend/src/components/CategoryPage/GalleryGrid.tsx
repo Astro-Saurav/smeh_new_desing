@@ -139,7 +139,7 @@ export function GalleryGrid({ items }: { items: MainSiteNewsItem[] }) {
                     ? item.imageCount
                     : Array.isArray(item.images) && item.images.length > 0
                     ? item.images.length
-                    : 1
+                    : (item.image && item.image !== '/new_logo.png' && item.image !== '/placeholder-news.jpg' ? 1 : 0)
 
                 return (
                   <div
@@ -294,7 +294,7 @@ export function GalleryGrid({ items }: { items: MainSiteNewsItem[] }) {
                   ? item.imageCount
                   : Array.isArray(item.images) && item.images.length > 0
                   ? item.images.length
-                  : 1
+                  : (item.image && item.image !== '/new_logo.png' && item.image !== '/placeholder-news.jpg' ? 1 : 0)
 
               return (
                 <div
