@@ -7,21 +7,29 @@ const { env } = require('../config/env')
 const logger = require('../utils/logger')
 
 // ─── Redis client (shared ioredis instance) ───────────────────────────────
+// Only use Redis in production. In development, fall back to in-memory rate limiting.
 let redisClient = null
 
 function getRedisClient () {
+  if (env.nodeEnv !== 'production') return null // skip Redis in dev
   if (redisClient) return redisClient
   try {
     const { default: Redis } = require('ioredis')
-    // enableOfflineQueue defaults to TRUE — commands are queued until connected
-    // Do NOT set enableOfflineQueue:false here; it causes RedisStore to crash on init
     redisClient = new Redis(env.redisUrl, {
       maxRetriesPerRequest: 3,
       connectTimeout: 5000,
+      lazyConnect: true,
       retryStrategy: (times) => (times > 3 ? null : Math.min(times * 200, 2000))
     })
     redisClient.on('error', (err) => {
       logger.warn('[Redis] Rate-limit store connection error (falling back to memory):', err.message)
+    })
+    redisClient.on('close', () => {
+      logger.warn('[Redis] Rate-limit store connection closed')
+    })
+    redisClient.on('end', () => {
+      logger.warn('[Redis] Rate-limit store connection ended')
+      redisClient = null
     })
     redisClient.on('connect', () => {
       logger.info('[Redis] Rate-limit store connected')
@@ -45,6 +53,7 @@ function buildRedisStore (prefix) {
     return undefined
   }
 }
+
 
 // ─── Global rate limit: 1000 requests per 15 minutes ─────────────────────
 const globalRateLimiter = rateLimit({

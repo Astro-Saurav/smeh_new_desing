@@ -1,6 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { 
+  FileText, 
+  CheckCircle2, 
+  Edit3, 
+  Image as ImageIcon, 
+  Eye,
+  ArrowUpRight,
+  Plus,
+  GraduationCap
+} from 'lucide-react'
 
 export default function DashboardPage() {
   const [stats, setStats] = useState({
@@ -9,18 +20,19 @@ export default function DashboardPage() {
     draft: 0,
     scheduled: 0,
     views: 0,
+    galleryCount: 0
   })
   const [recentNews, setRecentNews] = useState<any[]>([])
-  const [mounted, setMounted] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setMounted(true)
     fetchStats()
   }, [])
 
   async function fetchStats() {
+    setLoading(true)
     try {
-      const res = await fetch('/api/v1/news')
+      const res = await fetch('/api/v1/news?pageSize=100')
       const data = await res.json()
       const newsList = Array.isArray(data.data) ? data.data : []
       const totalViews = newsList.reduce((sum: number, n: any) => sum + (n.views_count || 0), 0)
@@ -31,6 +43,7 @@ export default function DashboardPage() {
         draft: newsList.filter((n: any) => n.status === 'draft').length,
         scheduled: newsList.filter((n: any) => n.status === 'scheduled').length,
         views: totalViews,
+        galleryCount: newsList.filter((n: any) => n.category?.slug === 'photo-gallery' || n.category?.slug === 'gallery').length
       })
 
       setRecentNews(
@@ -40,118 +53,146 @@ export default function DashboardPage() {
       )
     } catch (err) {
       console.error('Failed to fetch stats:', err)
+    } finally {
+      setLoading(false)
     }
   }
 
-  if (!mounted) return null
-
   return (
-    <div className="w-full space-y-8 pb-8">
-      {/* SECTION 1: KPI METRICS - EQUAL WIDTH CARDS */}
-      <div>
-        <h2 className="text-lg font-bold text-white mb-4">Dashboard Overview</h2>
+    <div className="space-y-8 font-sans antialiased text-zinc-200 select-none pb-20">
+      
+      {/* ─── OFFICIAL UNIVERSITY HERO BANNER ─── */}
+      <div className="relative overflow-hidden bg-gradient-to-b from-zinc-900 via-zinc-950 to-zinc-900 border border-zinc-700/60 rounded-2xl p-6 sm:p-8 shadow-lg">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-600 via-rose-500 to-red-700 shadow-[0_0_10px_#dc2626]" />
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative z-10">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]" />
+              <span className="text-[11px] font-black uppercase tracking-wider text-red-500 flex items-center gap-1.5">
+                <GraduationCap className="w-3.5 h-3.5 inline" /> SMeH Official Media Bureau
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              Manav Rachna Times Press Portal
+            </h1>
+            <p className="text-zinc-400 text-xs sm:text-sm max-w-xl">
+              Overview of published news, draft press releases, photo gallery collections, and reader analytics.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            <Link
+              href="/admin/news/create"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-extrabold text-xs rounded-xl shadow-[0_4px_0_0_#991b1b,0_6px_15px_rgba(0,0,0,0.5)] active:translate-y-1 active:shadow-none transition-all cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Publish New Article</span>
+            </Link>
+            <Link
+              href="/admin/gallery/create"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-extrabold text-xs rounded-xl border border-zinc-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_4px_rgba(0,0,0,0.4)] transition"
+            >
+              <ImageIcon className="w-4 h-4 text-red-500" />
+              <span>Create Photo Album</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* ─── SUMMARY STATS METERS ─── */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+          <h2 className="text-xs font-black uppercase tracking-wider text-zinc-400">
+            Publication Summary & Telemetry
+          </h2>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
           <KPICard
             label="Total Articles"
-            value={stats.total}
-            bgGradient="from-red-600 to-red-700"
-            borderColor="border-red-500"
+            value={loading ? "..." : stats.total}
+            icon={<FileText className="w-4 h-4 text-red-500" />}
           />
           <KPICard
-            label="Published"
-            value={stats.published}
-            bgGradient="from-green-600 to-green-700"
-            borderColor="border-green-500"
+            label="Published Live"
+            value={loading ? "..." : stats.published}
+            icon={<CheckCircle2 className="w-4 h-4 text-emerald-400" />}
           />
           <KPICard
-            label="Drafts"
-            value={stats.draft}
-            bgGradient="from-yellow-600 to-yellow-700"
-            borderColor="border-yellow-500"
+            label="Drafts in Review"
+            value={loading ? "..." : stats.draft}
+            icon={<Edit3 className="w-4 h-4 text-amber-400" />}
           />
           <KPICard
-            label="Scheduled"
-            value={stats.scheduled}
-            bgGradient="from-blue-600 to-blue-700"
-            borderColor="border-blue-500"
+            label="Photo Albums"
+            value={loading ? "..." : stats.galleryCount}
+            icon={<ImageIcon className="w-4 h-4 text-rose-400" />}
           />
           <KPICard
-            label="Total Views"
-            value={stats.views.toLocaleString()}
-            bgGradient="from-purple-600 to-purple-700"
-            borderColor="border-purple-500"
+            label="Total Reader Views"
+            value={loading ? "..." : stats.views.toLocaleString()}
+            icon={<Eye className="w-4 h-4 text-cyan-400" />}
           />
         </div>
       </div>
 
-      {/* SECTION 2: QUICK ACTIONS */}
-      <div>
-        <h2 className="text-lg font-bold text-white mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <a
+      {/* ─── RECENT ARTICLES TABLE ─── */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+          <h2 className="text-xs font-black uppercase tracking-wider text-zinc-400">
+            Recent Press Releases & News
+          </h2>
+          <Link
             href="/admin/news"
-            className="bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-bold py-4 px-6 rounded-lg transition text-center"
+            className="text-xs font-bold text-red-400 hover:text-red-300 flex items-center gap-1 transition"
           >
-            📰 Upload News
-          </a>
-          <a
-            href="/admin/categories"
-            className="bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-white font-semibold py-4 px-6 rounded-lg transition text-center"
-          >
-            📁 Categories
-          </a>
-          <a
-            href="/admin/settings"
-            className="bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-white font-semibold py-4 px-6 rounded-lg transition text-center"
-          >
-            ⚙️ Settings
-          </a>
+            View All Press Articles <ArrowUpRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
-      </div>
 
-      {/* SECTION 3: RECENT UPLOADS */}
-      <div>
-        <h2 className="text-lg font-bold text-white mb-4">Recent Uploads</h2>
-        <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
-          {recentNews.length === 0 ? (
-            <div className="p-8 text-center text-zinc-500">
-              <p className="text-sm">No articles yet. Start by uploading your first news article.</p>
+        <div className="bg-gradient-to-b from-zinc-900 via-zinc-950 to-zinc-900 border border-zinc-800/90 rounded-2xl overflow-hidden shadow-md">
+          {loading ? (
+            <div className="p-12 text-center text-zinc-500 text-xs animate-pulse">
+              Loading recent articles...
+            </div>
+          ) : recentNews.length === 0 ? (
+            <div className="p-12 text-center text-zinc-500 text-xs">
+              No articles published yet. Click "Publish New Article" to create your first story!
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-zinc-800 bg-zinc-800/50">
-                    <th className="text-left px-6 py-4 text-xs font-bold uppercase text-zinc-300">Title</th>
-                    <th className="text-left px-6 py-4 text-xs font-bold uppercase text-zinc-300">Category</th>
-                    <th className="text-left px-6 py-4 text-xs font-bold uppercase text-zinc-300">Status</th>
-                    <th className="text-right px-6 py-4 text-xs font-bold uppercase text-zinc-300">Views</th>
+                  <tr className="border-b border-zinc-800/90 bg-zinc-950/80 text-zinc-400 font-extrabold text-[10px] uppercase tracking-wider">
+                    <th className="px-5 py-3.5">Article Title</th>
+                    <th className="px-5 py-3.5">Category Desk</th>
+                    <th className="px-5 py-3.5">Status</th>
+                    <th className="px-5 py-3.5 text-right">Views</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-zinc-800/50">
                   {recentNews.map((item) => (
-                    <tr key={item.id} className="border-b border-zinc-800 hover:bg-zinc-800/30 transition">
-                      <td className="px-6 py-4 text-sm text-white font-medium">{item.title}</td>
-                      <td className="px-6 py-4">
-                        <span className="text-xs bg-zinc-800 text-zinc-300 px-3 py-1 rounded">
-                          {item.category?.name || 'N/A'}
-                        </span>
+                    <tr key={item.id} className="hover:bg-zinc-800/40 transition">
+                      <td className="px-5 py-4 font-bold text-white">
+                        {item.title}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-4 text-zinc-400 font-medium">
+                        {item.category?.name || 'General'}
+                      </td>
+                      <td className="px-5 py-4">
                         <span
-                          className={`text-xs font-semibold px-3 py-1 rounded ${
+                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider ${
                             item.status === 'published'
-                              ? 'bg-green-900/50 text-green-300'
-                              : item.status === 'draft'
-                              ? 'bg-yellow-900/50 text-yellow-300'
-                              : 'bg-blue-900/50 text-blue-300'
+                              ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-700/60'
+                              : 'bg-zinc-900 text-zinc-400 border border-zinc-800'
                           }`}
                         >
-                          {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                          {item.status}
                         </span>
                       </td>
-                      <td className="text-right px-6 py-4 text-sm text-zinc-400">
-                        👁️ {item.views_count?.toLocaleString() || 0}
+                      <td className="px-5 py-4 text-right font-mono font-bold text-zinc-300">
+                        {item.views_count?.toLocaleString() || 0}
                       </td>
                     </tr>
                   ))}
@@ -162,150 +203,20 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* SECTION 4: CONTENT STATUS */}
-      <div>
-        <h2 className="text-lg font-bold text-white mb-4">Content Status</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <StatusCard
-            label="Published"
-            icon="✓"
-            count={stats.published}
-            total={stats.total}
-            color="green"
-            bgColor="bg-green-900/20"
-            textColor="text-green-300"
-          />
-          <StatusCard
-            label="Draft"
-            icon="📋"
-            count={stats.draft}
-            total={stats.total}
-            color="yellow"
-            bgColor="bg-yellow-900/20"
-            textColor="text-yellow-300"
-          />
-          <StatusCard
-            label="Scheduled"
-            icon="⏱️"
-            count={stats.scheduled}
-            total={stats.total}
-            color="blue"
-            bgColor="bg-blue-900/20"
-            textColor="text-blue-300"
-          />
-        </div>
-      </div>
-
-      {/* SECTION 5: WORKFLOW GUIDE */}
-      <div>
-        <h2 className="text-lg font-bold text-white mb-4">Getting Started</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          <TipCard
-            step="1"
-            title="Create Article"
-            description="Upload your first news article with title, content, and category."
-            icon="📝"
-          />
-          <TipCard
-            step="2"
-            title="Organize Categories"
-            description="Set up and manage news categories for better organization."
-            icon="📂"
-          />
-        </div>
-      </div>
     </div>
   )
 }
 
-// KPI CARD COMPONENT
-function KPICard({
-  label,
-  value,
-  bgGradient,
-  borderColor,
-}: {
-  label: string
-  value: string | number
-  bgGradient: string
-  borderColor: string
-}) {
+function KPICard({ label, value, icon }: { label: string; value: string | number; icon: React.ReactNode }) {
   return (
-    <div
-      className={`bg-gradient-to-br ${bgGradient} rounded-lg p-6 border-l-4 ${borderColor} flex flex-col justify-between h-full min-h-[120px]`}
-    >
-      <p className="text-xs font-bold uppercase text-white/70 mb-3">{label}</p>
-      <p className="text-4xl font-black text-white">{value}</p>
-    </div>
-  )
-}
-
-// STATUS CARD COMPONENT
-function StatusCard({
-  label,
-  icon,
-  count,
-  total,
-  color,
-  bgColor,
-  textColor,
-}: {
-  label: string
-  icon: string
-  count: number
-  total: number
-  color: string
-  bgColor: string
-  textColor: string
-}) {
-  const percentage = total > 0 ? Math.round((count / total) * 100) : 0
-
-  return (
-    <div className={`${bgColor} border border-${color}-800 rounded-lg p-6`}>
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <p className="text-sm font-semibold text-zinc-300 mb-1">{label}</p>
-          <p className={`text-3xl font-black ${textColor}`}>{count}</p>
-        </div>
-        <span className="text-3xl">{icon}</span>
-      </div>
-      <div className="w-full bg-black/30 rounded-full h-2 overflow-hidden">
-        <div
-          className={`h-full transition-all duration-500 bg-${color}-500`}
-          style={{ width: `${percentage}%` }}
-        ></div>
-      </div>
-      <p className={`text-xs ${textColor} mt-2`}>{percentage}% of total</p>
-    </div>
-  )
-}
-
-// TIP CARD COMPONENT
-function TipCard({
-  step,
-  title,
-  description,
-  icon,
-}: {
-  step: string
-  title: string
-  description: string
-  icon: string
-}) {
-  return (
-    <div className="p-6 bg-zinc-800 border border-zinc-700 rounded-lg hover:border-zinc-600 transition">
-      <div className="flex items-start gap-4 mb-4">
-        <span className="flex-shrink-0 text-3xl">{icon}</span>
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-red-600 text-white text-xs font-bold rounded-full">
-              {step}
-            </span>
-            <h4 className="font-bold text-white text-sm">{title}</h4>
-          </div>
-          <p className="text-xs text-zinc-400 leading-relaxed">{description}</p>
+    <div className="bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800/90 rounded-2xl p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_6px_16px_rgba(0,0,0,0.5)] flex flex-col justify-between space-y-3">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400">{label}</span>
+        <div className="w-8 h-8 rounded-lg bg-zinc-950 border border-zinc-800 shadow-inner flex items-center justify-center">
+          {icon}
         </div>
       </div>
+      <div className="text-2xl font-black text-white tracking-tight drop-shadow">{value}</div>
     </div>
   )
 }

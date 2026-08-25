@@ -1,16 +1,85 @@
 "use client";
 
-
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Instagram, Linkedin, Youtube, Twitter } from "lucide-react";
 
 export function SiteFooter() {
   const pathname = usePathname();
   
+  const [socials, setSocials] = useState<{
+    instagramUrl?: string;
+    xUrl?: string;
+    linkedinUrl?: string;
+    youtubeUrl?: string;
+  }>({});
+
+  const checkSocials = () => {
+    try {
+      const saved = localStorage.getItem("mrt_newsroom_settings");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setSocials({
+          instagramUrl: parsed.instagramUrl || "",
+          xUrl: parsed.xUrl || "",
+          linkedinUrl: parsed.linkedinUrl || "",
+          youtubeUrl: parsed.youtubeUrl || "",
+        });
+      }
+    } catch (e) {
+      console.error("Failed to load footer socials:", e);
+    }
+  };
+
+  useEffect(() => {
+    checkSocials();
+    const handleSettingsChange = () => checkSocials();
+    window.addEventListener("mrt_settings_changed", handleSettingsChange);
+    window.addEventListener("storage", handleSettingsChange);
+
+    return () => {
+      window.removeEventListener("mrt_settings_changed", handleSettingsChange);
+      window.removeEventListener("storage", handleSettingsChange);
+    };
+  }, []);
+
   if (pathname?.startsWith('/admin') || pathname?.startsWith('/login')) {
     return null;
   }
+
+  // Active Social Media List - Render ONLY if URL exists!
+  const activeSocialItems = [
+    {
+      id: "instagram",
+      name: "Instagram",
+      url: socials.instagramUrl,
+      icon: Instagram,
+      color: "hover:bg-gradient-to-tr hover:from-amber-500 hover:via-rose-500 hover:to-purple-600 hover:text-white hover:border-pink-500/50"
+    },
+    {
+      id: "x",
+      name: "X (Twitter)",
+      url: socials.xUrl,
+      icon: Twitter,
+      color: "hover:bg-zinc-800 hover:text-white hover:border-zinc-700"
+    },
+    {
+      id: "linkedin",
+      name: "LinkedIn",
+      url: socials.linkedinUrl,
+      icon: Linkedin,
+      color: "hover:bg-blue-600 hover:text-white hover:border-blue-500"
+    },
+    {
+      id: "youtube",
+      name: "YouTube",
+      url: socials.youtubeUrl,
+      icon: Youtube,
+      color: "hover:bg-red-600 hover:text-white hover:border-red-500"
+    }
+  ].filter(item => item.url && item.url.trim().length > 0);
 
   const sections = [
     {
@@ -22,7 +91,7 @@ export function SiteFooter() {
         { name: "Current Affairs", href: "/category/current-affairs" },
         { name: "Entertainment & Lifestyle", href: "/category/entertainment-lifestyle" },
         { name: "Sports", href: "/category/sports" },
-        { name: "Students Voices", href: "/category/students-voices" },
+        { name: "Student Voices", href: "/category/students-voices" },
       ]
     },
     {
@@ -45,14 +114,14 @@ export function SiteFooter() {
   ];
 
   return (
-    <footer className="bg-zinc-950 text-zinc-400 py-16 border-t border-zinc-900 font-sans mt-20 relative overflow-hidden">
+    <footer className="bg-zinc-950 text-zinc-400 py-16 border-t border-zinc-900 font-sans mt-20 relative overflow-hidden select-none">
       {/* Decorative top border */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-600 via-red-500 to-red-800"></div>
       
       <div className="container mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
           
-          {/* Brand Section */}
+          {/* Brand Section & Conditional Social Icons */}
           <div className="lg:col-span-5 space-y-6 pr-0 lg:pr-12">
             <Link href="/" className="inline-block group">
               <div className="relative w-64 h-24 lg:w-72 lg:h-28 group-hover:opacity-80 transition-opacity duration-300">
@@ -63,6 +132,32 @@ export function SiteFooter() {
             <p className="text-sm leading-relaxed text-zinc-400 font-medium max-w-md">
               The authoritative voice of Manav Rachna's media platform. Delivering comprehensive coverage of campus news, global affairs, and student life.
             </p>
+
+            {/* Render Social Media Icons ONLY if URLs are configured in CRM Settings! */}
+            {activeSocialItems.length > 0 && (
+              <div className="pt-2 space-y-2">
+                <div className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                  Connect With Us
+                </div>
+                <div className="flex items-center gap-3">
+                  {activeSocialItems.map((item) => {
+                    const IconComp = item.icon;
+                    return (
+                      <Link
+                        key={item.id}
+                        href={item.url!}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 flex items-center justify-center transition-all duration-300 shadow-md transform hover:-translate-y-1 ${item.color}`}
+                        title={item.name}
+                      >
+                        <IconComp className="w-5 h-5" />
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Links Sections */}

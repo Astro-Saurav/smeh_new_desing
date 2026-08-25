@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Clock, Youtube, PlayCircle, Tag, User, Download } from "lucide-react";
+import { ArrowLeft, Clock, Youtube, PlayCircle, Tag, User, Download, Images } from "lucide-react";
+import { LightboxModal, LightboxImage } from "@/components/Gallery/LightboxModal";
 
 const getBaseUrl = () => {
   if (typeof window !== 'undefined') return ''; // Proxy through Next.js
@@ -42,6 +43,14 @@ interface RawArticle {
   thumbnail?: {
     file_path?: string;
   };
+  images?: Array<{
+    id: string;
+    media?: {
+      id?: string;
+      file_path?: string;
+      original_name?: string;
+    };
+  }>;
   document?: {
     file_path?: string;
     original_name?: string;
@@ -81,6 +90,8 @@ export default function ArticlePage() {
   const [article, setArticle] = useState<RawArticle | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   useEffect(() => {
     if (!id) return;
@@ -128,15 +139,44 @@ export default function ArticlePage() {
   );
 
   const categoryName = resolveCategoryName(article.category);
+  const isGalleryCategory = categoryName.toLowerCase().includes("gallery");
   const imgSrc = getImageUrl(article.thumbnail?.file_path || article.image_url || article.image || article.imageUrl);
   const ytId = getYouTubeId(article.youtube_url || article.youtubeUrl);
   const publishedDate = formatDate(article.published_at || article.created_at);
   const authorEmail = article.author?.email || "";
   const authorName = article.author_name || article.author?.name || article.author?.username || article.author?.email || 'MRT Bureau';
 
+  // Build Lightbox album photos
+  const albumPhotos: LightboxImage[] = [];
+  if (Array.isArray(article.images) && article.images.length > 0) {
+    article.images.forEach((imgItem, idx) => {
+      const url = getImageUrl(imgItem.media?.file_path);
+      if (url) {
+        albumPhotos.push({
+          src: url,
+          title: `${article.title} - Photo ${idx + 1}`,
+          originalName: imgItem.media?.original_name
+        });
+      }
+    });
+  }
+  // Fallback to main cover image if images array is empty
+  if (albumPhotos.length === 0 && imgSrc) {
+    albumPhotos.push({
+      src: imgSrc,
+      title: article.title,
+      originalName: "cover.jpg"
+    });
+  }
+
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  };
+
   return (
     <div className="bg-white min-h-screen">
-      <main className="container mx-auto px-4 md:px-8 py-8 max-w-4xl">
+      <main className="container mx-auto px-4 md:px-8 py-8 max-w-5xl">
 
         {/* Breadcrumb / Back */}
         <div className="flex items-center gap-2 mb-8">
@@ -167,7 +207,7 @@ export default function ArticlePage() {
                 <Clock className="w-3.5 h-3.5" /> {publishedDate}
               </span>
             )}
-            <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-sm">
+            <span className="px-2.5 py-1 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest rounded-sm">
               {categoryName}
             </span>
             {authorName && (
@@ -175,14 +215,62 @@ export default function ArticlePage() {
                 <User className="w-3.5 h-3.5" /> {authorName}
               </span>
             )}
+            {isGalleryCategory && (
+              <span className="flex items-center gap-1.5 text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded">
+                <Images className="w-3.5 h-3.5" /> {albumPhotos.length} Photos in Album
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Lead Image */}
-        {imgSrc && (
-          <div className="relative w-full aspect-[21/9] md:aspect-video overflow-hidden bg-zinc-50 mb-10 rounded-xl shadow-sm border border-zinc-100">
-            <Image src={imgSrc} alt={article.title || article.headline || 'Untitled'} fill className="object-cover" priority unoptimized={true} onError={(e) => { if (!e.currentTarget.src.includes('/new_logo.png')) { e.currentTarget.srcset = ''; e.currentTarget.src = '/new_logo.png'; } }} />
+        {/* 🖼️ Dedicated Photo Gallery Album Layout */}
+        {isGalleryCategory ? (
+          <div className="mb-12 space-y-8">
+            <div className="flex items-center justify-between border-b border-zinc-200 pb-3">
+              <h2 className="text-xl font-black uppercase tracking-tight text-zinc-900 flex items-center gap-2">
+                <Images className="w-5 h-5 text-red-600" /> Photo Album Grid
+              </h2>
+              <span className="text-xs font-mono text-zinc-400">Click any photo for Fullscreen & Download</span>
+            </div>
+
+            {/* Bento / Responsive Grid of Album Photos */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 auto-rows-[200px] md:auto-rows-[280px]">
+              {albumPhotos.map((photo, index) => {
+                // Alternating grid span pattern for dynamic modern look
+                const isFeatured = index === 0 || index === 5;
+                const spanClass = isFeatured ? "col-span-2 row-span-2" : "col-span-1 row-span-1";
+
+                return (
+                  <div
+                    key={index}
+                    onClick={() => openLightbox(index)}
+                    className={`${spanClass} group relative overflow-hidden rounded-xl bg-zinc-900 border border-zinc-200 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer`}
+                  >
+                    <img
+                      src={photo.src}
+                      alt={photo.title || `Photo ${index + 1}`}
+                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <span className="bg-red-600 text-white font-bold text-xs px-4 py-2 rounded-full shadow-lg flex items-center gap-2 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                        🔍 View Fullscreen
+                      </span>
+                    </div>
+                    <div className="absolute bottom-2 left-2 bg-black/70 text-white text-[10px] font-mono px-2 py-0.5 rounded">
+                      #{index + 1}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
+        ) : (
+          /* Lead Image for Standard Articles */
+          imgSrc && (
+            <div className="relative w-full aspect-[21/9] md:aspect-video overflow-hidden bg-zinc-50 mb-10 rounded-xl shadow-sm border border-zinc-100">
+              <Image src={imgSrc} alt={article.title || article.headline || 'Untitled'} fill className="object-cover" priority unoptimized={true} onError={(e) => { if (!e.currentTarget.src.includes('/new_logo.png')) { e.currentTarget.srcset = ''; e.currentTarget.src = '/new_logo.png'; } }} />
+            </div>
+          )
         )}
 
         {/* YouTube Embed — shown above body when video exists */}
@@ -278,6 +366,15 @@ export default function ArticlePage() {
             <ArrowLeft className="w-3 h-3" /> Back to {categoryName}
           </button>
         </div>
+
+        {/* 🖼️ Fullscreen Interactive Lightbox Modal */}
+        <LightboxModal
+          images={albumPhotos}
+          currentIndex={lightboxIndex}
+          isOpen={lightboxOpen}
+          onClose={() => setLightboxOpen(false)}
+          onNavigate={(index) => setLightboxIndex(index)}
+        />
 
       </main>
     </div>

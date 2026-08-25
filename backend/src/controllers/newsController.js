@@ -9,10 +9,18 @@ const {
   listNews,
   getNewsRevisions,
   restoreRevision,
-  incrementViews
+  incrementUniqueViews
 } = require('../services/newsService')
 const { recordAudit } = require('../services/auditService')
 const R = require('../utils/response')
+
+function getClientIp(req) {
+  const forwarded = req.headers['x-forwarded-for']
+  if (forwarded) {
+    return forwarded.split(',')[0].trim()
+  }
+  return req.ip || req.socket?.remoteAddress || '127.0.0.1'
+}
 
 const create = asyncHandler(async (req, res) => {
   const news = await createNews(req.validated.body, req.user.userId)
@@ -32,7 +40,7 @@ const create = asyncHandler(async (req, res) => {
 })
 
 const list = asyncHandler(async (req, res) => {
-  const { category, search, status, page = 1, limit = 10, featured, visibility } = req.validated?.query || req.query
+  const { category, search, status, page = 1, limit = 10, featured, breaking, visibility } = req.validated?.query || req.query
 
   const result = await listNews({
     category,
@@ -41,6 +49,7 @@ const list = asyncHandler(async (req, res) => {
     page: Number(page),
     limit: Number(limit),
     isFeatured: featured === 'true' ? true : featured === 'false' ? false : undefined,
+    isBreaking: breaking === 'true' ? true : breaking === 'false' ? false : undefined,
     visibility
   })
 
@@ -55,8 +64,8 @@ const getById = asyncHandler(async (req, res) => {
     return R.notFound(res, 'Article not found')
   }
 
-  // Async view increment (fire and forget)
-  incrementViews(news.id).catch(() => {})
+  const clientIp = getClientIp(req)
+  incrementUniqueViews(news.id, clientIp).catch(() => {})
 
   return R.success(res, news)
 })
@@ -69,7 +78,8 @@ const getBySlug = asyncHandler(async (req, res) => {
     return R.notFound(res, 'Article not found')
   }
 
-  incrementViews(news.id).catch(() => {})
+  const clientIp = getClientIp(req)
+  incrementUniqueViews(news.id, clientIp).catch(() => {})
 
   return R.success(res, news)
 })

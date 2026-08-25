@@ -57,6 +57,8 @@ frontend/public/uploads/
 
 *.db
 *.sqlite
+*.db-shm
+*.db-wal
 
 # ignor folder to keep track of changes
 ignor/

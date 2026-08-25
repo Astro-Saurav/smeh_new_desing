@@ -229,6 +229,7 @@ model News {
   visibility           String         @default("public")
   is_featured          Boolean        @default(false)
   is_pinned            Boolean        @default(false)
+  is_breaking          Boolean        @default(false)
   featured_order       Int?
   allow_comments       Boolean        @default(true)
   language             String         @default("en")
@@ -255,6 +256,7 @@ model News {
   images               NewsImage[]
   revisions            NewsRevision[]
   tags                 NewsTag[]
+  unique_views         NewsView[]
 
   @@index([slug])
   @@index([status, published_at])
@@ -265,6 +267,19 @@ model News {
   @@index([deleted_at])
   @@index([scheduled_publish_at])
   @@map("news")
+}
+
+model NewsView {
+  id         String   @id @default(uuid())
+  news_id    String
+  ip_address String
+  created_at DateTime @default(now())
+
+  news       News     @relation(fields: [news_id], references: [id], onDelete: Cascade)
+
+  @@unique([news_id, ip_address])
+  @@index([news_id])
+  @@map("news_views")
 }
 
 model NewsImage {
@@ -386,6 +401,11 @@ model EditorialMember {
   id            String        @id @default(uuid())
   name          String
   role_id       String
+  image         String?
+  tagline       String?
+  email         String?
+  contact       String?
+  social_link   String?
   display_order Int           @default(0)
   created_at    DateTime      @default(now())
   updated_at    DateTime      @updatedAt

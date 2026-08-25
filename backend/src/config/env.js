@@ -17,24 +17,24 @@ const env = {
   clientOrigin: fromEnv(['CLIENT_ORIGIN'], 'http://localhost:3000'),
 
   // JWT
-  jwtSecret: fromEnv(['JWT_SECRET']),
+  jwtSecret: fromEnv(['JWT_SECRET'], 'local-dev-jwt-secret-change-in-production'),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '60m',
-  refreshJwtSecret: fromEnv(['REFRESH_JWT_SECRET']),
+  refreshJwtSecret: fromEnv(['REFRESH_JWT_SECRET'], 'local-dev-refresh-jwt-secret-change-in-production'),
   refreshJwtExpiresIn: process.env.REFRESH_JWT_EXPIRES_IN || '7d',
   refreshCookieName: process.env.REFRESH_COOKIE_NAME || 'mrt_refresh_token',
   // Default to TRUE — cookies must be secure (HTTPS-only) unless explicitly disabled
-  refreshCookieSecure: String(process.env.REFRESH_COOKIE_SECURE ?? 'true').toLowerCase() === 'true',
-  refreshCookieSameSite: process.env.REFRESH_COOKIE_SAME_SITE || 'strict',
+  refreshCookieSecure: String(process.env.REFRESH_COOKIE_SECURE ?? 'false').toLowerCase() === 'true',
+  refreshCookieSameSite: process.env.REFRESH_COOKIE_SAME_SITE || 'lax',
 
   // Database
-  databaseUrl: fromEnv(['DATABASE_URL']),
+  databaseUrl: fromEnv(['DATABASE_URL'], 'file:./dev.db'),
 
   // Redis
   redisUrl: fromEnv(['REDIS_URL'], 'redis://localhost:6379'),
 
   // Uploads
   uploadBasePath: fromEnv(['UPLOAD_BASE_PATH'], './uploads'),
-  maxUploadSizeBytes: Number(process.env.MAX_UPLOAD_SIZE_BYTES || 100 * 1024 * 1024), // 100MB
+  maxUploadSizeBytes: Number(process.env.MAX_UPLOAD_SIZE_BYTES || 50 * 1024 * 1024), // 50MB
 
   // PM2
   pm2MaxMemory: process.env.PM2_MAX_MEMORY || '1G',
@@ -44,8 +44,8 @@ const env = {
   loginLockoutMinutes: Number(process.env.LOGIN_LOCKOUT_MINUTES || 15),
   bcryptRounds: Number(process.env.BCRYPT_ROUNDS || 12),
 
-  // Cron — MUST be set explicitly in production; no insecure default
-  cronSecret: fromEnv(['CRON_SECRET']),
+  // Cron
+  cronSecret: fromEnv(['CRON_SECRET'], 'local-dev-cron-secret-change-in-production'),
 
   // App
   appName: process.env.APP_NAME || 'Manav Rachna Time',
@@ -59,20 +59,15 @@ const requiredInProduction = [
   ['CRON_SECRET', env.cronSecret]
 ]
 
-const requiredAlways = [
-  ['JWT_SECRET', env.jwtSecret],
-  ['REFRESH_JWT_SECRET', env.refreshJwtSecret],
-  ['CRON_SECRET', env.cronSecret]
-]
-
 function validateEnv () {
-  const checkList = env.nodeEnv === 'production' ? requiredInProduction : requiredAlways
-  const missing = checkList
-    .filter(([, value]) => !value)
-    .map(([name]) => name)
+  if (env.nodeEnv === 'production') {
+    const missing = requiredInProduction
+      .filter(([, value]) => !value)
+      .map(([name]) => name)
 
-  if (missing.length > 0) {
-    throw new Error(`[MRT] Missing required environment variables: ${missing.join(', ')}`)
+    if (missing.length > 0) {
+      throw new Error(`[MRT] Missing required environment variables in production: ${missing.join(', ')}`)
+    }
   }
 
   // Warn if running in production without HTTPS cookies

@@ -4,7 +4,7 @@ import { useState, ChangeEvent, FormEvent } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { cacheManager } from '@/lib/cache-manager'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react'
 
 interface LoginFormData {
   email: string
@@ -37,6 +37,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [bgImage, setBgImage] = useState('/login-bg.jpg')
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -64,12 +65,11 @@ export default function LoginPage() {
       const data: LoginResponse = await response.json()
 
       if (!response.ok) {
-        setError(data.message || data.error || 'Login failed. Please try again.')
+        setError(data.message || data.error || 'Login failed. Please check credentials.')
         setLoading(false)
         return
       }
 
-      // Store ONLY the access token using secure cache manager
       const token = data.data?.accessToken || data.data?.token
       if (token) {
         const cached = cacheManager.setAuthData(token)
@@ -86,14 +86,11 @@ export default function LoginPage() {
 
       setSuccess(true)
       setError(null)
-
-      // Clear form data after successful login
       setFormData({ email: '', password: '' })
 
-      // Redirect to admin dashboard
       setTimeout(() => {
         router.push('/admin/dashboard')
-      }, 1000)
+      }, 500)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred. Please try again.')
     } finally {
@@ -102,78 +99,107 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4">
-      <div className="w-full max-w-md">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-block mb-6">
-            <div className="text-3xl font-black text-white">
-              MANAV RACHNA <span className="text-orange-500">TIMES</span>
-            </div>
-          </Link>
-          <h1 className="text-2xl font-bold text-white mb-2">Admin Login</h1>
-          <p className="text-slate-400">Sign in to your account to continue</p>
-        </div>
+    <div className="relative min-h-screen w-full flex items-center justify-center p-4 overflow-hidden select-none font-sans text-zinc-200 antialiased bg-zinc-950">
 
-        {/* Login Form Card */}
-        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-lg shadow-xl p-8">
-          {/* Success Message */}
+      {/* 🖼️ FULLSCREEN BACKGROUND IMAGE WITH DARK GLASS OVERLAY */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src={bgImage}
+          alt="Login Background"
+          onError={() => setBgImage('/campus_building.jpg')}
+          className="w-full h-full object-cover scale-105 filter brightness-50 contrast-110 blur-[2px] transition-all duration-700"
+        />
+        {/* Dark Vignette & Gradient Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/70 to-zinc-950/40" />
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-[3px]" />
+      </div>
+
+      {/* 💳 FLOATING GLASSMORPHIC LOGIN CARD */}
+      <div className="relative w-full max-w-md z-10 my-auto">
+        <div className="bg-zinc-950/80 backdrop-blur-xl border border-white/10 rounded-2xl p-7 md:p-8 shadow-2xl space-y-6">
+          
+          {/* Brand Header */}
+          <div className="text-center space-y-2">
+            <Link href="/" className="inline-flex items-center gap-2.5 mb-1 group">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center text-white font-black text-lg shadow-lg group-hover:scale-105 transition transform">
+                M
+              </div>
+              <span className="text-lg font-bold text-white tracking-tight group-hover:text-red-400 transition">
+                Manav Rachna Times
+              </span>
+            </Link>
+
+            <div className="pt-1">
+              <h1 className="text-xl font-extrabold text-white tracking-tight flex items-center justify-center gap-1.5">
+                <ShieldCheck className="w-5 h-5 text-red-500" />
+                <span>Admin Console Sign In</span>
+              </h1>
+              <p className="text-zinc-400 text-xs mt-1">Enter your authorization credentials to access CRM</p>
+            </div>
+          </div>
+
+          {/* Alert Messages */}
           {success && (
-            <div className="mb-6 p-4 bg-green-900/20 border border-green-700 rounded-lg text-green-300 text-sm">
-              Login successful! Redirecting...
+            <div className="p-3.5 bg-emerald-950/60 border border-emerald-700/50 rounded-xl text-emerald-300 text-xs font-medium text-center shadow-sm">
+              ✅ Authentication successful! Opening dashboard...
             </div>
           )}
 
-          {/* Error Message */}
           {error && (
-            <div className="mb-6 p-4 bg-red-900/20 border border-red-700 rounded-lg text-red-300 text-sm">
-              {error}
+            <div className="p-3.5 bg-red-950/60 border border-red-700/50 rounded-xl text-red-300 text-xs font-medium text-center shadow-sm">
+              ⚠️ {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
+              <label htmlFor="email" className="block text-xs font-semibold text-zinc-300 mb-1.5">
                 Email Address
               </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="admin@example.com"
-                required
-                autoComplete="email"
-                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all"
-              />
+              <div className="relative">
+                <Mail className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="admin@mrt.edu.in"
+                  required
+                  autoComplete="email"
+                  className="w-full pl-10 pr-4 py-2.5 bg-zinc-900/80 border border-zinc-700/70 hover:border-zinc-500 rounded-xl text-white text-xs placeholder-zinc-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition shadow-inner"
+                />
+              </div>
             </div>
 
             {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
+              <label htmlFor="password" className="block text-xs font-semibold text-zinc-300 mb-1.5">
                 Password
               </label>
               <div className="relative">
+                <Lock className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="••••••••"
+                  placeholder="••••••••••••"
                   required
                   autoComplete="current-password"
-                  className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all pr-12"
+                  className="w-full pl-10 pr-10 py-2.5 bg-zinc-900/80 border border-zinc-700/70 hover:border-zinc-500 rounded-xl text-white text-xs placeholder-zinc-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition shadow-inner"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300 transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200 transition-colors p-1"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
@@ -182,26 +208,25 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-orange-500 hover:bg-orange-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all duration-200 transform hover:scale-105 disabled:scale-100"
+              className="w-full py-3 px-4 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 disabled:opacity-50 text-white font-bold text-xs rounded-xl transition shadow-lg flex items-center justify-center gap-2 active:scale-[0.99] cursor-pointer mt-2"
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? (
+                <span>Verifying credentials...</span>
+              ) : (
+                <>
+                  <span>Access CRM Console</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
             </button>
           </form>
 
-          {/* Footer Links */}
-          <div className="mt-6 text-center text-sm">
-            <p className="text-slate-400">
-              Back to{' '}
-              <Link href="/" className="text-orange-500 hover:text-orange-400 font-medium">
-                home page
-              </Link>
-            </p>
+          {/* Footer Link */}
+          <div className="text-center text-xs text-zinc-500 border-t border-white/10 pt-4">
+            <Link href="/" className="text-zinc-400 hover:text-white transition flex items-center justify-center gap-1">
+              ← Return to Main Website
+            </Link>
           </div>
-        </div>
-
-        {/* Support Message */}
-        <div className="mt-6 p-4 bg-slate-700/30 border border-slate-600 rounded-lg text-slate-300 text-xs text-center">
-          <p>If you need login assistance, please contact the administrator.</p>
         </div>
       </div>
     </div>

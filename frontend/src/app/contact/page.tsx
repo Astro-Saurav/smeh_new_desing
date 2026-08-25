@@ -129,25 +129,15 @@ export default function ContactPage() {
               <div className="flex-1 h-[2px] bg-red-600 max-w-[40px]" />
             </div>
 
-            {/* Campus photo with logo badge — full width */}
+            {/* Campus photo — full width */}
             <div className="relative w-full mb-6">
               <Image
                 src="/MRIIRS.webp"
                 alt="Manav Rachna Campus"
                 width={900}
                 height={480}
-                className="w-full h-[280px] object-cover grayscale rounded-sm"
+                className="w-full h-[280px] object-cover grayscale rounded-sm shadow-sm"
               />
-              {/* red logo badge at bottom-left */}
-              <div className="absolute bottom-0 left-0 w-16 h-16 bg-red-600 flex items-center justify-center">
-                <Image
-                  src="/new_logo.png"
-                  alt="MR Logo"
-                  width={44}
-                  height={44}
-                  className="object-contain brightness-0 invert"
-                />
-              </div>
             </div>
 
             {/* tagline below the image */}

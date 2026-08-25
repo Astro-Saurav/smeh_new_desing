@@ -28,9 +28,9 @@ prisma.$on('error', (e) => {
 
 async function connectDB () {
   try {
-    // Just a simple query to ensure SQLite is connected
-    await prisma.$queryRaw`SELECT 1`
-    logger.info('SQLite connected via Prisma')
+    await prisma.$queryRaw`PRAGMA journal_mode = WAL;`
+    await prisma.$queryRaw`PRAGMA busy_timeout = 5000;`
+    logger.info('SQLite connected via Prisma (WAL Mode Enabled)')
   } catch (err) {
     logger.error('SQLite connection failed', { message: err.message })
     process.exit(1)

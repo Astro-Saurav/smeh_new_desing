@@ -9,11 +9,9 @@ const NEWS_SELECT = {
   slug: true,
   excerpt: true,
   content: true,
-  youtube_url: true,
-  status: true,
-  visibility: true,
   is_featured: true,
   is_pinned: true,
+  is_breaking: true,
   featured_order: true,
   allow_comments: true,
   language: true,
@@ -39,6 +37,14 @@ const NEWS_SELECT = {
   author_name: true,
   thumbnail: { select: { id: true, file_path: true, path_webp: true, path_avif: true, path_thumb: true } },
   document: { select: { id: true, file_path: true, original_name: true, mime_type: true } },
+  images: {
+    select: {
+      id: true,
+      sort_order: true,
+      media: { select: { id: true, file_path: true, path_webp: true, path_thumb: true, original_name: true } }
+    },
+    orderBy: { sort_order: 'asc' }
+  },
   tags: { include: { tag: { select: { id: true, name: true, slug: true } } } }
 }
 
@@ -57,6 +63,7 @@ async function createNews (payload, authorId) {
     visibility: payload.visibility || 'public',
     is_featured: !!payload.isFeatured,
     is_pinned: !!payload.isPinned,
+    is_breaking: !!payload.isBreaking,
     allow_comments: payload.allowComments !== false,
     language: payload.language || 'en',
     seo_title: payload.seoTitle || null,
@@ -72,6 +79,15 @@ async function createNews (payload, authorId) {
     reading_time: payload.readingTime ? Number(payload.readingTime) : estimateReadingTime(payload.content),
     published_at: payload.status === 'published' ? new Date() : null,
     scheduled_publish_at: payload.scheduledPublishAt ? new Date(payload.scheduledPublishAt) : null
+  }
+
+  if (Array.isArray(payload.imagesMediaIds) && payload.imagesMediaIds.length > 0) {
+    data.images = {
+      create: payload.imagesMediaIds.map((mediaId, index) => ({
+        media_id: mediaId,
+        sort_order: index
+      }))
+    }
   }
 
   const news = await prisma.news.create({ data, select: NEWS_SELECT })
@@ -117,6 +133,7 @@ async function updateNews (id, payload, editorId) {
   if (payload.authorName !== undefined) updateData.author_name = payload.authorName
   if (payload.isFeatured !== undefined) updateData.is_featured = payload.isFeatured
   if (payload.isPinned !== undefined) updateData.is_pinned = payload.isPinned
+  if (payload.isBreaking !== undefined) updateData.is_breaking = payload.isBreaking
   if (payload.thumbnailMediaId !== undefined) updateData.thumbnail_media_id = payload.thumbnailMediaId
   if (payload.documentMediaId !== undefined) updateData.document_media_id = payload.documentMediaId
   if (payload.titleFont !== undefined) updateData.title_font = payload.titleFont || 'Inter'
@@ -131,6 +148,19 @@ async function updateNews (id, payload, editorId) {
 
   updateData.updated_by = editorId
   updateData.publish_version = { increment: 1 }
+
+  if (Array.isArray(payload.imagesMediaIds)) {
+    await prisma.newsImage.deleteMany({ where: { news_id: id } })
+    if (payload.imagesMediaIds.length > 0) {
+      await prisma.newsImage.createMany({
+        data: payload.imagesMediaIds.map((mediaId, index) => ({
+          news_id: id,
+          media_id: mediaId,
+          sort_order: index
+        }))
+      })
+    }
+  }
 
   const updated = await prisma.news.update({
     where: { id },
@@ -234,7 +264,7 @@ async function getNewsBySlug (slug) {
   })
 }
 
-async function listNews ({ category, search, status, page = 1, limit = 10, isFeatured, visibility, includeDeleted = false }) {
+async function listNews ({ category, search, status, page = 1, limit = 10, isFeatured, isBreaking, visibility, includeDeleted = false }) {
   const skip = (Number(page) - 1) * Number(limit)
   const where = {}
 
@@ -242,6 +272,7 @@ async function listNews ({ category, search, status, page = 1, limit = 10, isFea
   if (status) where.status = status
   if (visibility) where.visibility = visibility
   if (isFeatured !== undefined) where.is_featured = isFeatured
+  if (isBreaking !== undefined) where.is_breaking = isBreaking
 
   if (category) {
     where.category = {
@@ -307,6 +338,39 @@ async function incrementViews (id) {
   })
 }
 
+async function incrementUniqueViews (newsId, ipAddress) {
+  if (!ipAddress || !newsId) return null
+
+  try {
+    const existing = await prisma.newsView.findUnique({
+      where: {
+        news_id_ip_address: {
+          news_id: newsId,
+          ip_address: ipAddress
+        }
+      }
+    })
+
+    if (existing) {
+      return null
+    }
+
+    await prisma.newsView.create({
+      data: {
+        news_id: newsId,
+        ip_address: ipAddress
+      }
+    })
+
+    return prisma.news.update({
+      where: { id: newsId },
+      data: { views_count: { increment: 1 } }
+    })
+  } catch (err) {
+    return null
+  }
+}
+
 // ─── Helpers ─────────────────────────────────────────────
 
 function estimateReadingTime (content) {
@@ -327,7 +391,19 @@ async function ensureUniqueSlug (baseSlug, excludeId = null) {
 }
 
 async function getCategoryFeed (slug, cursor, limit = 12) {
-  const category = await prisma.category.findUnique({ where: { slug } })
+  let category = await prisma.category.findUnique({ where: { slug } })
+  if (!category) {
+    const alternateSlugs = slug === 'photo-gallery' ? ['gallery', 'photo-gallery'] : slug === 'gallery' ? ['photo-gallery', 'gallery'] : [slug]
+    category = await prisma.category.findFirst({
+      where: {
+        OR: [
+          { slug: { in: alternateSlugs } },
+          { name: { equals: slug.replace(/-/g, ' '), mode: 'insensitive' } },
+          { name: { equals: 'Photo Gallery', mode: 'insensitive' } }
+        ]
+      }
+    })
+  }
   if (!category) return null
 
   const where = { category_id: category.id, status: 'published', deleted_at: null }
@@ -392,6 +468,30 @@ async function getCategoryFeed (slug, cursor, limit = 12) {
   }
 }
 
+async function publishScheduledNews () {
+  const now = new Date()
+  const dueItems = await prisma.news.findMany({
+    where: {
+      status: 'scheduled',
+      scheduled_publish_at: { lte: now },
+      deleted_at: null
+    }
+  })
+
+  if (dueItems.length === 0) return []
+
+  const ids = dueItems.map(i => i.id)
+  await prisma.news.updateMany({
+    where: { id: { in: ids } },
+    data: {
+      status: 'published',
+      published_at: now
+    }
+  })
+
+  return dueItems
+}
+
 module.exports = {
   createNews,
   updateNews,
@@ -404,5 +504,7 @@ module.exports = {
   getNewsRevisions,
   restoreRevision,
   incrementViews,
+  incrementUniqueViews,
+  publishScheduledNews,
   getCategoryFeed
 }

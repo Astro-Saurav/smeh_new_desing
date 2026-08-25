@@ -19,6 +19,8 @@ export type MainSiteNewsItem = {
   isFeatured: boolean;
   slug: string;
   author?: string;
+  images?: any[];
+  imageCount?: number;
 };
 
 export type CategoryItem = {
@@ -98,6 +100,9 @@ function normalizeNewsItem(item: Record<string, unknown>, fallbackCategory: stri
     authorStr = item.author;
   }
 
+  const rawImages = Array.isArray(item.images) ? item.images : [];
+  const imageCount = rawImages.length > 0 ? rawImages.length : (item.thumbnail ? 1 : 0);
+
   return {
     id,
     headline,
@@ -109,6 +114,8 @@ function normalizeNewsItem(item: Record<string, unknown>, fallbackCategory: stri
     isFeatured: !!(item.is_featured || item.isFeatured),
     slug,
     author: authorStr,
+    images: rawImages,
+    imageCount,
   };
 }
 

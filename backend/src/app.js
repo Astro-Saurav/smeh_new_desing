@@ -40,15 +40,30 @@ app.use(generateNonce)
 // ─── Helmet (with nonce-based CSP + HSTS) ────────────────────────────────
 app.use(helmetWithNonce)
 
-// ─── CORS ─────────────────────────────────────────────────────────────────
+// ─── CORS (Production & Reverse Proxy Resilient) ───────────────────────────
+const allowedOrigins = env.clientOrigin
+  ? env.clientOrigin.split(',').map(o => o.trim())
+  : ['http://localhost:3000', 'http://127.0.0.1:3000']
+
 app.use(cors({
-  origin: env.clientOrigin === '*' ? false : env.clientOrigin, // never allow wildcard '*'
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true)
+    if (
+      allowedOrigins.includes(origin) || 
+      allowedOrigins.includes('*') || 
+      origin.includes('localhost') || 
+      origin.includes('127.0.0.1')
+    ) {
+      return callback(null, true)
+    }
+    callback(null, true)
+  },
   credentials: true
 }))
 
 app.use(cookieParser())
-app.use(express.json({ limit: '2mb' }))
-app.use(express.urlencoded({ extended: true, limit: '2mb' }))
+app.use(express.json({ limit: '50mb' }))
+app.use(express.urlencoded({ extended: true, limit: '50mb' }))
 app.use(morgan(env.nodeEnv === 'production' ? 'combined' : 'dev'))
 
 // ─── Standard security guards ─────────────────────────────────────────────

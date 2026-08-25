@@ -66,19 +66,19 @@ const nextConfig: NextConfig = {
         source: '/explore/:path*',
         destination: '/student-projects/:path*',
       },
-      // Proxy API requests to backend during local development
+      // Proxy API requests to backend during local development or production VPS
       {
         source: '/api/:path*',
         destination: process.env.INTERNAL_API_URL 
           ? `${process.env.INTERNAL_API_URL}/api/:path*`
-          : 'http://localhost:8080/api/:path*',
+          : (process.env.BACKEND_URL ? `${process.env.BACKEND_URL}/api/:path*` : 'http://127.0.0.1:8080/api/:path*'),
       },
-      // Proxy uploads to backend during local development
+      // Proxy uploads to backend during local development or production VPS
       {
         source: '/uploads/:path*',
         destination: process.env.INTERNAL_API_URL 
           ? `${process.env.INTERNAL_API_URL}/uploads/:path*`
-          : 'http://localhost:8080/uploads/:path*',
+          : (process.env.BACKEND_URL ? `${process.env.BACKEND_URL}/uploads/:path*` : 'http://127.0.0.1:8080/uploads/:path*'),
       },
     ]
   },

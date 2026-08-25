@@ -1,12 +1,14 @@
 const { app } = require('./app')
 const { env, validateEnv } = require('./config/env')
 const { connectDB, disconnectDB } = require('./config/db')
+const { startPublisherJob } = require('./jobs/publisherJob')
 const logger = require('./utils/logger')
 
 async function startServer () {
   try {
     validateEnv()
     await connectDB()
+    startPublisherJob()
 
     const server = app.listen(env.port, () => {
       logger.info('MRT API running', {

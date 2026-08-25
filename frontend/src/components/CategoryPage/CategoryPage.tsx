@@ -69,8 +69,8 @@ export function CategoryPage({ slug }: { slug: string }) {
   return (
     <div className="bg-white min-h-screen">
       <main className="container mx-auto px-4 md:px-8 py-8">
-        <div className="border-b-4 border-zinc-900 mb-10 pb-4">
-          <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase">
+        <div className="border-b-2 border-zinc-900 mb-6 pb-2">
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight uppercase text-zinc-900">
             {data.category.name}
           </h1>
         </div>

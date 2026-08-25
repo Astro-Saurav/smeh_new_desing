@@ -76,7 +76,7 @@ async function main () {
     { name: 'MR TV',                     slug: 'mr-tv' },
     { name: 'MR Podcast',                slug: 'podcast' },
     { name: 'Students Voices',           slug: 'students-voices' },
-    { name: 'Photo Gallery',             slug: 'gallery' },
+    { name: 'Photo Gallery',             slug: 'photo-gallery' },
     { name: 'Announcement',              slug: 'announcement' },
   ]
 
