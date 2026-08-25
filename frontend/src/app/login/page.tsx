@@ -172,7 +172,7 @@ export default function LoginPage() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="admin@mrt.edu.in"
+                  placeholder="name@domain.com"
                   required
                   autoComplete="email"
                   className="w-full pl-10 pr-4 py-2.5 bg-zinc-900/80 border border-zinc-700/70 hover:border-zinc-500 rounded-xl text-white text-xs placeholder-zinc-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition shadow-inner"
