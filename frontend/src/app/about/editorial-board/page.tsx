@@ -113,15 +113,15 @@ export default async function EditorialBoardPage() {
               return (
                 <div
                   key={role.id}
-                  className="bg-white border border-zinc-200/90 rounded-3xl p-8 shadow-sm hover:shadow-2xl hover:border-red-600 transition-all duration-300 flex flex-col justify-between space-y-6 relative overflow-hidden group select-none"
+                  className="bg-white border border-zinc-200/90 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm hover:shadow-2xl hover:border-red-600 transition-all duration-300 flex flex-col justify-between space-y-5 relative overflow-hidden group select-none"
                 >
                   {/* Subtle Red Top Bar */}
                   <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-red-600 to-rose-600 opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                  <div className="space-y-5">
+                  <div className="space-y-4 sm:space-y-5">
                     {/* Position / Role Title Badge */}
-                    <div className="flex items-center justify-between">
-                      <span className="inline-block text-[11px] font-black uppercase tracking-widest text-red-600 bg-red-50 border border-red-200/80 px-3.5 py-1 rounded-full select-none">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="inline-block text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-red-600 bg-red-50 border border-red-200/80 px-3 py-1 rounded-full select-none">
                         {roleTitle}
                       </span>
                       <span className="text-[10px] font-mono text-emerald-700 font-bold bg-emerald-50 border border-emerald-200/60 px-2.5 py-0.5 rounded-full flex items-center gap-1 select-none">
@@ -130,8 +130,8 @@ export default async function EditorialBoardPage() {
                     </div>
 
                     {/* Prominent Enlarged Round Profile Picture */}
-                    <div className="flex flex-col items-center text-center space-y-3 pt-2">
-                      <div className="relative w-36 h-36 md:w-40 md:h-40 rounded-full border-4 border-white shadow-2xl overflow-hidden bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center text-white font-black text-3xl group-hover:scale-105 transition-transform duration-300 ring-4 ring-red-600/20 select-none">
+                    <div className="flex flex-col items-center text-center space-y-3 pt-1">
+                      <div className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full border-4 border-white shadow-xl overflow-hidden bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center text-white font-black text-2xl sm:text-3xl group-hover:scale-105 transition-transform duration-300 ring-4 ring-red-600/20 select-none shrink-0">
                         {memberImgSrc ? (
                           <img
                             src={memberImgSrc}
@@ -144,11 +144,11 @@ export default async function EditorialBoardPage() {
                         )}
                       </div>
 
-                      <div>
-                        <h3 className="text-xl md:text-2xl font-black text-zinc-900 group-hover:text-red-600 transition-colors leading-tight tracking-tight">
+                      <div className="w-full px-1">
+                        <h3 className="text-lg sm:text-xl md:text-2xl font-black text-zinc-900 group-hover:text-red-600 transition-colors leading-tight tracking-tight break-words">
                           {activeMember.name}
                         </h3>
-                        <p className="text-xs text-zinc-500 font-medium mt-1 leading-relaxed max-w-xs mx-auto">
+                        <p className="text-xs text-zinc-500 font-medium mt-1 leading-relaxed max-w-xs mx-auto text-justify">
                           {activeMember.tagline || 'SMeH Student Journalist & Editor'}
                         </p>
                       </div>
@@ -156,21 +156,21 @@ export default async function EditorialBoardPage() {
 
                     {/* Contact & Social Information */}
                     {(activeMember.email || activeMember.contact || activeMember.social_link) && (
-                      <div className="pt-4 border-t border-zinc-100 space-y-2 text-xs text-zinc-600">
+                      <div className="pt-3.5 border-t border-zinc-100 space-y-2 text-xs text-zinc-600 w-full overflow-hidden">
                         {activeMember.email && (
                           <a
                             href={`mailto:${activeMember.email}`}
-                            className="flex items-center justify-center gap-2 text-zinc-600 hover:text-red-600 transition-colors truncate font-medium"
+                            className="flex items-center justify-center gap-1.5 text-zinc-600 hover:text-red-600 transition-colors font-medium text-[11px] sm:text-xs max-w-full"
                             title={activeMember.email}
                           >
-                            <Mail className="w-4 h-4 text-red-600 shrink-0" />
-                            <span className="truncate">{activeMember.email}</span>
+                            <Mail className="w-3.5 h-3.5 text-red-600 shrink-0" />
+                            <span className="truncate max-w-[200px] sm:max-w-full">{activeMember.email}</span>
                           </a>
                         )}
 
                         {activeMember.contact && (
-                          <div className="flex items-center justify-center gap-2 text-zinc-500 font-medium">
-                            <Phone className="w-4 h-4 text-zinc-400 shrink-0" />
+                          <div className="flex items-center justify-center gap-1.5 text-zinc-500 font-medium text-[11px] sm:text-xs">
+                            <Phone className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                             <span>{activeMember.contact}</span>
                           </div>
                         )}
@@ -180,9 +180,9 @@ export default async function EditorialBoardPage() {
                             href={activeMember.social_link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 text-red-600 hover:text-red-700 font-bold transition-colors truncate pt-1"
+                            className="flex items-center justify-center gap-1.5 text-red-600 hover:text-red-700 font-bold transition-colors text-[11px] sm:text-xs pt-0.5"
                           >
-                            <ExternalLink className="w-4 h-4 text-red-600 shrink-0" />
+                            <ExternalLink className="w-3.5 h-3.5 text-red-600 shrink-0" />
                             <span className="truncate">View Public Profile →</span>
                           </a>
                         )}
@@ -191,9 +191,9 @@ export default async function EditorialBoardPage() {
                   </div>
 
                   {/* Card Bottom Footer */}
-                  <div className="pt-4 border-t border-zinc-100 flex items-center justify-between text-[11px] font-mono text-zinc-400">
-                    <span className="flex items-center gap-1.5 text-zinc-500 font-semibold">
-                      <ShieldCheck className="w-3.5 h-3.5 text-red-600" /> Verified Credentials
+                  <div className="pt-3 border-t border-zinc-100 flex items-center justify-between text-[10px] sm:text-[11px] font-mono text-zinc-400">
+                    <span className="flex items-center gap-1 text-zinc-500 font-semibold">
+                      <ShieldCheck className="w-3.5 h-3.5 text-red-600" /> Verified
                     </span>
                     <span>SMeH Press</span>
                   </div>

@@ -4,7 +4,7 @@ import { Menu, ChevronDown, Radio } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription, SheetClose } from "@/components/ui/sheet";
 import { usePathname } from "next/navigation";
 
 // ─── Navigation Config ───────────────────────────────────────────────────────
@@ -255,6 +255,7 @@ export function SiteHeader() {
               </SheetTrigger>
               <SheetContent side="left" className="bg-black text-white border-none p-0 w-[85vw] max-w-[320px] shadow-2xl flex flex-col h-[100dvh]">
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                <SheetDescription className="sr-only">Main site navigation menu drawer</SheetDescription>
 
                 {/* Side Drawer Branding */}
                 <div className="p-8 border-b border-zinc-900 bg-zinc-950 flex flex-col items-center gap-5 shrink-0">
