@@ -61,7 +61,7 @@ export default function EditNewsPage() {
 
       setCategories(filtered)
 
-      const token = localStorage.getItem('token') || ''
+      const token = cacheManager.getAccessToken() || ''
       const newsRes = await fetch(`/api/v1/news/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`

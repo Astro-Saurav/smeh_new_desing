@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { Eye, ThumbsUp, Share2, Facebook, Twitter } from 'lucide-react'
+import { cacheManager } from '@/lib/cache-manager'
 
 interface NewsDetail {
   id: string
@@ -55,7 +56,7 @@ export default function NewsDetailPage() {
     if (!news) return
     setLiked(!liked)
     try {
-      const token = localStorage.getItem('accessToken')
+      const token = cacheManager.getAccessToken()
       await fetch(`/api/v1/news/${newsId}/like`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token || ''}` },

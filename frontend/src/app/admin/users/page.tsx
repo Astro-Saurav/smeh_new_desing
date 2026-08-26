@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { cacheManager } from '@/lib/cache-manager'
 
 export default function UsersPage() {
   const [users, setUsers] = useState<any[]>([])
@@ -13,7 +14,7 @@ export default function UsersPage() {
   const fetchUsers = async () => {
     try {
       setLoading(true)
-      const token = localStorage.getItem('accessToken')
+      const token = cacheManager.getAccessToken()
       const res = await fetch('/api/v1/users', {
         headers: { Authorization: `Bearer ${token}` },
       })
