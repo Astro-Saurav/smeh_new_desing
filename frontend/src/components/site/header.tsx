@@ -123,7 +123,15 @@ function BreakingNewsTicker() {
   const [enabled, setEnabled] = useState(true);
   const [mounted, setMounted] = useState(false);
 
+  const getApiBase = () => {
+    if (typeof window !== 'undefined') return '/api/v1';
+    if (process.env.INTERNAL_API_URL) return `${process.env.INTERNAL_API_URL}/api/v1`;
+    if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
+    return 'http://127.0.0.1:8081/api/v1';
+  };
+
   const checkSettings = () => {
+    // 1. Check local storage first
     try {
       const saved = localStorage.getItem('mrt_newsroom_settings');
       if (saved) {
@@ -135,6 +143,21 @@ function BreakingNewsTicker() {
     } catch (e) {
       console.error(e);
     }
+
+    // 2. Fetch live settings from PostgreSQL DB API
+    const apiBase = getApiBase();
+    fetch(`${apiBase}/settings`)
+      .then((res) => res.json())
+      .then((resData) => {
+        if (resData.success && resData.data) {
+          const val = resData.data.enableBreakingTicker;
+          if (val !== undefined) {
+            const isEnabled = val === 'true' || val === true;
+            setEnabled(isEnabled);
+          }
+        }
+      })
+      .catch(console.error);
   };
 
   useEffect(() => {
