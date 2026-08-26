@@ -152,23 +152,43 @@ class CacheManager {
   }
 
   /**
+   * Alias for getAccessToken
+   */
+  getToken(): string | null {
+    return this.getAccessToken()
+  }
+
+  /**
    * Clear all auth data on logout
    */
   clearAuthData(): void {
-    if (typeof window === 'undefined' || !sessionStorage) {
+    if (typeof window === 'undefined') {
       return
     }
 
     try {
-      // Remove only auth-related data
-      sessionStorage.removeItem(this.PREFIX + 'token')
-      // Clear all form data too
-      const keys = Object.keys(sessionStorage)
-      keys.forEach(key => {
-        if (key.startsWith(this.PREFIX + 'form_')) {
-          sessionStorage.removeItem(key)
-        }
-      })
+      // 1. Wipe sessionStorage
+      if (sessionStorage) {
+        sessionStorage.removeItem(this.PREFIX + 'token')
+        sessionStorage.removeItem('accessToken')
+        sessionStorage.removeItem('token')
+        sessionStorage.clear()
+      }
+
+      // 2. Wipe localStorage tokens completely
+      if (localStorage) {
+        localStorage.removeItem(this.PREFIX + 'token')
+        localStorage.removeItem('accessToken')
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        localStorage.removeItem('role')
+        localStorage.removeItem('mrt_user')
+      }
+
+      // 3. Clear auth cookies
+      document.cookie = 'mrt_refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+      document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
     } catch (err) {
       console.error('Failed to clear auth data:', err)
     }

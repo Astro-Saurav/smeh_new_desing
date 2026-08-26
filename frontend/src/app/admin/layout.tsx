@@ -31,7 +31,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       setSidebarOpen(false)
     }
     if (!cacheManager.isAuthenticated()) {
-      router.push('/login')
+      window.location.replace('/login')
+    }
+
+    // 🔒 Security Guard against BFCache (Back/Forward Cache) and Undo navigation
+    const checkAuthAndKick = () => {
+      if (!cacheManager.isAuthenticated()) {
+        window.location.replace('/login')
+      }
+    }
+
+    const handlePageShow = (e: PageTransitionEvent) => {
+      checkAuthAndKick()
+    }
+
+    window.addEventListener('pageshow', handlePageShow)
+    window.addEventListener('popstate', checkAuthAndKick)
+    window.addEventListener('focus', checkAuthAndKick)
+
+    return () => {
+      window.removeEventListener('pageshow', handlePageShow)
+      window.removeEventListener('popstate', checkAuthAndKick)
+      window.removeEventListener('focus', checkAuthAndKick)
     }
   }, [router])
 
@@ -40,14 +61,30 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (window.innerWidth < 768) {
       setSidebarOpen(false)
     }
+    if (!cacheManager.isAuthenticated()) {
+      window.location.replace('/login')
+    }
   }, [pathname])
 
-  const handleLogout = () => {
-    cacheManager.clearAuthData()
-    window.location.href = '/login'
+  const handleLogout = async () => {
+    try {
+      const apiBase = typeof window !== 'undefined' ? '/api/v1' : 'http://127.0.0.1:8081/api/v1'
+      const token = cacheManager.getAccessToken()
+      await fetch(`${apiBase}/auth/logout`, {
+        method: 'POST',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      }).catch(() => {})
+    } catch (e) {
+      // Ignore network errors on logout
+    } finally {
+      cacheManager.clearAuthData()
+      window.location.replace('/login')
+    }
   }
 
-  if (!mounted) return <div className="bg-zinc-950 min-h-screen" />
+  if (!mounted || !cacheManager.isAuthenticated()) {
+    return <div className="bg-zinc-950 min-h-screen flex items-center justify-center text-zinc-500 text-sm font-mono">Authenticating...</div>
+  }
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-zinc-200 font-sans overflow-hidden antialiased select-none">
