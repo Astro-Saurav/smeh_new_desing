@@ -163,7 +163,7 @@ export function SiteFooter() {
             </Link>
             
             <p className="text-sm leading-relaxed text-zinc-400 font-medium max-w-md">
-              The authoritative voice of Manav Rachna's media platform. Delivering comprehensive coverage of campus news, global affairs, and student life.
+              A student-run media platform at the School of Media Studies and Humanities, Manav Rachna International Institute of Research and Studies.
             </p>
 
             {/* Render Social Media Icons ONLY if URLs are configured in CRM Settings! */}
