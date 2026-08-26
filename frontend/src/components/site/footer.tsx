@@ -16,7 +16,12 @@ export function SiteFooter() {
     youtubeUrl?: string;
   }>({});
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1'
+  const getApiBase = () => {
+    if (typeof window !== 'undefined') return '/api/v1'
+    if (process.env.INTERNAL_API_URL) return `${process.env.INTERNAL_API_URL}/api/v1`
+    if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL
+    return 'http://127.0.0.1:8081/api/v1'
+  }
 
   const checkSocials = () => {
     // 1. Try local storage first
@@ -36,7 +41,8 @@ export function SiteFooter() {
     }
 
     // 2. Fetch official public settings from PostgreSQL DB API
-    fetch(`${API_BASE}/settings`)
+    const apiBase = getApiBase();
+    fetch(`${apiBase}/settings`)
       .then(res => res.json())
       .then(resData => {
         if (resData.success && resData.data) {

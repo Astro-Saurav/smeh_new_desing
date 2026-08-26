@@ -47,7 +47,12 @@ export default function SettingsPage() {
   const [pageSize, setPageSize] = useState('20')
   const [allowDownloads, setAllowDownloads] = useState(true)
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1'
+  const getApiBase = () => {
+    if (typeof window !== 'undefined') return '/api/v1'
+    if (process.env.INTERNAL_API_URL) return `${process.env.INTERNAL_API_URL}/api/v1`
+    if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL
+    return 'http://127.0.0.1:8081/api/v1'
+  }
 
   useEffect(() => {
     setMounted(true)
@@ -74,35 +79,36 @@ export default function SettingsPage() {
     }
 
     // Then fetch true settings from PostgreSQL database API
-    fetch(`${API_BASE}/settings`)
+    const apiBase = getApiBase()
+    fetch(`${apiBase}/settings`)
       .then(res => res.json())
       .then(resData => {
         if (resData.success && resData.data) {
           const dbData = resData.data
-          if (dbData.siteName) setSiteName(dbData.siteName)
-          if (dbData.siteTagline) setSiteTagline(dbData.siteTagline)
-          if (dbData.contactEmail) setContactEmail(dbData.contactEmail)
+          if (dbData.siteName || dbData.site_name) setSiteName(dbData.siteName || dbData.site_name)
+          if (dbData.siteTagline || dbData.site_tagline) setSiteTagline(dbData.siteTagline || dbData.site_tagline)
+          if (dbData.contactEmail || dbData.contact_email) setContactEmail(dbData.contactEmail || dbData.contact_email)
           if (dbData.enableBreakingTicker !== undefined) setEnableBreakingTicker(dbData.enableBreakingTicker === 'true' || dbData.enableBreakingTicker === true)
           if (dbData.instagramUrl !== undefined) setInstagramUrl(dbData.instagramUrl)
           if (dbData.xUrl !== undefined) setXUrl(dbData.xUrl)
           if (dbData.linkedinUrl !== undefined) setLinkedinUrl(dbData.linkedinUrl)
           if (dbData.youtubeUrl !== undefined) setYoutubeUrl(dbData.youtubeUrl)
           if (dbData.defaultPublishState) setDefaultPublishState(dbData.defaultPublishState as any)
-          if (dbData.pageSize) setPageSize(dbData.pageSize)
+          if (dbData.pageSize || dbData.news_per_page) setPageSize(dbData.pageSize || dbData.news_per_page)
           if (dbData.allowDownloads !== undefined) setAllowDownloads(dbData.allowDownloads === 'true' || dbData.allowDownloads === true)
 
           // Keep localStorage updated
           const updatedSettings = {
-            siteName: dbData.siteName || siteName,
-            siteTagline: dbData.siteTagline || siteTagline,
-            contactEmail: dbData.contactEmail || contactEmail,
+            siteName: dbData.siteName || dbData.site_name || siteName,
+            siteTagline: dbData.siteTagline || dbData.site_tagline || siteTagline,
+            contactEmail: dbData.contactEmail || dbData.contact_email || contactEmail,
             enableBreakingTicker: dbData.enableBreakingTicker === 'true' || dbData.enableBreakingTicker === true,
             instagramUrl: dbData.instagramUrl || '',
             xUrl: dbData.xUrl || '',
             linkedinUrl: dbData.linkedinUrl || '',
             youtubeUrl: dbData.youtubeUrl || '',
             defaultPublishState: dbData.defaultPublishState || defaultPublishState,
-            pageSize: dbData.pageSize || pageSize,
+            pageSize: dbData.pageSize || dbData.news_per_page || pageSize,
             allowDownloads: dbData.allowDownloads === 'true' || dbData.allowDownloads === true
           }
           localStorage.setItem('mrt_newsroom_settings', JSON.stringify(updatedSettings))
@@ -122,7 +128,8 @@ export default function SettingsPage() {
 
       const token = cacheManager.getToken()
       if (token) {
-        await fetch(`${API_BASE}/settings`, {
+        const apiBase = getApiBase()
+        await fetch(`${apiBase}/settings`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -160,7 +167,8 @@ export default function SettingsPage() {
       // Save to PostgreSQL DB
       const token = cacheManager.getToken()
       if (token) {
-        const res = await fetch(`${API_BASE}/settings`, {
+        const apiBase = getApiBase()
+        const res = await fetch(`${apiBase}/settings`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
