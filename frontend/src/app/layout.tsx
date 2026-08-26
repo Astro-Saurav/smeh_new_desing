@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { SiteHeader } from '@/components/site/header';
@@ -6,6 +6,12 @@ import { SiteFooter } from '@/components/site/footer';
 import { Toaster } from '@/components/ui/toaster';
 import { LenisScroller } from '@/components/lenis-scroller';
 import { FontProvider } from '@/components/site/font-provider';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   title: 'Manav Rachna Times',
