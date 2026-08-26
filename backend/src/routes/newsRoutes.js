@@ -24,7 +24,7 @@ newsRouter.get('/slug/:slug', optionalAuthenticate, validateRequest(slugParamSch
 newsRouter.get('/:id', optionalAuthenticate, validateRequest(idParamSchema), getById)
 newsRouter.post('/', authenticate, authorize('admin', 'editor'), validateRequest(createNewsSchema), create)
 newsRouter.put('/:id', authenticate, authorize('admin', 'editor'), validateRequest(updateNewsSchema), update)
-newsRouter.delete('/:id', authenticate, authorize('admin'), validateRequest(idParamSchema), remove)
+newsRouter.delete('/:id', authenticate, authorize('admin', 'editor'), validateRequest(idParamSchema), remove)
 
 module.exports = {
   newsRouter

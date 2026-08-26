@@ -57,12 +57,15 @@ export default function GalleryManagementPage() {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       })
-      if (!res.ok) throw new Error('Delete failed')
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}))
+        throw new Error(errJson.message || 'Delete failed')
+      }
       setSuccessMsg('Gallery album deleted successfully')
       setTimeout(() => setSuccessMsg(''), 3000)
       await fetchData()
-    } catch {
-      setError('Failed to delete album. Please try again.')
+    } catch (err: any) {
+      setError(err?.message || 'Failed to delete album. Please try again.')
     } finally {
       setDeletingId(null)
     }

@@ -230,13 +230,17 @@ async function hardDeleteNews (id) {
     }
   }
 
-  // Delete physical files and media records
-  for (const mediaId of mediaIds) {
-    await deleteMediaFiles(mediaId)
-  }
-
-  // Delete the news record (this cascades to NewsImage, NewsTag, NewsRevision due to schema)
+  // 1. Delete the news record first (cascades to NewsImage, NewsTag, NewsRevision, NewsView)
   await prisma.news.delete({ where: { id } })
+
+  // 2. Now safely delete physical files and orphan Media DB records
+  for (const mediaId of mediaIds) {
+    try {
+      await deleteMediaFiles(mediaId)
+    } catch (e) {
+      console.error(`Error deleting media ${mediaId}:`, e?.message)
+    }
+  }
 
   invalidateHomepageCache()
   return true
