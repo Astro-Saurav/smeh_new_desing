@@ -145,7 +145,7 @@ function BreakingNewsTicker() {
     window.addEventListener('mrt_settings_changed', handleSettingsChange);
     window.addEventListener('storage', handleSettingsChange);
 
-    fetch('/api/v1/news?pageSize=50')
+    fetch('/api/v1/news?pageSize=100&status=published')
       .then((res) => res.json())
       .then((data) => {
         const list = Array.isArray(data.data) ? data.data : [];

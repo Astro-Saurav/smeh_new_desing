@@ -41,8 +41,10 @@ const create = asyncHandler(async (req, res) => {
 
 const list = asyncHandler(async (req, res) => {
   const query = req.validated?.query || req.query
-  const { category, search, status, page = 1, featured, breaking, visibility } = query
+  const { category, search, status, page = 1, featured, breaking, isBreaking, visibility } = query
   const limit = query.pageSize || query.limit || 10
+
+  const breakingVal = breaking !== undefined ? breaking : isBreaking
 
   const result = await listNews({
     category,
@@ -51,7 +53,7 @@ const list = asyncHandler(async (req, res) => {
     page: Number(page),
     limit: Number(limit),
     isFeatured: featured === 'true' ? true : featured === 'false' ? false : undefined,
-    isBreaking: breaking === 'true' ? true : breaking === 'false' ? false : undefined,
+    isBreaking: breakingVal === 'true' ? true : breakingVal === 'false' ? false : (typeof breakingVal === 'boolean' ? breakingVal : undefined),
     visibility
   })
 
