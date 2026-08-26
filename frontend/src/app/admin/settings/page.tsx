@@ -203,23 +203,23 @@ export default function SettingsPage() {
 
       {/* ─── SECTION 1: SECURITY & PASSWORD CHANGE ─── */}
       <div className="bg-gradient-to-b from-zinc-900 via-zinc-950 to-zinc-900 border border-zinc-800/90 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_10px_30px_rgba(0,0,0,0.5)] space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-zinc-800/80">
-          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-red-600 to-rose-600 border border-red-500/40 flex items-center justify-center text-white shadow-md shrink-0">
+        <div className="flex items-start sm:items-center gap-3 pb-4 border-b border-zinc-800/80">
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-red-600 to-rose-600 border border-red-500/40 flex items-center justify-center text-white shadow-md shrink-0 mt-0.5 sm:mt-0">
             <KeyRound className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
               <h2 className="text-sm sm:text-base font-black text-white tracking-wide">Security & Password</h2>
-              <span className="text-[9px] font-mono text-red-400 bg-red-950/80 border border-red-800/60 px-2 py-0.5 rounded-full uppercase">Credentials</span>
+              <span className="text-[9px] font-mono text-red-400 bg-red-950/80 border border-red-800/60 px-2 py-0.5 rounded-full uppercase whitespace-nowrap shrink-0">Credentials</span>
             </div>
-            <p className="text-[11px] sm:text-xs text-zinc-400">Update your administrative access password</p>
+            <p className="text-[11px] sm:text-xs text-zinc-400 leading-snug">Update your administrative access password</p>
           </div>
         </div>
 
         <form onSubmit={handlePasswordChange} className="space-y-4 max-w-xl">
           {/* Current Password */}
           <div>
-            <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5 leading-snug">
               Current Password *
             </label>
             <div className="relative">
@@ -245,7 +245,7 @@ export default function SettingsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* New Password */}
             <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5 leading-snug">
                 New Password *
               </label>
               <div className="relative">
@@ -270,7 +270,7 @@ export default function SettingsPage() {
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5 leading-snug">
                 Confirm New Password *
               </label>
               <input
@@ -300,22 +300,22 @@ export default function SettingsPage() {
       <form onSubmit={handleSaveInfo} className="space-y-6 sm:space-y-8">
         
         <div className="bg-gradient-to-b from-zinc-900 via-zinc-950 to-zinc-900 border border-zinc-800/90 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_10px_30px_rgba(0,0,0,0.5)] space-y-6">
-          <div className="flex items-center gap-3 pb-4 border-b border-zinc-800/80">
-            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-red-600 to-rose-600 border border-red-500/40 flex items-center justify-center text-white shadow-md shrink-0">
+          <div className="flex items-start sm:items-center gap-3 pb-4 border-b border-zinc-800/80">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-red-600 to-rose-600 border border-red-500/40 flex items-center justify-center text-white shadow-md shrink-0 mt-0.5 sm:mt-0">
               <Globe className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
                 <h2 className="text-sm sm:text-base font-black text-white tracking-wide">Website Information</h2>
-                <span className="text-[9px] font-mono text-zinc-400 bg-zinc-800/80 border border-zinc-700/60 px-2 py-0.5 rounded-full uppercase">Branding</span>
+                <span className="text-[9px] font-mono text-zinc-400 bg-zinc-800/80 border border-zinc-700/60 px-2 py-0.5 rounded-full uppercase whitespace-nowrap shrink-0">Branding</span>
               </div>
-              <p className="text-[11px] sm:text-xs text-zinc-400">Website title, tagline motto, and primary contact email</p>
+              <p className="text-[11px] sm:text-xs text-zinc-400 leading-snug">Website title, tagline motto, and primary contact email</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5 leading-snug">
                 Website Name *
               </label>
               <input
@@ -328,7 +328,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5 leading-snug">
                 Contact Email *
               </label>
               <input
@@ -341,7 +341,7 @@ export default function SettingsPage() {
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5 leading-snug">
                 Website Tagline / Subtitle *
               </label>
               <input
@@ -361,7 +361,7 @@ export default function SettingsPage() {
                 <Radio className="w-4 h-4 text-red-500 animate-pulse shrink-0" />
                 <span>Show Breaking News Running Ticker</span>
               </div>
-              <div className="text-[11px] text-zinc-400">Display live continuous scrolling news headlines at top of website</div>
+              <div className="text-[11px] text-zinc-400 leading-snug">Display live continuous scrolling news headlines at top of website</div>
             </div>
             <button
               type="button"
@@ -381,23 +381,23 @@ export default function SettingsPage() {
 
         {/* ─── SECTION 3: OFFICIAL SOCIAL MEDIA LINKS ─── */}
         <div className="bg-gradient-to-b from-zinc-900 via-zinc-950 to-zinc-900 border border-zinc-800/90 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_10px_30px_rgba(0,0,0,0.5)] space-y-6">
-          <div className="flex items-center gap-3 pb-4 border-b border-zinc-800/80">
-            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-red-600 to-rose-600 border border-red-500/40 flex items-center justify-center text-white shadow-md shrink-0">
+          <div className="flex items-start sm:items-center gap-3 pb-4 border-b border-zinc-800/80">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-red-600 to-rose-600 border border-red-500/40 flex items-center justify-center text-white shadow-md shrink-0 mt-0.5 sm:mt-0">
               <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
                 <h2 className="text-sm sm:text-base font-black text-white tracking-wide">Official Social Media Links</h2>
-                <span className="text-[9px] font-mono text-zinc-400 bg-zinc-800/80 border border-zinc-700/60 px-2 py-0.5 rounded-full uppercase">Networks</span>
+                <span className="text-[9px] font-mono text-zinc-400 bg-zinc-800/80 border border-zinc-700/60 px-2 py-0.5 rounded-full uppercase whitespace-nowrap shrink-0">Networks</span>
               </div>
-              <p className="text-[11px] sm:text-xs text-zinc-400">Add URLs to display social icons in the website footer. Leave blank to hide an icon.</p>
+              <p className="text-[11px] sm:text-xs text-zinc-400 leading-snug">Add URLs to display social icons in the website footer. Leave blank to hide an icon.</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {/* Instagram */}
             <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5 flex items-center gap-2">
+              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5 flex items-center gap-2 leading-snug">
                 <Instagram className="w-4 h-4 text-pink-500 shrink-0" />
                 <span>Instagram URL</span>
               </label>
@@ -412,7 +412,7 @@ export default function SettingsPage() {
 
             {/* X / Twitter */}
             <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5 flex items-center gap-2">
+              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5 flex items-center gap-2 leading-snug">
                 <Twitter className="w-4 h-4 text-sky-400 shrink-0" />
                 <span>X (Twitter) URL</span>
               </label>
@@ -427,7 +427,7 @@ export default function SettingsPage() {
 
             {/* LinkedIn */}
             <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5 flex items-center gap-2">
+              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5 flex items-center gap-2 leading-snug">
                 <Linkedin className="w-4 h-4 text-blue-500 shrink-0" />
                 <span>LinkedIn URL</span>
               </label>
@@ -442,7 +442,7 @@ export default function SettingsPage() {
 
             {/* YouTube */}
             <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5 flex items-center gap-2">
+              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5 flex items-center gap-2 leading-snug">
                 <Youtube className="w-4 h-4 text-red-500 shrink-0" />
                 <span>YouTube URL</span>
               </label>
@@ -459,22 +459,22 @@ export default function SettingsPage() {
 
         {/* ─── SECTION 4: PUBLISHING PREFERENCES ─── */}
         <div className="bg-gradient-to-b from-zinc-900 via-zinc-950 to-zinc-900 border border-zinc-800/90 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_10px_30px_rgba(0,0,0,0.5)] space-y-6">
-          <div className="flex items-center gap-3 pb-4 border-b border-zinc-800/80">
-            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-red-600 to-rose-600 border border-red-500/40 flex items-center justify-center text-white shadow-md shrink-0">
+          <div className="flex items-start sm:items-center gap-3 pb-4 border-b border-zinc-800/80">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-red-600 to-rose-600 border border-red-500/40 flex items-center justify-center text-white shadow-md shrink-0 mt-0.5 sm:mt-0">
               <Sliders className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
                 <h2 className="text-sm sm:text-base font-black text-white tracking-wide">Publishing Preferences</h2>
-                <span className="text-[9px] font-mono text-zinc-400 bg-zinc-800/80 border border-zinc-700/60 px-2 py-0.5 rounded-full uppercase">Workflow</span>
+                <span className="text-[9px] font-mono text-zinc-400 bg-zinc-800/80 border border-zinc-700/60 px-2 py-0.5 rounded-full uppercase whitespace-nowrap shrink-0">Workflow</span>
               </div>
-              <p className="text-[11px] sm:text-xs text-zinc-400">Default article options and photo gallery download settings</p>
+              <p className="text-[11px] sm:text-xs text-zinc-400 leading-snug">Default article options and photo gallery download settings</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5 leading-snug">
                 Default Article Status
               </label>
               <select
@@ -488,7 +488,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] sm:text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1.5 leading-snug">
                 Articles Per Page
               </label>
               <select
@@ -508,7 +508,7 @@ export default function SettingsPage() {
           <div className="p-4 sm:p-5 bg-zinc-950 border border-zinc-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)] rounded-xl sm:rounded-2xl flex flex-col xs:flex-row items-start xs:items-center justify-between gap-4">
             <div className="space-y-0.5">
               <div className="text-xs sm:text-sm font-extrabold text-white">Allow Public Photo Downloads</div>
-              <div className="text-[11px] text-zinc-400">Let visitors download photos from the photo gallery</div>
+              <div className="text-[11px] text-zinc-400 leading-snug">Let visitors download photos from the photo gallery</div>
             </div>
             <button
               type="button"
