@@ -89,10 +89,10 @@ function MobileCollapsibleItem({ item }: { item: (typeof navConfig)[0] }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border-b border-zinc-900/40">
+    <div className="border-b border-zinc-900/60">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-12 py-6 text-[11px] font-black uppercase tracking-[0.3em] hover:bg-zinc-900 text-zinc-500 hover:text-primary transition-all text-left"
+        className="w-full flex items-center justify-between px-6 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] hover:bg-zinc-900 text-zinc-300 hover:text-primary transition-all text-left"
       >
         {item.name}
         <ChevronDown
@@ -105,7 +105,7 @@ function MobileCollapsibleItem({ item }: { item: (typeof navConfig)[0] }) {
             <SheetClose key={child.name} asChild>
               <Link
                 href={child.url}
-                className="block pl-16 pr-12 py-4 text-[10px] font-black uppercase tracking-[0.25em] text-zinc-600 hover:text-primary hover:bg-zinc-900 transition-all"
+                className="block pl-10 pr-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-primary hover:bg-zinc-900 transition-all"
               >
                 › {child.name}
               </Link>
@@ -221,13 +221,13 @@ export function SiteHeader() {
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex flex-col items-center justify-center z-10 px-2">
           {/* Logo Link - Enlarged for Maximum Impact */}
           <Link href="/" className="flex items-center justify-center group relative z-10">
-            <div className="relative w-[310px] h-[80px] sm:w-[410px] sm:h-[100px] md:w-[580px] md:h-[132px] transform group-hover:scale-[1.02] transition-transform duration-300">
+            <div className="relative w-[230px] h-[60px] xs:w-[280px] xs:h-[75px] sm:w-[410px] sm:h-[100px] md:w-[580px] md:h-[132px] transform group-hover:scale-[1.02] transition-transform duration-300">
               <Image
                 src="/new_logo.png"
                 alt="Manav Rachna Times Logo"
                 fill
                 className="object-contain object-center"
-                sizes="(max-width: 768px) 410px, 580px"
+                sizes="(max-width: 640px) 280px, (max-width: 768px) 410px, 580px"
                 priority
                 unoptimized
               />
@@ -235,7 +235,7 @@ export function SiteHeader() {
           </Link>
 
           {/* Centered Newspaper Date Banner BELOW Logo */}
-          <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.25em] text-zinc-300 relative z-30 pt-0.5 sm:pt-1 flex items-center gap-2 select-none drop-shadow-md">
+          <div className="text-[9px] xs:text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] sm:tracking-[0.25em] text-zinc-300 relative z-30 pt-0.5 sm:pt-1 flex items-center gap-1.5 sm:gap-2 select-none drop-shadow-md">
             <span className="w-1.5 h-1.5 rounded-full bg-red-600 inline-block shadow-[0_0_6px_#dc2626]" />
             <span>{new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
             <span className="w-1.5 h-1.5 rounded-full bg-red-600 inline-block shadow-[0_0_6px_#dc2626]" />
@@ -244,12 +244,14 @@ export function SiteHeader() {
 
         <div className="flex-1" />
 
-        <div className="flex items-center gap-3 sm:gap-4 z-10">
+        <div className="flex items-center gap-3 sm:gap-4 z-20 absolute right-3 sm:right-6 top-1/2 -translate-y-1/2">
           {/* Mobile Hamburger */}
           <div className="lg:hidden">
             <Sheet>
               <SheetTrigger asChild>
-                <Menu className="w-6 h-6 sm:w-7 sm:h-7 cursor-pointer text-zinc-500 hover:text-white transition-colors" />
+                <button className="p-2 text-zinc-400 hover:text-white transition-colors cursor-pointer rounded-lg bg-zinc-900/60 border border-zinc-800" aria-label="Open Navigation Menu">
+                  <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
+                </button>
               </SheetTrigger>
               <SheetContent side="left" className="bg-black text-white border-none p-0 w-[85vw] max-w-[320px] shadow-2xl flex flex-col h-[100dvh]">
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
@@ -278,7 +280,7 @@ export function SiteHeader() {
                         <SheetClose key={item.name} asChild>
                           <Link
                             href={item.url}
-                            className="px-12 py-6 text-[11px] font-black uppercase tracking-[0.3em] border-b border-zinc-900/40 hover:bg-zinc-900 text-zinc-500 hover:text-primary transition-all text-left"
+                            className="px-6 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] border-b border-zinc-900/60 hover:bg-zinc-900 text-zinc-300 hover:text-primary transition-all text-left"
                           >
                             {item.name}
                           </Link>

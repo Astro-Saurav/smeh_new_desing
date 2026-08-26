@@ -246,17 +246,13 @@ export default function ArticlePage() {
 
             {/* Bento / Responsive Grid of Album Photos */}
             {albumPhotos.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 auto-rows-[200px] md:auto-rows-[280px]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 auto-rows-[220px] sm:auto-rows-[250px] md:auto-rows-[280px]">
                 {albumPhotos.map((photo, index) => {
-                  // Alternating grid span pattern for dynamic modern look
-                  const isFeatured = index === 0 || index === 5;
-                  const spanClass = isFeatured ? "col-span-2 row-span-2" : "col-span-1 row-span-1";
-
                   return (
                     <div
                       key={index}
                       onClick={() => openLightbox(index)}
-                      className={`${spanClass} group relative overflow-hidden rounded-xl bg-zinc-900 border border-zinc-200 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer`}
+                      className="group relative overflow-hidden rounded-xl bg-zinc-900 border border-zinc-200 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
                     >
                       <img
                         src={photo.src}
