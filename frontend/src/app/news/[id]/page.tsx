@@ -41,8 +41,11 @@ export default function NewsDetailPage() {
     try {
       setLoading(true)
       setError(null)
-      const res = await fetch(`/api/v1/news/${newsId}`)
-      if (!res.ok) throw new Error('News not found')
+      let res = await fetch(`/api/v1/news/slug/${newsId}`)
+      if (!res.ok) {
+        res = await fetch(`/api/v1/news/${newsId}`)
+      }
+      if (!res.ok) throw new Error('News article not found')
       const data = await res.json()
       setNews(data.data || data)
     } catch (err) {

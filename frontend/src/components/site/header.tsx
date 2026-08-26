@@ -212,7 +212,7 @@ function BreakingNewsTicker() {
             headlines.map((item, idx) => (
               <Link
                 key={item.id || idx}
-                href={`/news/${item.slug}`}
+                href={`/article/${item.slug || item.id}`}
                 className="inline-flex items-center gap-3 text-xs font-bold text-zinc-200 hover:text-red-400 transition-colors"
               >
                 <span>{item.title}</span>
