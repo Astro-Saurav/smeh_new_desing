@@ -206,24 +206,24 @@ export default function EditGalleryAlbumPage() {
   if (!mounted) return null
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto font-sans antialiased text-zinc-200 pb-12">
+    <div className="space-y-6 max-w-4xl mx-auto font-sans antialiased text-zinc-200 pb-16">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-800/80 pb-4">
         <div>
-          <h1 className="text-xl font-semibold text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
             <Edit3 className="w-5 h-5 text-red-500" /> Edit Gallery Album
           </h1>
           <p className="text-zinc-400 text-xs mt-0.5">Manage photo entries and album metadata</p>
         </div>
         <Link
           href="/admin/gallery"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 font-medium text-xs rounded-lg transition"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 font-medium text-xs rounded-lg transition self-start sm:self-auto"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Back
         </Link>
       </div>
 
-      <div className="bg-gradient-to-b from-zinc-900/70 to-zinc-950/70 border border-zinc-800/80 rounded-xl p-6 shadow-sm">
+      <div className="bg-gradient-to-b from-zinc-900/70 to-zinc-950/70 border border-zinc-800/80 rounded-xl p-4 sm:p-6 md:p-8 shadow-sm">
         {submitted && (
           <div className="p-3 bg-emerald-950/40 border border-emerald-800/40 rounded-lg text-emerald-300 text-xs font-medium mb-5">
             ✅ Album updated successfully!
@@ -260,7 +260,7 @@ export default function EditGalleryAlbumPage() {
                   name="status"
                   value={formData.status}
                   onChange={handleInputChange}
-                  className="w-full appearance-none pl-3.5 pr-9 py-2 bg-zinc-950/80 border border-zinc-800 hover:border-zinc-700 rounded-lg text-xs text-white focus:outline-none focus:border-red-500/80 transition cursor-pointer"
+                  className="w-full appearance-none pl-3.5 pr-9 py-2.5 bg-zinc-950/80 border border-zinc-800 hover:border-zinc-700 rounded-lg text-xs text-white focus:outline-none focus:border-red-500/80 transition cursor-pointer"
                 >
                   <option value="published" className="bg-zinc-900 text-zinc-200 py-1">Published</option>
                   <option value="draft" className="bg-zinc-900 text-zinc-200 py-1">Draft</option>
@@ -276,7 +276,7 @@ export default function EditGalleryAlbumPage() {
                 value={formData.authorName}
                 onChange={handleInputChange}
                 placeholder="Source or photographer credit"
-                className="w-full px-3 py-2 bg-zinc-950/80 border border-zinc-800 hover:border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500/80 transition"
+                className="w-full px-3.5 py-2.5 bg-zinc-950/80 border border-zinc-800 hover:border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500/80 transition"
               />
             </div>
           </div>
@@ -290,7 +290,7 @@ export default function EditGalleryAlbumPage() {
               onChange={handleInputChange}
               placeholder="Album summary description"
               rows={2}
-              className="w-full px-3.5 py-2 bg-zinc-950/80 border border-zinc-800 hover:border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500/80 transition resize-none"
+              className="w-full px-3.5 py-2.5 bg-zinc-950/80 border border-zinc-800 hover:border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500/80 transition resize-none"
             />
           </div>
 
@@ -305,20 +305,20 @@ export default function EditGalleryAlbumPage() {
               className="w-full px-3 py-2 bg-zinc-950/80 border border-zinc-800 hover:border-zinc-700 rounded-lg text-zinc-400 text-xs focus:outline-none focus:border-red-500/80 transition cursor-pointer"
             />
             {preview && (
-              <img src={preview} alt="Preview" className="w-full h-32 object-cover rounded-lg mt-2 border border-zinc-800" />
+              <img src={preview} alt="Preview" className="w-full h-36 object-cover rounded-lg mt-2 border border-zinc-800" />
             )}
           </div>
 
           {/* Album Photos Manager */}
-          <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-lg p-5 space-y-3">
-            <div className="flex items-center justify-between">
+          <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-4 sm:p-5 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h3 className="text-xs font-medium text-white flex items-center gap-2">
+                <h3 className="text-xs font-semibold text-white flex items-center gap-2">
                   <span>🖼️ Album Photos</span> <span className="text-zinc-500 font-mono text-[11px]">({albumImages.length} photos)</span>
                 </h3>
               </div>
-              <label className="px-3 py-1.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-medium text-xs rounded-lg cursor-pointer transition flex items-center gap-1">
-                <Plus className="w-3.5 h-3.5" /> Add Photos
+              <label className="px-3.5 py-2 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-xs rounded-xl cursor-pointer transition flex items-center gap-1.5 shadow-sm">
+                <Plus className="w-4 h-4" /> Add Photos
                 <input
                   type="file"
                   accept="image/*"
@@ -330,14 +330,14 @@ export default function EditGalleryAlbumPage() {
             </div>
 
             {albumImages.length > 0 ? (
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5 pt-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 pt-2">
                 {albumImages.map((img, idx) => (
-                  <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden border border-zinc-800 bg-zinc-900">
+                  <div key={idx} className="relative group aspect-square rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900 shadow-sm">
                     <img src={img.preview} alt={`Album photo ${idx + 1}`} className="w-full h-full object-cover" />
                     <button
                       type="button"
                       onClick={() => removeAlbumImage(idx)}
-                      className="absolute top-1 right-1 w-5 h-5 bg-red-600/90 hover:bg-red-700 text-white rounded-full text-[10px] font-bold flex items-center justify-center shadow"
+                      className="absolute top-1.5 right-1.5 w-7 h-7 bg-red-600/90 hover:bg-red-600 text-white rounded-full text-xs font-extrabold flex items-center justify-center shadow-md cursor-pointer border border-white/20 active:scale-95 transition"
                       title="Remove Photo"
                     >
                       ✕
@@ -346,7 +346,7 @@ export default function EditGalleryAlbumPage() {
                 ))}
               </div>
             ) : (
-              <div className="border border-dashed border-zinc-800 rounded-lg p-6 text-center text-zinc-500 text-xs">
+              <div className="border border-dashed border-zinc-800 rounded-xl p-6 text-center text-zinc-500 text-xs">
                 No photos in this album. Click <strong className="text-zinc-300">+ Add Photos</strong> to select images.
               </div>
             )}
@@ -355,7 +355,7 @@ export default function EditGalleryAlbumPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 px-4 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 disabled:opacity-50 text-white font-medium text-xs rounded-lg transition shadow-sm"
+            className="w-full py-3 sm:py-3.5 px-4 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 disabled:opacity-50 text-white font-bold text-xs sm:text-sm rounded-xl transition shadow-md cursor-pointer flex items-center justify-center gap-2"
           >
             {loading ? 'Updating Album...' : 'Save Gallery Album Changes'}
           </button>
