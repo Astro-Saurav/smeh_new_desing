@@ -202,7 +202,7 @@ function BreakingNewsTicker() {
       <div className="bg-gradient-to-r from-red-700 via-red-600 to-rose-600 px-4 h-full flex items-center gap-2 font-black text-[10px] sm:text-xs uppercase tracking-widest text-white shadow-md z-30 shrink-0 select-none">
         <span className="w-2 h-2 rounded-full bg-white animate-ping" />
         <Radio className="w-3.5 h-3.5 text-white" />
-        <span>Breaking News</span>
+        <span>Latest News</span>
       </div>
 
       {/* Marquee Container */}
