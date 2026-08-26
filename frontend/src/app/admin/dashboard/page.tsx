@@ -162,7 +162,7 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <table className="w-full text-left text-xs min-w-[500px]">
                 <thead>
                   <tr className="border-b border-zinc-800/90 bg-zinc-950/80 text-zinc-400 font-extrabold text-[10px] uppercase tracking-wider">
                     <th className="px-5 py-3.5">Article Title</th>

@@ -35,6 +35,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, [router])
 
+  // Auto-close mobile sidebar drawer on navigation
+  useEffect(() => {
+    if (window.innerWidth < 768) {
+      setSidebarOpen(false)
+    }
+  }, [pathname])
+
   const handleLogout = () => {
     cacheManager.clearAuthData()
     window.location.href = '/login'
@@ -49,7 +56,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside
         data-lenis-prevent="true"
         className={`
-          absolute z-50 h-full md:relative flex-shrink-0 bg-gradient-to-b from-zinc-900 via-zinc-950 to-zinc-900 border-r border-zinc-800/90 shadow-[5px_0_25px_rgba(0,0,0,0.8)] flex flex-col transition-all duration-300 ease-in-out
+          fixed md:relative z-50 h-full flex-shrink-0 bg-gradient-to-b from-zinc-900 via-zinc-950 to-zinc-900 border-r border-zinc-800/90 shadow-[5px_0_25px_rgba(0,0,0,0.8)] flex flex-col transition-all duration-300 ease-in-out
           ${sidebarOpen 
             ? 'translate-x-0 w-64' 
             : '-translate-x-full w-64 md:translate-x-0 md:w-20'}
@@ -59,10 +66,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-600 via-rose-500 to-red-700 shadow-[0_0_10px_#dc2626]" />
 
         {/* Official University Press Crest Header */}
-        <div className="h-20 flex items-center justify-between px-4 border-b border-zinc-800/80 bg-zinc-950/80 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.6)]">
+        <div className="h-16 md:h-20 flex items-center justify-between px-4 border-b border-zinc-800/80 bg-zinc-950/80 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.6)]">
           <div className={`flex items-center gap-3 ${!sidebarOpen && 'hidden'}`}>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-600 to-rose-600 border border-red-400/40 flex items-center justify-center text-white font-black text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_10px_rgba(0,0,0,0.5)] shrink-0">
-              <GraduationCap className="w-6 h-6 text-white" />
+            <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-tr from-red-600 to-rose-600 border border-red-400/40 flex items-center justify-center text-white font-black text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_10px_rgba(0,0,0,0.5)] shrink-0">
+              <GraduationCap className="w-5 h-5 md:w-6 md:h-6 text-white" />
             </div>
             <div className="min-w-0">
               <h2 className="text-white font-black text-xs tracking-wider uppercase truncate">Manav Rachna Times</h2>
@@ -82,13 +89,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         {/* Professional Navigation Links */}
-        <nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto">
+        <nav className="flex-1 px-3 py-4 md:py-6 space-y-2 overflow-y-auto">
           <NavItem
             href="/admin/dashboard"
             icon={<LayoutDashboard className="w-4.5 h-4.5" />}
             label="Dashboard"
             active={pathname === '/admin/dashboard' || pathname === '/admin'}
             open={sidebarOpen}
+            onNavClick={() => { if (window.innerWidth < 768) setSidebarOpen(false) }}
           />
           <NavItem
             href="/admin/news"
@@ -96,6 +104,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             label="News & Press Releases"
             active={pathname.startsWith('/admin/news')}
             open={sidebarOpen}
+            onNavClick={() => { if (window.innerWidth < 768) setSidebarOpen(false) }}
           />
           <NavItem
             href="/admin/gallery"
@@ -103,6 +112,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             label="Photo Gallery"
             active={pathname.startsWith('/admin/gallery')}
             open={sidebarOpen}
+            onNavClick={() => { if (window.innerWidth < 768) setSidebarOpen(false) }}
           />
           <NavItem
             href="/admin/editorial"
@@ -110,6 +120,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             label="Editorial Board"
             active={pathname.startsWith('/admin/editorial')}
             open={sidebarOpen}
+            onNavClick={() => { if (window.innerWidth < 768) setSidebarOpen(false) }}
           />
           <NavItem
             href="/admin/settings"
@@ -117,6 +128,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             label="Portal Settings"
             active={pathname.startsWith('/admin/settings')}
             open={sidebarOpen}
+            onNavClick={() => { if (window.innerWidth < 768) setSidebarOpen(false) }}
           />
         </nav>
 
@@ -127,7 +139,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-zinc-300 hover:text-white bg-zinc-900 border border-zinc-800 hover:border-zinc-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_4px_rgba(0,0,0,0.4)] transition text-xs font-bold"
             title="View Main Website"
           >
-            <ExternalLink className="w-4 h-4 text-red-500" />
+            <ExternalLink className="w-4 h-4 text-red-500 shrink-0" />
             {sidebarOpen && <span>View Main Website</span>}
           </Link>
 
@@ -136,7 +148,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-red-400 hover:text-white bg-red-950/40 hover:bg-red-600 border border-red-800/50 shadow-[0_4px_0_0_#7f1d1d] hover:shadow-[0_2px_0_0_#7f1d1d] hover:translate-y-0.5 transition-all text-xs font-bold cursor-pointer"
             title="Log Out"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-4 h-4 shrink-0" />
             {sidebarOpen && <span>Log Out Portal</span>}
           </button>
         </div>
@@ -146,36 +158,39 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="flex-1 flex flex-col min-w-0 bg-transparent">
         
         {/* Official Top Header */}
-        <header className="h-20 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 border-b border-zinc-800/90 shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex items-center px-6 sm:px-8 justify-between flex-shrink-0 relative z-20">
-          <div className="flex items-center gap-3">
+        <header className="h-16 sm:h-20 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 border-b border-zinc-800/90 shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex items-center px-4 sm:px-8 justify-between flex-shrink-0 relative z-20">
+          <div className="flex items-center gap-2.5 min-w-0">
             <button
-              onClick={() => setSidebarOpen(true)}
-              className="md:hidden text-zinc-400 hover:text-white p-2 bg-zinc-900 border border-zinc-800 rounded-lg"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="md:hidden text-zinc-400 hover:text-white p-2 bg-zinc-900 border border-zinc-800 rounded-lg shrink-0 cursor-pointer"
+              title="Toggle Menu"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
             
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
-              <span className="text-white font-black text-xs sm:text-sm tracking-wide uppercase">
-                School of Media Studies & Humanities (SMeH) Press Portal
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981] shrink-0" />
+              <span className="text-white font-black text-xs sm:text-sm tracking-wide uppercase truncate">
+                <span className="hidden sm:inline">School of Media Studies & Humanities (SMeH) Press Portal</span>
+                <span className="sm:hidden">SMeH Portal</span>
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <Link
               href="/admin/news/create"
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-extrabold text-xs rounded-xl shadow-[0_4px_0_0_#991b1b,0_6px_15px_rgba(0,0,0,0.5)] active:translate-y-1 active:shadow-none transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-extrabold text-xs rounded-xl shadow-[0_4px_0_0_#991b1b,0_6px_15px_rgba(0,0,0,0.5)] active:translate-y-1 active:shadow-none transition-all cursor-pointer"
             >
-              <Plus className="w-4 h-4" />
-              <span>Publish New Article</span>
+              <Plus className="w-4 h-4 shrink-0" />
+              <span className="hidden sm:inline">Publish New Article</span>
+              <span className="sm:hidden">Publish</span>
             </Link>
           </div>
         </header>
 
         {/* Main Content Viewport */}
-        <main data-lenis-prevent="true" className="flex-1 overflow-y-auto overflow-x-hidden p-6 md:p-10 max-w-7xl w-full mx-auto">
+        <main data-lenis-prevent="true" className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 md:p-10 max-w-7xl w-full mx-auto">
           {children}
         </main>
       </div>
@@ -197,12 +212,14 @@ interface NavItemProps {
   label: string
   active?: boolean
   open: boolean
+  onNavClick?: () => void
 }
 
-function NavItem({ href, icon, label, active, open }: NavItemProps) {
+function NavItem({ href, icon, label, active, open, onNavClick }: NavItemProps) {
   return (
     <Link
       href={href}
+      onClick={onNavClick}
       className={`
         flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all duration-200 font-bold text-xs relative
         ${active 

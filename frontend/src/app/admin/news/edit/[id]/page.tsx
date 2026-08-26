@@ -208,7 +208,7 @@ export default function EditNewsPage() {
     <div className="space-y-6 font-sans antialiased text-zinc-200 pb-16">
       
       {/* Editorial Header Bar */}
-      <div className="flex items-center justify-between border-b border-zinc-800/80 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-800/80 pb-5">
         <div className="flex items-center gap-3">
           <Link
             href="/admin/news"
@@ -225,7 +225,7 @@ export default function EditNewsPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 self-end sm:self-auto">
           <Link
             href="/admin/news"
             className="px-4 py-2 bg-zinc-800/60 hover:bg-zinc-700 text-zinc-300 font-medium text-xs rounded-lg transition"
@@ -239,7 +239,7 @@ export default function EditNewsPage() {
               if (form) form.requestSubmit()
             }}
             disabled={loading}
-            className="px-5 py-2 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 disabled:opacity-50 text-white font-semibold text-xs rounded-lg transition shadow-md flex items-center gap-1.5"
+            className="px-5 py-2 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 disabled:opacity-50 text-white font-semibold text-xs rounded-lg transition shadow-md flex items-center gap-1.5 cursor-pointer"
           >
             <Save className="w-3.5 h-3.5" />
             <span>{loading ? 'Saving...' : 'Save Changes'}</span>
@@ -266,7 +266,7 @@ export default function EditNewsPage() {
         <div className="lg:col-span-8 space-y-6">
           
           {/* Main Article Container */}
-          <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-zinc-800/80 rounded-2xl p-6 md:p-8 space-y-6 shadow-sm">
+          <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-zinc-800/80 rounded-2xl p-4 sm:p-6 md:p-8 space-y-6 shadow-sm">
             
             {/* Headline Title */}
             <div>

@@ -47,7 +47,7 @@ export default function UsersPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-slate-300">
+            <table className="w-full text-left text-slate-300 min-w-[500px]">
               <thead className="border-b border-slate-700 text-slate-400 text-sm">
                 <tr>
                   <th className="pb-3 px-4">Email</th>

@@ -237,7 +237,7 @@ export default function NewsManagementPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-zinc-300">
+            <table className="w-full text-left text-xs text-zinc-300 min-w-[700px]">
               <thead className="bg-zinc-900/90 border-b border-zinc-800/80 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
                 <tr>
                   <th className="py-3 px-4">Article Title</th>

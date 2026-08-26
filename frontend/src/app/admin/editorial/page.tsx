@@ -647,7 +647,7 @@ export default function EditorialBoardPage() {
                   {/* Members Table */}
                   {memberCount > 0 ? (
                     <div className="overflow-x-auto">
-                      <table className="w-full text-left text-xs text-zinc-300">
+                      <table className="w-full text-left text-xs text-zinc-300 min-w-[600px]">
                         <thead className="bg-zinc-950/60 border-b border-zinc-800/80 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
                           <tr>
                             <th className="py-2.5 px-5">Round Profile Picture</th>

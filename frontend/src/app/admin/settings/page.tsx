@@ -293,7 +293,7 @@ export default function SettingsPage() {
       {/* ─── SECTION 2: WEBSITE INFORMATION & PREFERENCES ─── */}
       <form onSubmit={handleSaveInfo} className="space-y-8">
         
-        <div className="bg-gradient-to-b from-zinc-900 via-zinc-950 to-zinc-900 border border-zinc-800/90 rounded-2xl p-6 sm:p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_10px_30px_rgba(0,0,0,0.5)] space-y-6">
+        <div className="bg-gradient-to-b from-zinc-900 via-zinc-950 to-zinc-900 border border-zinc-800/90 rounded-2xl p-4 sm:p-6 md:p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_10px_30px_rgba(0,0,0,0.5)] space-y-6">
           <div className="flex items-center gap-3 pb-4 border-b border-zinc-800/80">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-600 to-rose-600 border border-red-500/40 flex items-center justify-center text-white shadow-md">
               <Globe className="w-5 h-5" />

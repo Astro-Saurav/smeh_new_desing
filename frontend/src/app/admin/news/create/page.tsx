@@ -244,7 +244,7 @@ export default function CreateNewsPage() {
         <div className="lg:col-span-8 space-y-6">
           
           {/* Main Article Container */}
-          <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-zinc-800/80 rounded-2xl p-6 md:p-8 space-y-6 shadow-sm">
+          <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 border border-zinc-800/80 rounded-2xl p-4 sm:p-6 md:p-8 space-y-6 shadow-sm">
             
             {/* Prominent Headline Input */}
             <div>
