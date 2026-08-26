@@ -216,18 +216,18 @@ export function SiteHeader() {
   return (
     <div className="w-full flex flex-col bg-white border-b border-zinc-200 sticky top-0 z-50 md:static">
       {/* Global Black Bar - Centered Elite Branding */}
-      <div className="w-full bg-black text-white h-32 md:h-44 flex items-center px-4 md:px-8 relative shadow-2xl overflow-hidden">
+      <div className="w-full bg-black text-white h-28 xs:h-32 md:h-44 flex items-center px-3 sm:px-6 md:px-8 relative shadow-2xl overflow-hidden">
         {/* Centered Professional Masthead & Publication Date */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex flex-col items-center justify-center z-10 px-2">
-          {/* Logo Link - Enlarged for Maximum Impact */}
+          {/* Logo Link - Sized for zero overlap on all mobile screens */}
           <Link href="/" className="flex items-center justify-center group relative z-10">
-            <div className="relative w-[230px] h-[60px] xs:w-[280px] xs:h-[75px] sm:w-[410px] sm:h-[100px] md:w-[580px] md:h-[132px] transform group-hover:scale-[1.02] transition-transform duration-300">
+            <div className="relative w-[160px] h-[50px] xs:w-[210px] xs:h-[65px] sm:w-[380px] sm:h-[95px] md:w-[580px] md:h-[132px] transform group-hover:scale-[1.02] transition-transform duration-300">
               <Image
                 src="/new_logo.png"
                 alt="Manav Rachna Times Logo"
                 fill
                 className="object-contain object-center"
-                sizes="(max-width: 640px) 280px, (max-width: 768px) 410px, 580px"
+                sizes="(max-width: 480px) 210px, (max-width: 768px) 380px, 580px"
                 priority
                 unoptimized
               />
@@ -235,7 +235,7 @@ export function SiteHeader() {
           </Link>
 
           {/* Centered Newspaper Date Banner BELOW Logo */}
-          <div className="text-[9px] xs:text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] sm:tracking-[0.25em] text-zinc-300 relative z-30 pt-0.5 sm:pt-1 flex items-center gap-1.5 sm:gap-2 select-none drop-shadow-md">
+          <div className="text-[8px] xs:text-[9.5px] sm:text-xs font-black uppercase tracking-[0.15em] xs:tracking-[0.2em] sm:tracking-[0.25em] text-zinc-300 relative z-30 pt-0.5 sm:pt-1 flex items-center gap-1 sm:gap-2 select-none drop-shadow-md">
             <span className="w-1.5 h-1.5 rounded-full bg-red-600 inline-block shadow-[0_0_6px_#dc2626]" />
             <span>{new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
             <span className="w-1.5 h-1.5 rounded-full bg-red-600 inline-block shadow-[0_0_6px_#dc2626]" />
@@ -244,12 +244,12 @@ export function SiteHeader() {
 
         <div className="flex-1" />
 
-        <div className="flex items-center gap-3 sm:gap-4 z-20 absolute right-3 sm:right-6 top-1/2 -translate-y-1/2">
+        <div className="flex items-center gap-2 sm:gap-4 z-20 absolute right-2.5 sm:right-6 top-1/2 -translate-y-1/2">
           {/* Mobile Hamburger */}
           <div className="lg:hidden">
             <Sheet>
               <SheetTrigger asChild>
-                <button className="p-2 text-zinc-400 hover:text-white transition-colors cursor-pointer rounded-lg bg-zinc-900/60 border border-zinc-800" aria-label="Open Navigation Menu">
+                <button className="p-1.5 xs:p-2 text-zinc-300 hover:text-white transition-colors cursor-pointer rounded-xl bg-zinc-900/90 border border-zinc-800/90 backdrop-blur-md shadow-md active:scale-95" aria-label="Open Navigation Menu">
                   <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
               </SheetTrigger>
