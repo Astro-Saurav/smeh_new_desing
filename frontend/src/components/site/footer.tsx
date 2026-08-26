@@ -148,14 +148,14 @@ export function SiteFooter() {
           
           {/* Brand Section & Conditional Social Icons */}
           <div className="lg:col-span-5 space-y-6 pr-0 lg:pr-12">
-            <Link href="/" className="inline-block group">
-              <div className="relative w-64 h-24 sm:w-80 sm:h-28 lg:w-96 lg:h-32 group-hover:scale-[1.02] transition-transform duration-300">
+            <Link href="/" className="inline-block group max-w-full">
+              <div className="relative w-48 h-16 xs:w-56 xs:h-20 sm:w-72 sm:h-24 md:w-80 md:h-28 lg:w-96 lg:h-32 max-w-full group-hover:scale-[1.02] transition-transform duration-300">
                 <Image
                   src="/new_logo.png"
                   alt="Manav Rachna Times Logo"
                   fill
                   className="object-contain object-left"
-                  sizes="(max-width: 1024px) 320px, 384px"
+                  sizes="(max-width: 480px) 224px, (max-width: 768px) 288px, 384px"
                   priority
                   unoptimized
                 />
