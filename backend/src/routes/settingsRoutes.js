@@ -4,8 +4,8 @@ const { authenticate, authorize } = require('../middleware/authMiddleware')
 
 const settingsRouter = express.Router()
 
-// Settings can be viewed by any authenticated user (e.g. editor) but only updated by admin
-settingsRouter.get('/', authenticate, getSettings)
+// Public route: site settings (social links, breaking ticker, branding info) can be viewed by any visitor
+settingsRouter.get('/', getSettings)
 settingsRouter.put('/', authenticate, authorize('admin'), updateSettings)
 
 module.exports = {

@@ -47,8 +47,12 @@ export default function SettingsPage() {
   const [pageSize, setPageSize] = useState('20')
   const [allowDownloads, setAllowDownloads] = useState(true)
 
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1'
+
   useEffect(() => {
     setMounted(true)
+
+    // First load from localStorage for instant render
     try {
       const saved = localStorage.getItem('mrt_newsroom_settings')
       if (saved) {
@@ -66,11 +70,48 @@ export default function SettingsPage() {
         if (typeof parsed.allowDownloads === 'boolean') setAllowDownloads(parsed.allowDownloads)
       }
     } catch (e) {
-      console.error('Failed to load settings:', e)
+      console.error('Failed to load local settings:', e)
     }
+
+    // Then fetch true settings from PostgreSQL database API
+    fetch(`${API_BASE}/settings`)
+      .then(res => res.json())
+      .then(resData => {
+        if (resData.success && resData.data) {
+          const dbData = resData.data
+          if (dbData.siteName) setSiteName(dbData.siteName)
+          if (dbData.siteTagline) setSiteTagline(dbData.siteTagline)
+          if (dbData.contactEmail) setContactEmail(dbData.contactEmail)
+          if (dbData.enableBreakingTicker !== undefined) setEnableBreakingTicker(dbData.enableBreakingTicker === 'true' || dbData.enableBreakingTicker === true)
+          if (dbData.instagramUrl !== undefined) setInstagramUrl(dbData.instagramUrl)
+          if (dbData.xUrl !== undefined) setXUrl(dbData.xUrl)
+          if (dbData.linkedinUrl !== undefined) setLinkedinUrl(dbData.linkedinUrl)
+          if (dbData.youtubeUrl !== undefined) setYoutubeUrl(dbData.youtubeUrl)
+          if (dbData.defaultPublishState) setDefaultPublishState(dbData.defaultPublishState as any)
+          if (dbData.pageSize) setPageSize(dbData.pageSize)
+          if (dbData.allowDownloads !== undefined) setAllowDownloads(dbData.allowDownloads === 'true' || dbData.allowDownloads === true)
+
+          // Keep localStorage updated
+          const updatedSettings = {
+            siteName: dbData.siteName || siteName,
+            siteTagline: dbData.siteTagline || siteTagline,
+            contactEmail: dbData.contactEmail || contactEmail,
+            enableBreakingTicker: dbData.enableBreakingTicker === 'true' || dbData.enableBreakingTicker === true,
+            instagramUrl: dbData.instagramUrl || '',
+            xUrl: dbData.xUrl || '',
+            linkedinUrl: dbData.linkedinUrl || '',
+            youtubeUrl: dbData.youtubeUrl || '',
+            defaultPublishState: dbData.defaultPublishState || defaultPublishState,
+            pageSize: dbData.pageSize || pageSize,
+            allowDownloads: dbData.allowDownloads === 'true' || dbData.allowDownloads === true
+          }
+          localStorage.setItem('mrt_newsroom_settings', JSON.stringify(updatedSettings))
+        }
+      })
+      .catch(err => console.error('Error loading settings from DB:', err))
   }, [])
 
-  const toggleTicker = (newVal: boolean) => {
+  const toggleTicker = async (newVal: boolean) => {
     setEnableBreakingTicker(newVal)
     try {
       const saved = localStorage.getItem('mrt_newsroom_settings')
@@ -78,12 +119,24 @@ export default function SettingsPage() {
       parsed.enableBreakingTicker = newVal
       localStorage.setItem('mrt_newsroom_settings', JSON.stringify(parsed))
       window.dispatchEvent(new Event('mrt_settings_changed'))
+
+      const token = cacheManager.getToken()
+      if (token) {
+        await fetch(`${API_BASE}/settings`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ enableBreakingTicker: String(newVal) })
+        })
+      }
     } catch (e) {
       console.error(e)
     }
   }
 
-  const handleSaveInfo = (e: React.FormEvent) => {
+  const handleSaveInfo = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
       const settings = {
@@ -99,11 +152,44 @@ export default function SettingsPage() {
         pageSize,
         allowDownloads
       }
+
+      // Save to localStorage
       localStorage.setItem('mrt_newsroom_settings', JSON.stringify(settings))
       window.dispatchEvent(new Event('mrt_settings_changed'))
-      setMessage({ type: 'success', text: 'Website information, social links, and preferences saved successfully!' })
-    } catch (err) {
-      setMessage({ type: 'error', text: 'Failed to save settings.' })
+
+      // Save to PostgreSQL DB
+      const token = cacheManager.getToken()
+      if (token) {
+        const res = await fetch(`${API_BASE}/settings`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            siteName,
+            siteTagline,
+            contactEmail,
+            enableBreakingTicker: String(enableBreakingTicker),
+            instagramUrl,
+            xUrl,
+            linkedinUrl,
+            youtubeUrl,
+            defaultPublishState,
+            pageSize,
+            allowDownloads: String(allowDownloads)
+          })
+        })
+        const resData = await res.json()
+        if (!res.ok || !resData.success) {
+          throw new Error(resData.message || 'Database update failed')
+        }
+      }
+
+      setMessage({ type: 'success', text: 'Website information, social links, and preferences saved to database successfully!' })
+    } catch (err: any) {
+      console.error(err)
+      setMessage({ type: 'error', text: err.message || 'Failed to save settings to database.' })
     }
   }
 

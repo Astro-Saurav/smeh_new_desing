@@ -16,7 +16,10 @@ export function SiteFooter() {
     youtubeUrl?: string;
   }>({});
 
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1'
+
   const checkSocials = () => {
+    // 1. Try local storage first
     try {
       const saved = localStorage.getItem("mrt_newsroom_settings");
       if (saved) {
@@ -29,8 +32,24 @@ export function SiteFooter() {
         });
       }
     } catch (e) {
-      console.error("Failed to load footer socials:", e);
+      console.error("Failed to load footer socials from localStorage:", e);
     }
+
+    // 2. Fetch official public settings from PostgreSQL DB API
+    fetch(`${API_BASE}/settings`)
+      .then(res => res.json())
+      .then(resData => {
+        if (resData.success && resData.data) {
+          const dbData = resData.data;
+          setSocials({
+            instagramUrl: dbData.instagramUrl || "",
+            xUrl: dbData.xUrl || "",
+            linkedinUrl: dbData.linkedinUrl || "",
+            youtubeUrl: dbData.youtubeUrl || "",
+          });
+        }
+      })
+      .catch(err => console.error("Failed to fetch footer settings from DB API:", err));
   };
 
   useEffect(() => {
