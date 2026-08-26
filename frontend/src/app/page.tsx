@@ -333,7 +333,7 @@ export default async function HomePage() {
           {/* Main Story – 8 columns, text overlaid on image */}
           <div className="lg:col-span-8">
             {mainStory ? (
-              <Link href={mainStory.link || '#'} className="group block relative overflow-hidden rounded-xl shadow-md aspect-[16/9] bg-zinc-900">
+              <Link href={mainStory.link || '#'} className="group block relative overflow-hidden rounded-2xl shadow-xl aspect-[4/3] xs:aspect-[16/10] sm:aspect-[16/9] bg-zinc-950 border border-zinc-800/80">
                 <SafeImage
                   src={mainStory.image}
                   alt={mainStory.headline}
@@ -342,20 +342,29 @@ export default async function HomePage() {
                   priority
                   unoptimized={true}
                 />
-                {/* Dark gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
-                {/* Category badge */}
-                <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 text-[10px] rounded-sm font-bold uppercase tracking-widest shadow">
-                  {mainStory.category}
-                </div>
-                {/* Text overlay at bottom */}
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <h2 className="text-2xl md:text-4xl font-black tracking-tight leading-tight text-white group-hover:text-red-300 transition-colors mb-3 drop-shadow-lg">
-                    {mainStory.headline}
-                  </h2>
-                  <p className="text-zinc-300 line-clamp-2 text-sm leading-relaxed drop-shadow">
-                    {mainStory.description}
-                  </p>
+                {/* Multi-stage dark gradient overlay for text readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/70 via-40% to-black/30" />
+
+                {/* Flexbox container ensuring badge and title never collide */}
+                <div className="absolute inset-0 p-4 xs:p-5 sm:p-6 md:p-8 flex flex-col justify-between z-10">
+                  {/* Top Bar: Category Badge */}
+                  <div className="flex items-center justify-between">
+                    <span className="bg-red-600 text-white px-2.5 py-1 text-[9px] xs:text-[10px] sm:text-xs rounded font-black uppercase tracking-widest shadow-lg border border-red-500/30 shrink-0">
+                      {mainStory.category}
+                    </span>
+                  </div>
+
+                  {/* Bottom Stack: Title & Description */}
+                  <div className="space-y-1.5 xs:space-y-2 sm:space-y-3 max-w-3xl">
+                    <h2 className="text-base xs:text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-tight leading-snug xs:leading-tight text-white group-hover:text-red-300 transition-colors line-clamp-2 sm:line-clamp-3 drop-shadow-md">
+                      {mainStory.headline}
+                    </h2>
+                    {mainStory.description && (
+                      <p className="text-zinc-300 line-clamp-2 text-xs sm:text-sm leading-relaxed font-medium drop-shadow hidden xs:block">
+                        {mainStory.description}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </Link>
             ) : (

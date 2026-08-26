@@ -63,7 +63,7 @@ function HeroOverlayCard({ article }: { article: HomepageArticle }) {
   return (
     <Link
       href={routes.article(article.slug)}
-      className="group relative block w-full overflow-hidden rounded-xl shadow-md aspect-[16/9] bg-zinc-900"
+      className="group relative block w-full overflow-hidden rounded-2xl shadow-xl aspect-[4/3] xs:aspect-[16/10] sm:aspect-[16/9] bg-zinc-950 border border-zinc-800/80"
     >
       <Image
         src={getImageSrc(article.thumbnail)}
@@ -74,22 +74,26 @@ function HeroOverlayCard({ article }: { article: HomepageArticle }) {
         unoptimized={true}
         onError={(e) => { if (!e.currentTarget.src.includes(PLACEHOLDER_IMAGE)) { e.currentTarget.srcset = ''; e.currentTarget.src = PLACEHOLDER_IMAGE; } }}
       />
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
-      {/* Category badge */}
-      <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 text-[10px] rounded-sm font-bold uppercase tracking-widest shadow">
-        {article.category.name}
-      </div>
-      {/* Text at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 p-5">
-        <h3 className="text-xl md:text-2xl font-black tracking-tight leading-tight text-white group-hover:text-red-300 transition-colors mb-2 drop-shadow-lg">
-          {article.title}
-        </h3>
-        {article.excerpt && (
-          <p className="text-zinc-300 text-sm line-clamp-2 leading-relaxed drop-shadow">
-            {article.excerpt}
-          </p>
-        )}
+      {/* Multi-stage gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/70 via-40% to-black/30" />
+      
+      {/* Flex container */}
+      <div className="absolute inset-0 p-4 xs:p-5 sm:p-6 flex flex-col justify-between z-10">
+        <div className="flex items-center justify-between">
+          <span className="bg-red-600 text-white px-2.5 py-1 text-[9px] xs:text-[10px] sm:text-xs rounded font-black uppercase tracking-widest shadow-lg border border-red-500/30 shrink-0">
+            {article.category.name}
+          </span>
+        </div>
+        <div className="space-y-1.5 sm:space-y-2">
+          <h3 className="text-base xs:text-lg sm:text-xl md:text-2xl font-black tracking-tight leading-snug xs:leading-tight text-white group-hover:text-red-300 transition-colors line-clamp-2 sm:line-clamp-3 drop-shadow-md">
+            {article.title}
+          </h3>
+          {article.excerpt && (
+            <p className="text-zinc-300 text-xs sm:text-sm line-clamp-2 leading-relaxed font-medium drop-shadow hidden xs:block">
+              {article.excerpt}
+            </p>
+          )}
+        </div>
       </div>
     </Link>
   )
